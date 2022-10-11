@@ -1,7 +1,11 @@
 # EXPH
 EXPH_v1.0
+
 Author: Bowen Hou
+
 Time: 10/10/2022
+
+
 
 Exciton-Phonon Interaction
 
