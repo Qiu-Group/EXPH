@@ -1,5 +1,5 @@
 from __future__ import print_function
-from time import sleep
+# from time import sleep
 import sys
 import re
 

@@ -70,10 +70,13 @@ def move_k_back_to_BZ_1(A):
     :param A: A could be any numpy array, but IT HAS TO BE FRACTIONAL coordinate
     :return: A_BZ: 0 <= A_BZ[()] < 1
     """
-    temp_1 = np.where(A >= 0.999999999, A - 1, A)
+    temp_0 = np.where(np.abs(A - 1) < 0.00001, 1.0, A)
+    temp_0_ = np.where(np.abs(temp_0 - 0.0) < 0.00001, 0.0, temp_0)
+    temp_1 = np.where(temp_0_ >= 0.999999999, temp_0_ - 1, temp_0_)
     res = np.where(temp_1 < -0.000000001, temp_1 + 1, temp_1)
     # temp_1 = np.where(A >= 0.99999999999999999999999999999, A - 1, A)
     # res = np.where(temp_1 < -0.00000000000000000000000000001, temp_1 + 1, temp_1)
+
     if isDoubleCountK(res):
         raise Exception("There is a double count in A")
     return res
@@ -92,3 +95,12 @@ def isDoubleCountK(A):
             if np.linalg.norm(A[i] - A[j]) < dbc_tolerance:
                 return True
     return False
+
+def frac2carte(a0, fractional_point):
+    if a0.shape[0] != 3 or a0.shape[0] != 3:
+        raise Exception("a0.shape[0] != 3 or a0.shape[0] != 3")
+    if np.sum(fractional_point.shape) == 3:
+        lenth = 1
+    else:
+        lenth = fractional_point.shape[0]
+    return (a0.T@fractional_point.T).T
