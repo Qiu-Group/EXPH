@@ -22,7 +22,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     :param acvmat: acv matrix (do not read it every time)
     :param gkkmat: gkk matrix (do not read it every time)
     :param kmap: kmap matrix (do not read it every time) -> kmap.shape = (kx,ky,kz,Q, k_acv, q, k_gkk)
-    :param kmap_dic: kmap dictionary -> kmap_dic = {'  %.6f    %.6f    %.6f' : [Q, k_acv, q, k_gkk], ...}
+    :param kmap_dic: kmap dictionary -> kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
     :param bandmap_occ: [bandmap_matrix, occ]
     :return: the gkk unit is meV, but return here is eV
     """
@@ -92,14 +92,17 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
                     # 2.0 we need to find these new k/q/Q in the 1s BZ:
                     # res1 <- [Q+q, k+Q+q, k+Q]; res2 <- [Q+q, k-q, k+Q]
                     # todo: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
-                    # kmap_dic = {'  %.6f    %.6f    %.6f' : [Q, k_acv, q, k_gkk], ...}
+                    # kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
                     # kmapout[x] = [Q, k_acv, q, k_gkk]
                     Q_plus_q_point =  move_k_back_to_BZ_1(kmap[Q_kmap,0:3] + kmap[q_kmap,0:3])
-                    Q_plus_q_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])]
+                    key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
+                    Q_plus_q_kmapout = kmap_dic[key_temp.replace('-','')]
                     Q_plus_q_plus_k_point = move_k_back_to_BZ_1(Q_plus_q_point + kmap[k_kmap,0:3])
-                    Q_plus_q_plus_k_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(Q_plus_q_plus_k_point[0], Q_plus_q_plus_k_point[1], Q_plus_q_plus_k_point[2])]
+                    key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_plus_k_point[0], Q_plus_q_plus_k_point[1], Q_plus_q_plus_k_point[2])
+                    Q_plus_q_plus_k_kmapout = kmap_dic[key_temp.replace('-','')]
                     k_plus_Q_point = move_k_back_to_BZ_1(kmap[k_kmap,0:3] + kmap[Q_kmap,0:3])
-                    k_plus_Q_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(k_plus_Q_point[0], k_plus_Q_point[1], k_plus_Q_point[2])]
+                    key_temp = '  %.5f    %.5f    %.5f'%(k_plus_Q_point[0], k_plus_Q_point[1], k_plus_Q_point[2])
+                    k_plus_Q_kmapout = kmap_dic[key_temp.replace('-','')]
 
                     # 3.0 Calculation!
                     # acvmat.shape = (nQ,nS,nk,nc,nv,2)
@@ -154,12 +157,14 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
                     # 2.0 we need to find these new k/q/Q in the 1s BZ:
                     # res1 <- [Q+q, k+Q+q, k+Q]; res2 <- [Q+q, k-q, k+Q]
                     # todo: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
-                    # kmap_dic = {'  %.6f    %.6f    %.6f' : [Q, k_acv, q, k_gkk], ...}
+                    # kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
                     # kmapout[x] = [Q, k_acv, q, k_gkk]
                     Q_plus_q_point =  move_k_back_to_BZ_1(kmap[Q_kmap,0:3] + kmap[q_kmap,0:3])
-                    Q_plus_q_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])]
+                    key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
+                    Q_plus_q_kmapout = kmap_dic[key_temp.replace('-','')]
                     k_minus_q_point = move_k_back_to_BZ_1(kmap[k_kmap,0:3] - kmap[q_kmap,0:3])
-                    k_minus_q_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(k_minus_q_point[0], k_minus_q_point[1], k_minus_q_point[2])]
+                    key_temp = '  %.5f    %.5f    %.5f'%(k_minus_q_point[0], k_minus_q_point[1], k_minus_q_point[2])
+                    k_minus_q_kmapout = kmap_dic[key_temp.replace('-','')]
 
                     # 3.0 Calculation!
                     # acvmat.shape = (nQ,nS,nk,nc,nv,2)
@@ -200,4 +205,4 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
 
 if __name__ == "__main__":
     # gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk())
-    res = gqQ(n_ex_acv_index=1,m_ex_acv_index=0,v_ph_gkk=4,Q_kmap=6,q_kmap=12)
+    res = gqQ(n_ex_acv_index=0,m_ex_acv_index=0,v_ph_gkk=0,Q_kmap=6,q_kmap=8)

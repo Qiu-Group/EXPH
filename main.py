@@ -13,7 +13,7 @@ if __name__ == "__main__":
     #==========================================================
     save_path = './save/'
     h5_path = './'
-    [nQ, nq, nk, nmode, ni, nj] = [144, 16, 144, 9, 4, 4]
+    [nQ, nq, nk, nmode, ni, nj] = [144, 144, 144, 9, 4, 4]
     # ==========================================================
 
     # main program
@@ -34,4 +34,4 @@ if __name__ == "__main__":
     # 3.0 g(Q,q) construction
     gqQ_res = gqQ(n_ex_acv_index=1, m_ex_acv_index=0, v_ph_gkk=4, Q_kmap=6, q_kmap=12)
     gamma_res = Gamma_scat()
-    Exciton_Life()
+    # Exciton_Life()

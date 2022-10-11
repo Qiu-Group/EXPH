@@ -26,10 +26,10 @@ This function construct gnmv(Q,q)
 # input (as variable)
 # !!! Just two example, you need to intensively test on this
 Q_kmap = 6 # this is index of kmap
-q_kmap = 12 # this is index of kmap
+q_kmap = 8 # this is index of kmap
 n_ex_acv_index = 0 # this is index of exciton state in Acv
 m_ex_acv_index = 0 # this is index of exciton state in Acv
-v_ph_gkk = 3 # this is index of phonon mode
+v_ph_gkk = 0 # this is index of phonon mode
 
 # loading acv, gkk, kmap and bandmap
 acvmat = read_Acv() # load acv matrix
@@ -44,6 +44,7 @@ kmap_dic = construct_kmap() # construct kmap dictionary {'k1 k2 k3':[0 0 0 0]}: 
 # acv["mf_header/kpoints"]
 
 progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)
+res = np.complex(0, 0)
 # note: kmap.shape(nk, information=(kx,ky,kz,Q, k_acv, q, k_gkk))
 for k_kmap in range(kmap.shape[0]):  # k_kmap is the index of kmap from 0-15 (e.g)
     # get the right index in acv and gkk
@@ -51,7 +52,7 @@ for k_kmap in range(kmap.shape[0]):  # k_kmap is the index of kmap from 0-15 (e.
     # print("k_acv_index: %s "%i_kmap)
     progress.current += 1
     progress()
-    res = np.complex(0,0)
+
 
     first_res = 0
     second_res = 0
@@ -77,14 +78,17 @@ for k_kmap in range(kmap.shape[0]):  # k_kmap is the index of kmap from 0-15 (e.
                 # 2.0 we need to find these new k/q/Q in the 1s BZ:
                 # res1 <- [Q+q, k+Q+q, k+Q]; res2 <- [Q+q, k-q, k+Q]
                 # todo: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
-                # kmap_dic = {'  %.6f    %.6f    %.6f' : [Q, k_acv, q, k_gkk], ...}
+                # kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
                 # kmapout[x] = [Q, k_acv, q, k_gkk]
                 Q_plus_q_point =  move_k_back_to_BZ_1(kmap[Q_kmap,0:3] + kmap[q_kmap,0:3])
-                Q_plus_q_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])]
+                key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
+                Q_plus_q_kmapout = kmap_dic[key_temp.replace('-','')]
                 Q_plus_q_plus_k_point = move_k_back_to_BZ_1(Q_plus_q_point + kmap[k_kmap,0:3])
-                Q_plus_q_plus_k_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(Q_plus_q_plus_k_point[0], Q_plus_q_plus_k_point[1], Q_plus_q_plus_k_point[2])]
+                key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_plus_k_point[0], Q_plus_q_plus_k_point[1], Q_plus_q_plus_k_point[2])
+                Q_plus_q_plus_k_kmapout = kmap_dic[key_temp.replace('-','')]
                 k_plus_Q_point = move_k_back_to_BZ_1(kmap[k_kmap,0:3] + kmap[Q_kmap,0:3])
-                k_plus_Q_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(k_plus_Q_point[0], k_plus_Q_point[1], k_plus_Q_point[2])]
+                key_temp = '  %.5f    %.5f    %.5f'%(k_plus_Q_point[0], k_plus_Q_point[1], k_plus_Q_point[2])
+                k_plus_Q_kmapout = kmap_dic[key_temp.replace('-','')]
 
                 # 3.0 Calculation!
                 # acvmat.shape = (nQ,nS,nk,nc,nv,2)
@@ -138,12 +142,14 @@ for k_kmap in range(kmap.shape[0]):  # k_kmap is the index of kmap from 0-15 (e.
                 # 2.0 we need to find these new k/q/Q in the 1s BZ:
                 # res1 <- [Q+q, k+Q+q, k+Q]; res2 <- [Q+q, k-q, k+Q]
                 # todo: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
-                # kmap_dic = {'  %.6f    %.6f    %.6f' : [Q, k_acv, q, k_gkk], ...}
+                # kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
                 # kmapout[x] = [Q, k_acv, q, k_gkk]
                 Q_plus_q_point =  move_k_back_to_BZ_1(kmap[Q_kmap,0:3] + kmap[q_kmap,0:3])
-                Q_plus_q_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])]
+                key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
+                Q_plus_q_kmapout = kmap_dic[key_temp.replace('-','')]
                 k_minus_q_point = move_k_back_to_BZ_1(kmap[k_kmap,0:3] - kmap[q_kmap,0:3])
-                k_minus_q_kmapout = kmap_dic['  %.6f    %.6f    %.6f'%(k_minus_q_point[0], k_minus_q_point[1], k_minus_q_point[2])]
+                key_temp = '  %.5f    %.5f    %.5f'%(k_minus_q_point[0], k_minus_q_point[1], k_minus_q_point[2])
+                k_minus_q_kmapout = kmap_dic[key_temp.replace('-','')]
 
                 # 3.0 Calculation!
                 # acvmat.shape = (nQ,nS,nk,nc,nv,2)

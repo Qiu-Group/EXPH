@@ -17,9 +17,10 @@ outout: gkk.h5
 #=============================================================================================
 # cat epw.out | grep -E '^ +[0-9]+ +[0-9]+ +[0-9]+'|awk '{print $7}' > elphmat.dat
 # grep '     iq' epw.out |awk '{print $5,$6,$7}' > q.dat
+# grep 'lattice parameter ' epw.out |awk '{print $5}' >a0.dat
 # grep '            a' epw.out|awk '{print $4,$5,$6}' > a.dat
 # grep '            b' epw.out|awk '{print $4,$5,$6}' > b.dat
-# kmesh.pl 12 12 1 |grep '^ '|awk '{print $1,$2,$3}' > k.dat
+# kmesh.pl 12 12 1 |grep '^ '|awk '{print $1,$2,$3}' > k.dat #todo: 12 12 1 should be determined by smarter method..
 # grep 'ik =       1' epw.out -A 11| grep -E '^ +[0-9]+ +[0-9]+ +[0-9]+'|awk '{print $6}' > omega.dat #todo: notice that 11 is determined by nmode + 2
 #=============================================================================================
 # then put all data to save/gkk.save

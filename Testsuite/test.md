@@ -6,3 +6,5 @@ Progress need to do:
 (not hurry)
 
 (3) check BE distribution: since when omega = 0, BE will goes to divergence. discuss this with Diana
+
+(4) think some better solution for kmap (float issue)

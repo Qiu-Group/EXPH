@@ -72,6 +72,9 @@ def firstGridCheck(h5path='./'):
         print("[first grid check]: not pass")
         print("We find", notMatch, "set kgrid not matches")
         print("Reduced K-grid seeking...")
+
+    if notMatch == 0:
+        kmap_generate(Qpt_in_acv_frac, kpt_in_acv_frac, qpt_in_gkk_frac, kpt_in_gkk_frac, readwhat=3)
     return notMatch
 
 
@@ -91,7 +94,7 @@ def kmap_generate(Q, k_acv, q, k_gkk, readwhat=1):
     for j in range(baseKgrid.shape[0]):
         base_kpoint = baseKgrid[j]
         res = '  %.6f    %.6f    %.6f'%(base_kpoint[0], base_kpoint[1], base_kpoint[2])
-        # res_map['%.6f %.6f %.6f'%(base_kpoint[0], base_kpoint[1], base_kpoint[2])] = []
+        # res_map['%.5f %.5f %.5f'%(base_kpoint[0], base_kpoint[1], base_kpoint[2])] = []
         for i in range(4):
             todoKgrid = [Q, k_acv, q, k_gkk][i]
             match = 0
@@ -149,7 +152,7 @@ def construct_kmap():
         raise Exception("failed to open kkqQmap.dat")
     res = {}
     for i in range(kmap.shape[0]):
-        res['  %.6f    %.6f    %.6f' % (kmap[i, 0:3][0], kmap[i, 0:3][1], kmap[i, 0:3][2])] = kmap[i, 3:]
+        res['  %.5f    %.5f    %.5f' % (kmap[i, 0:3][0], kmap[i, 0:3][1], kmap[i, 0:3][2])] = kmap[i, 3:]
     return res
 
 if __name__ == "__main__":

@@ -75,7 +75,7 @@ for q_kmap in range(kmap.shape[0]):  # q_kmap is the index of kmap from point 0-
             [Q_acv_index, q_gkk_index] = [kmap[Q_kmap, 3], kmap[q_kmap, 5]]
             Q_plus_q_point = move_k_back_to_BZ_1(kmap[Q_kmap, 0:3] + kmap[q_kmap, 0:3])
             Q_plus_q_kmapout = kmap_dic[
-                '  %.6f    %.6f    %.6f' % (Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])]
+                '  %.5f    %.5f    %.5f' % (Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])]
             Qpr_as_Q_plus_q_acv_index = Q_plus_q_kmapout[0]
 
             # find energy for exciton and phonon (you should use index_acv and index_gkk)
