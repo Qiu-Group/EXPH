@@ -1,0 +1,1 @@
+readwhat_map = {1:"Qpr",2:"kpt_acv",3:"qpt",4:'kpt_gkk'}
