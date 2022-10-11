@@ -5,6 +5,7 @@ from Common.kgrid_check import k_grid_summary
 from Common.band_check import band_summary
 from ELPH.EL_PH_mat import gqQ
 from ELPH.EX_Ph_scat import Gamma_scat
+from ELPH.EX_PH_lifetime import Exciton_Life
 
 if __name__ == "__main__":
     # todo: 0.0 find a way to get all of this
@@ -33,3 +34,4 @@ if __name__ == "__main__":
     # 3.0 g(Q,q) construction
     gqQ_res = gqQ(n_ex_acv_index=1, m_ex_acv_index=0, v_ph_gkk=4, Q_kmap=6, q_kmap=12)
     gamma_res = Gamma_scat()
+    Exciton_Life()
