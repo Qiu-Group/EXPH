@@ -72,6 +72,8 @@ def move_k_back_to_BZ_1(A):
     """
     temp_1 = np.where(A >= 0.999999999, A - 1, A)
     res = np.where(temp_1 < -0.000000001, temp_1 + 1, temp_1)
+    # temp_1 = np.where(A >= 0.99999999999999999999999999999, A - 1, A)
+    # res = np.where(temp_1 < -0.00000000000000000000000000001, temp_1 + 1, temp_1)
     if isDoubleCountK(res):
         raise Exception("There is a double count in A")
     return res
