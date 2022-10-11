@@ -4,6 +4,7 @@ from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy
 from IO.IO_common import read_bandmap, read_kmap
 from Common.kgrid_check import construct_kmap
+from Common.progress import ProgressBar
 
 
 # input
@@ -26,10 +27,14 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
     Nqpt = kmap.shape[0]  # number of q-points
 
 
+    # progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)  # progress
+
     res = np.zeros((kmap.shape[0],4))
     for Q_kmap in range(kmap.shape[0]):
+        # progress.current += 1
+        # progress()
         res[Q_kmap,:3] = kmap[Q_kmap, 0:3]
-        res[Q_kmap, 3] = 1/Gamma_scat(Q_kmap=Q_kmap, n_ext_acv_index=n_ext_acv_index, T=T, degaussian=degaussian)
+        res[Q_kmap, 3] = 1/Gamma_scat(Q_kmap=Q_kmap, n_ext_acv_index=n_ext_acv_index, T=T, degaussian=degaussian,muteProgress=False)
 
     np.savetxt(outfilename,res)
 
