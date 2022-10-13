@@ -13,9 +13,9 @@ if __name__ == "__main__":
     # todo: 0.0 find a way to get all of this
     # setting:
     #==========================================================
-    save_path = './save/'
+    save_path = './save_441/'
     h5_path = './'
-    [nQ, nq, nk, nmode, ni, nj] = [144, 144, 144, 9, 4, 4]
+    [nQ, nq, nk, nmode, ni, nj] = [144, 16, 144, 9, 4, 4]
     # ==========================================================
 
     # main program
@@ -34,12 +34,12 @@ if __name__ == "__main__":
     # ==========================================================
 
     # 3.0 g(Q,q) construction
-    gqQ_res = gqQ(n_ex_acv_index=1, m_ex_acv_index=0, v_ph_gkk=4, Q_kmap=6, q_kmap=12)
-    gamma_res = Gamma_scat()
-    Exciton_Life()
+    # gqQ_res = gqQ(n_ex_acv_index=1, m_ex_acv_index=0, v_ph_gkk=4, Q_kmap=6, q_kmap=12)
+    # gamma_res = Gamma_scat()
+    # Exciton_Life()
 
     #todo: write a function
-    # a = np.loadtxt('./save/gkk.save/a.dat')
-    # b = np.loadtxt('./ex_S1_lifetime.dat')[:,0:3]
-    # x = frac2carte(a,b)
-    # np.savetxt('kpt.dat',x)
+    a = np.loadtxt('./save_441/gkk.save/a.dat')
+    b = np.loadtxt('./ex_S1_lifetime.dat')[:,0:3]
+    x = frac2carte(a,b)
+    np.savetxt('kpt.dat',x)
