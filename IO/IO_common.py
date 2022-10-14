@@ -3,7 +3,7 @@ import h5py as h5
 from Common.progress import ProgressBar
 from Common.h5_status import print_attrs, check_h5_tree
 from Common.common import move_k_back_to_BZ_1
-
+import os
 
 def readkkqQ(readwhat=0, h5path="./"):
     """
@@ -44,3 +44,17 @@ def read_bandmap():
     f.close()
     occ = int(a.split()[-1])
     return [bandmap, occ]
+
+def write_loop(loop_index,filename,array):
+    if loop_index == 0:
+        a = open(filename, 'w')
+        a.write(np.array2string(array).strip('[').strip(']') + '\n')
+        a.close()
+    else:
+        a = open(filename, 'a')
+        a.write(np.array2string(array).strip('[').strip(']') + '\n')
+        a.close()
+
+
+if __name__ == "__main__":
+    pass

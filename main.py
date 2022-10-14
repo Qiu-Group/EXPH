@@ -36,10 +36,5 @@ if __name__ == "__main__":
     # 3.0 g(Q,q) construction
     # gqQ_res = gqQ(n_ex_acv_index=1, m_ex_acv_index=0, v_ph_gkk=4, Q_kmap=6, q_kmap=12)
     # gamma_res = Gamma_scat()
-    # Exciton_Life()
+    Exciton_Life()
 
-    #todo: write a function
-    a = np.loadtxt('./save_441/gkk.save/a.dat')
-    b = np.loadtxt('./ex_S1_lifetime.dat')[:,0:3]
-    x = frac2carte(a,b)
-    np.savetxt('kpt.dat',x)

@@ -5,7 +5,8 @@ from IO.IO_acv import read_Acv, read_Acv_exciton_energy
 from IO.IO_common import read_bandmap, read_kmap
 from Common.kgrid_check import construct_kmap
 from Common.progress import ProgressBar
-
+from IO.IO_common import write_loop
+import os
 
 # input
 def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
@@ -31,13 +32,25 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
 
     res = np.zeros((kmap.shape[0],4))
     for Q_kmap in range(kmap.shape[0]):
+
         # progress.current += 1
         # progress()
         res[Q_kmap,:3] = kmap[Q_kmap, 0:3]
         res[Q_kmap, 3] = 1/Gamma_scat(Q_kmap=Q_kmap, n_ext_acv_index=n_ext_acv_index, T=T, degaussian=degaussian,muteProgress=False)
 
-    np.savetxt(outfilename,res)
+        # save temp file
+        # if Q_kmap == 0:
+        #     a = open('TEMP-' + outfilename, 'w')
+        #     a.write(np.array2string(res[Q_kmap]).strip('[').strip(']')+'\n')
+        #     a.close()
+        # else:
+        #     a = open('TEMP-' + outfilename, 'a')
+        #     a.write(np.array2string(res[Q_kmap]).strip('[').strip(']')+'\n')
+        #     a.close()
+        write_loop(loop_index=Q_kmap,filename='TEMP-'+ outfilename,array=res[Q_kmap])
 
+    np.savetxt(outfilename,res)
+    # os.remove('./'+'TEMP-' + outfilename)
 
 if __name__ == "__main__":
     Exciton_Life()
