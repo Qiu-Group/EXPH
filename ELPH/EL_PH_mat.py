@@ -11,7 +11,10 @@ from Common.progress import ProgressBar
 
 
 
-def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk(), kmap = read_kmap(), kmap_dic = construct_kmap(), bandmap_occ=read_bandmap(),muteProgress=False):
+#def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk(), kmap=read_kmap(), kmap_dic=construct_kmap(), bandmap_occ=read_bandmap(),muteProgress=False):
+def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=None, gkkmat=None,
+            kmap=None, kmap_dic=None, bandmap_occ=None, muteProgress=False):
+
     """
     This function construct gnmv(Q,q)
     :param n_ex_acv: index of initial exciton state
@@ -19,13 +22,23 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     :param v_ph_gkk: index of phonon mode
     :param Q_kmap: exciton momentum in kmap
     :param q_kmap: phonon momentumB in kmap
-    :param acvmat: acv matrix (do not read it every time)
-    :param gkkmat: gkk matrix (do not read it every time)
-    :param kmap: kmap matrix (do not read it every time) -> kmap.shape = (kx,ky,kz,Q, k_acv, q, k_gkk)
-    :param kmap_dic: kmap dictionary -> kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
-    :param bandmap_occ: [bandmap_matrix, occ]
+    :param acvmat: acv matrix (do not read it every time): False -> no input, read it
+    :param gkkmat: gkk matrix (do not read it every time):  False -> no input, read it
+    :param kmap: kmap matrix (do not read it every time) -> kmap.shape = (kx,ky,kz,Q, k_acv, q, k_gkk):  False -> no input, read it
+    :param kmap_dic: kmap dictionary -> kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}:  False -> no input, read it
+    :param bandmap_occ: [bandmap_matrix, occ]:  False -> no input, read it
     :return: the gkk unit is meV, but return here is eV
     """
+    if acvmat is None:
+        acvmat = read_Acv()
+    if gkkmat is None:
+        gkkmat = read_gkk()
+    if kmap is None:
+        kmap = read_kmap()
+    if kmap_dic is None:
+        kmap_dic = construct_kmap()
+    if bandmap_occ is None:
+        bandmap_occ = read_bandmap()
 
     # input (as variable)
     # !!! Just two example, you need to intensively test on this
