@@ -70,7 +70,7 @@ def firstGridCheck(h5path='./'):
         print("[kkqQmap]: created")
     else:
         print("[first grid check]: not pass")
-        print("We find", notMatch, "set kgrid not matches")
+        print("We find", notMatch, "set k-grid not matching")
         print("Reduced K-grid seeking...")
 
     if notMatch == 0:
@@ -79,14 +79,22 @@ def firstGridCheck(h5path='./'):
 
 
 def kmap_generate(Q, k_acv, q, k_gkk, readwhat=1):
-    h5path='./'
+    """
+    :param Q: Q-grid in acv
+    :param k_acv: k-grid in acv
+    :param q: q-grid in gkk
+    :param k_gkk: k-grid in gkk
+    :param readwhat: choose [readwhat] as standard basis for all k-grid (ussually, this is the least dense k-grid), otherwise, choose q-gkk as basis
+    :return:
+    """
+    #h5path='./'
     # matched or non matched grid
     # Q =     readkkqQ(1, h5path)
     # k_acv = readkkqQ(2, h5path)
     # q =     readkkqQ(3, h5path)
     # k_gkk = readkkqQ(4, h5path)
     # get base grid as k-grid standard
-    baseKgrid = [Q, k_acv, q, k_gkk][readwhat-1]
+    baseKgrid = [Q, k_acv, q, k_gkk][readwhat-1] # choose [readwhat] as kgrid basis
     f=open('kkqQmap.dat', 'w')
     f.write('#This is a map from kgrid to index of gkk and Acv\n')
     f.write('# grid_1 grid_2 grid_3 Q k_acv q k_gkk\n')
@@ -115,6 +123,9 @@ def kmap_generate(Q, k_acv, q, k_gkk, readwhat=1):
 
 
 def secondGridCheck(h5path='./'):
+    # find the least dense as basis
+    # if match (no -1 in f): good!
+    # else(-1 in f): raise Exception
     Qpt_in_acv_frac = readkkqQ(1, h5path)
     kpt_in_acv_frac = readkkqQ(2, h5path)
     qpt_in_gkk_frac = readkkqQ(3, h5path)
@@ -144,16 +155,7 @@ def k_grid_summary(h5path='./'):
     if notMatchFirstCehck != 0:
         secondGridCheck()
 
-def construct_kmap():
-    #to be filled
-    try:
-        kmap = np.loadtxt('kkqQmap.dat')
-    except:
-        raise Exception("failed to open kkqQmap.dat")
-    res = {}
-    for i in range(kmap.shape[0]):
-        res['  %.5f    %.5f    %.5f' % (kmap[i, 0:3][0], kmap[i, 0:3][1], kmap[i, 0:3][2])] = kmap[i, 3:]
-    return res
+
 
 if __name__ == "__main__":
     k_grid_summary()

@@ -10,7 +10,7 @@ def readkkqQ(readwhat=0, h5path="./"):
     read qpt, kpt, kpt or Qpt from h5 file
     :param readwhat: <1>:Qpt  <2>:kpt_acv  <3>:qpt  <4>:kpt_gkk
     :param h5path:
-    :return:
+    :return: k-grid in 1st BZ
     """
     acv = h5.File(h5path + 'Acv.h5', 'r')
     gkk = h5.File(h5path + 'gkk.h5', 'r')
@@ -55,6 +55,30 @@ def write_loop(loop_index,filename,array):
         a.write(np.array2string(array).strip('[').strip(']') + '\n')
         a.close()
 
+def read_lattice(lattice_type='a'):
+    """
+    :param lattice_type: a -> real lattice; b -> reciprocal lattice
+    :return:
+    """
+    try:
+        acv = h5.File('Acv.h5','r')
+    except:
+        raise Exception("failed to open Acv.h5")
+    if lattice_type == 'a':
+        return acv['mf_header/crystal/avec_bohr'][()]
+    else:
+        return acv['mf_header/crystal/bvec_bohr'][()]
+
+def construct_kmap():
+    #to be filled
+    try:
+        kmap = np.loadtxt('kkqQmap.dat')
+    except:
+        raise Exception("failed to open kkqQmap.dat")
+    res = {}
+    for i in range(kmap.shape[0]):
+        res['  %.5f    %.5f    %.5f' % (kmap[i, 0:3][0], kmap[i, 0:3][1], kmap[i, 0:3][2])] = kmap[i, 3:]
+    return res
 
 if __name__ == "__main__":
     pass
