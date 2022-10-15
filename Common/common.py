@@ -1,13 +1,14 @@
 import numpy as np
 from Common.progress import ProgressBar
 
-
-# This includes some frequently used but fundamental functions:
-# (1) equivalence_even_order(A,B,tolerance=1E-4)
-# (2) equivalence_no_order(A,B,tolerance=1E-4)
-# (3) move_k_back_to_BZ_1(A)
-# (4) isDoubleCountK(A)
-
+#############################################################################################################
+# This includes some frequently used but fundamental functions:                                             #
+# (1) equivalence_even_order(A,B,tolerance=1E-4)                                                            #
+# (2) equivalence_no_order(A,B,tolerance=1E-4)                                                              #
+# (3) move_k_back_to_BZ_1(A)                                                                                #
+# (4) isDoubleCountK(A)                                                                                     #
+# (5) frac2carte(a0, fractional_point)                                                                      #
+#############################################################################################################
 
 def equivalence_order(A, B, tolerance=1E-4):
     """
@@ -36,6 +37,9 @@ def equivalence_no_order(A, B, tolerance=1E-4, mute=True):
     """
     # firstly compare dimension
     # print('start check two sets of k-grid')
+    if np.sum(A.shape)==3:# if this is a vector
+        equivalence_order(A,B,tolerance)
+
     if A.shape != B.shape:
         if not mute:
             print('ths dimension of two grid not matching')
@@ -70,7 +74,6 @@ def move_k_back_to_BZ_1(A):
     :param A: A could be any numpy array, but IT HAS TO BE FRACTIONAL coordinate
     :return: A_BZ: 0 <= A_BZ[()] < 1
     """
-    # todo: double check!!
     temp_0 = np.where(np.abs(A - 1) < 0.00001, 1.0, A)
     temp_0_ = np.where(np.abs(temp_0 - 0.0) < 0.00001, 0.0, temp_0)
     temp_1 = np.where(temp_0_ >= 0.999999999, temp_0_ - 1, temp_0_)
@@ -90,7 +93,7 @@ def isDoubleCountK(A):
     if np.sum(A.shape)==3:# if this is a vector
         return False
 
-    dbc_tolerance = 5E-4
+    dbc_tolerance = 5E-6
     for i in range(A.shape[0] - 1):
         for j in range(i + 1, A.shape[0]):
             if np.linalg.norm(A[i] - A[j]) < dbc_tolerance:
@@ -100,11 +103,11 @@ def isDoubleCountK(A):
 def frac2carte(a0, fractional_point):
     """
     :param a0: a0.shape = (3,3), the reciprocal lattice (Cartesian)
-    :param fractional_point: fractional_point.shape = (n,3)
+    :param fractional_point: fractional_point.shape = (n,3) (coordinate)
     :return:
     """
-    if a0.shape[0] != 3 or a0.shape[0] != 3:
-        raise Exception("a0.shape[0] != 3 or a0.shape[0] != 3")
+    if a0.shape[0] != 3 or a0.shape[1] != 3:
+        raise Exception("a0.shape[0] != 3 or a0.shape[1] != 3")
     if np.sum(fractional_point.shape) == 3:
         lenth = 1
     else:

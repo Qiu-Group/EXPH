@@ -2,8 +2,8 @@ from ELPH.EX_Ph_scat import Gamma_scat
 import numpy as np
 from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy
-from IO.IO_common import read_bandmap, read_kmap
-from Common.kgrid_check import construct_kmap
+from IO.IO_common import read_bandmap, read_kmap, read_lattice,construct_kmap
+from Common.common import frac2carte
 from Common.progress import ProgressBar
 from IO.IO_common import write_loop
 import os
@@ -14,6 +14,8 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
     # T = 100 # randomly choosing
     # degaussian = 0.001
     outfilename = 'ex_S%s_lifetime.dat'%(n_ext_acv_index + 1)
+
+    acv = read_Acv()
 
     kmap = read_kmap()  # load kmap matrix
     bandmap, occ = read_bandmap()  # load band map and number of occupation
@@ -26,7 +28,8 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
     nv = occ + 1 - bandmap[:, 0][0]  # load number of valence band
     n_phonon = omega_mat.shape[1]
     Nqpt = kmap.shape[0]  # number of q-points
-
+    bvec = read_lattice('b')
+    avec = read_lattice('a')
 
     # progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)  # progress
 
@@ -35,7 +38,9 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
 
         # progress.current += 1
         # progress()
-        res[Q_kmap,:3] = kmap[Q_kmap, 0:3]
+
+
+        res[Q_kmap,:3] = frac2carte(bvec,kmap[Q_kmap, 0:3]) # give out bohr lattice in reciprocal space
         res[Q_kmap, 3] = 1/Gamma_scat(Q_kmap=Q_kmap, n_ext_acv_index=n_ext_acv_index, T=T, degaussian=degaussian,muteProgress=False)
 
         # save temp file
@@ -47,10 +52,10 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
         #     a = open('TEMP-' + outfilename, 'a')
         #     a.write(np.array2string(res[Q_kmap]).strip('[').strip(']')+'\n')
         #     a.close()
-        write_loop(loop_index=Q_kmap,filename='TEMP-'+ outfilename,array=res[Q_kmap])
+        write_loop(loop_index=Q_kmap,filename=outfilename,array=res[Q_kmap])
 
-    np.savetxt(outfilename,res)
-    # os.remove('./'+'TEMP-' + outfilename)
+    # np.savetxt(outfilename,res)
+    os.remove('./'+'TEMP-' + outfilename)
 
 if __name__ == "__main__":
     Exciton_Life()

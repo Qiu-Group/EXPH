@@ -8,17 +8,18 @@ from ELPH.EX_Ph_scat import Gamma_scat
 from ELPH.EX_PH_lifetime import Exciton_Life
 from Common.common import frac2carte
 import numpy as np
+import h5py as h5
 
 if __name__ == "__main__":
     # todo: 0.0 find a way to get all of this
-    # setting:
+    # 0.0 setting:
     #==========================================================
     save_path = './save_441/'
     h5_path = './'
     [nQ, nq, nk, nmode, ni, nj] = [144, 16, 144, 9, 4, 4]
     # ==========================================================
 
-    # main program
+
     # 1.0 Interface
     # ==========================================================
     create_acvsh5(nQ, save_path + 'acvs.save/')
@@ -36,5 +37,5 @@ if __name__ == "__main__":
     # 3.0 g(Q,q) construction
     # gqQ_res = gqQ(n_ex_acv_index=1, m_ex_acv_index=0, v_ph_gkk=4, Q_kmap=6, q_kmap=12)
     # gamma_res = Gamma_scat()
-    Exciton_Life()
+    # Exciton_Life()
 

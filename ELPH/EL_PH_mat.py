@@ -1,9 +1,8 @@
 import numpy as np
 from IO.IO_common import read_bandmap
-from Common.kgrid_check import construct_kmap
 from IO.IO_acv import read_Acv
 from IO.IO_gkk import read_gkk
-from IO.IO_common import read_bandmap, read_kmap
+from IO.IO_common import read_bandmap, read_kmap,construct_kmap
 from Common.common import move_k_back_to_BZ_1
 from Common.h5_status import check_h5_tree
 import h5py as h5

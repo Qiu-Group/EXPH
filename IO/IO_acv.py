@@ -26,7 +26,7 @@ def create_acvsh5(nQ, save_path):
     del f['exciton_header/kpoints/kpts']
     del f['exciton_header/kpoints/exciton_Q_shifts']
     del f['exciton_header/params/ns']
-    # todo solved: exciton_Q_shifts: f.create_dataset('exciton_header/kpoints/exciton_Q_shift',data) loop add
+    # todosolved: exciton_Q_shifts: f.create_dataset('exciton_header/kpoints/exciton_Q_shift',data) loop add
     # 2.0 'exciton_header/params' modify
     f.create_dataset('exciton_header/params/nS', data=f_temp['exciton_header/params/nevecs'][()])
     f.create_dataset('exciton_header/params/S_total_states', data=nQ*f_temp['exciton_header/params/nevecs'][()])
