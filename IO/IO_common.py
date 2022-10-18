@@ -27,9 +27,9 @@ def readkkqQ(readwhat=0, h5path="./"):
     else:
         raise Exception("input should be: 0-5")
 
-def read_kmap():
+def read_kmap(path="./kkqQmap.dat"):
     try:
-        kmap = np.loadtxt("kkqQmap.dat")
+        kmap = np.loadtxt(path)
     except:
         raise Exception("failed to open kmap.dat")
     return kmap
@@ -55,13 +55,13 @@ def write_loop(loop_index,filename,array):
         a.write(np.array2string(array).strip('[').strip(']') + '\n')
         a.close()
 
-def read_lattice(lattice_type='a'):
+def read_lattice(lattice_type='a',path='./Acv.h5'):
     """
     :param lattice_type: a -> real lattice; b -> reciprocal lattice
     :return:
     """
     try:
-        acv = h5.File('Acv.h5','r')
+        acv = h5.File(path,'r')
     except:
         raise Exception("failed to open Acv.h5")
     if lattice_type == 'a':

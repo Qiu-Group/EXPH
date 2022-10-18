@@ -54,8 +54,8 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
         #     a.close()
         write_loop(loop_index=Q_kmap,filename=outfilename,array=res[Q_kmap])
 
-    # np.savetxt(outfilename,res)
-    os.remove('./'+'TEMP-' + outfilename)
+    np.savetxt(outfilename,res)
+    # os.remove('./'+'TEMP-' + outfilename)
 
 if __name__ == "__main__":
     Exciton_Life()
