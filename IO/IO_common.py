@@ -34,12 +34,12 @@ def read_kmap(path="./kkqQmap.dat"):
         raise Exception("failed to open kmap.dat")
     return kmap
 
-def read_bandmap():
+def read_bandmap(path="./bandmap.dat"):
     try:
-        bandmap = np.loadtxt("bandmap.dat")
+        bandmap = np.loadtxt(path)
     except:
         raise Exception("failed to open bandmap.dat")
-    f = open("bandmap.dat",'r')
+    f = open(path,'r')
     a = f.readline()
     f.close()
     occ = int(a.split()[-1])
@@ -69,10 +69,10 @@ def read_lattice(lattice_type='a',path='./Acv.h5'):
     else:
         return acv['mf_header/crystal/bvec_bohr'][()]
 
-def construct_kmap():
+def construct_kmap(path='kkqQmap.dat'):
     #to be filled
     try:
-        kmap = np.loadtxt('kkqQmap.dat')
+        kmap = np.loadtxt(path)
     except:
         raise Exception("failed to open kkqQmap.dat")
     res = {}

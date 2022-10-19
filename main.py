@@ -14,9 +14,9 @@ if __name__ == "__main__":
     # todo: 0.0 find a way to get all of this
     # 0.0 setting:
     #==========================================================
-    save_path = './save_441/'
+    save_path = './save/'
     h5_path = './'
-    [nQ, nq, nk, nmode, ni, nj] = [144, 16, 144, 9, 4, 4]
+    [nQ, nq, nk, nmode, ni, nj] = [144, 144, 144, 9, 4, 4]
     # ==========================================================
 
 
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # ==========================================================
 
     # 3.0 g(Q,q) construction
-    # gqQ_res = gqQ(n_ex_acv_index=1, m_ex_acv_index=0, v_ph_gkk=4, Q_kmap=6, q_kmap=12)
+    # gqQ_res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11)
     # gamma_res = Gamma_scat()
-    Exciton_Life()
+    # Exciton_Life()
 

@@ -74,9 +74,9 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     f.close()
 
 
-def read_gkk():
+def read_gkk(path="gkk.h5"):
     try:
-        f=h5.File("gkk.h5",'r')
+        f=h5.File(path,'r')
     except:
         raise Exception("failed to open gkk.h5")
     gkkmat = f['epw_data/elphmat'][()]

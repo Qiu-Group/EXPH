@@ -58,10 +58,10 @@ def create_acvsh5(nQ, save_path):
     f.close()
 
 
-def read_Acv():
+def read_Acv(path="Acv.h5"):
     # todo: maybe try to modify it to a parallel reading
     try:
-        f = h5.File("Acv.h5",'r')
+        f = h5.File(path,'r')
     except:
         raise Exception("failed to open Acv.h5")
     acvmat = f["exciton_data/eigenvectors"][()]
