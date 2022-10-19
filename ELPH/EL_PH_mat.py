@@ -59,7 +59,9 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     nv = occ + 1 - bandmap[:,0][0] # load number of valence band
     # kmap_dic = construct_kmap() # construct kmap dictionary {'k1 k2 k3':[0 0 0 0]}: this is used for mapping final state of scattering
 
-
+    # print('occ:',occ)
+    # print('nc:', nc)
+    # print('nv:', nv)
     # acv = h5.File("Acv.h5",'r')
     # acv["mf_header/kpoints"]
     # =========================================================================================================
@@ -83,6 +85,32 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
         first_res = np.complex(0, 0)
         second_res = np.complex(0, 0)
 
+        # Q+q, Q, q and k are independent of v,c,c' or v', so we don't have to loop them
+        #=========================
+        # (a-) Q, q, k and k
+        [Q_acv_index, q_gkk_index] = [kmap[Q_kmap, 3], kmap[q_kmap, 5]]
+        [k_acv_index, k_gkk_index] = [kmap[k_kmap, 4], kmap[k_kmap, 6]] # k_gkk will not be used since momentum conservation
+        # (a) Q+q
+        Q_plus_q_point = move_k_back_to_BZ_1(kmap[Q_kmap, 0:3] + kmap[q_kmap, 0:3])
+        key_temp = '  %.5f    %.5f    %.5f' % (Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
+        Q_plus_q_kmapout = kmap_dic[key_temp.replace('-', '')]
+        # (b) Q+q+k
+        Q_plus_q_plus_k_point = move_k_back_to_BZ_1(Q_plus_q_point + kmap[k_kmap, 0:3])
+        key_temp = '  %.5f    %.5f    %.5f' % (
+        Q_plus_q_plus_k_point[0], Q_plus_q_plus_k_point[1], Q_plus_q_plus_k_point[2])
+        Q_plus_q_plus_k_kmapout = kmap_dic[
+            key_temp.replace('-', '')]  # we don't need to use this because momentum conservation
+        # (c) k+Q
+        k_plus_Q_point = move_k_back_to_BZ_1(kmap[k_kmap, 0:3] + kmap[Q_kmap, 0:3])
+        key_temp = '  %.5f    %.5f    %.5f' % (k_plus_Q_point[0], k_plus_Q_point[1], k_plus_Q_point[2])
+        k_plus_Q_kmapout = kmap_dic[key_temp.replace('-', '')]
+
+        # (d) k-q
+        k_minus_q_point = move_k_back_to_BZ_1(kmap[k_kmap, 0:3] - kmap[q_kmap, 0:3])
+        key_temp = '  %.5f    %.5f    %.5f' % (k_minus_q_point[0], k_minus_q_point[1], k_minus_q_point[2])
+        k_minus_q_kmapout = kmap_dic[key_temp.replace('-', '')]
+        #========================
+
         # I. first part of equation (5) in Bernardi's paper
         # first_res
         for v_bandmap in range(int(nv)): # start with the lowest valence band
@@ -93,9 +121,9 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
 
                     # 1.0 get the right index for band and k-points in acv and gkk MATRIX
                     # kmap.shape(nk, information=(kx, ky, kz, Q, k_acv, q, k_gkk))
-                    # todo: move Q and q out of loop
-                    [Q_acv_index, q_gkk_index] = [ kmap[Q_kmap, 3], kmap[q_kmap,5]]
-                    [k_acv_index, k_gkk_index] = [ kmap[k_kmap, 4], kmap[k_kmap, 6]]
+                    # todo Done: move Q and q out of loop
+                    # [Q_acv_index, q_gkk_index] = [ kmap[Q_kmap, 3], kmap[q_kmap,5]]
+                    # [k_acv_index, k_gkk_index] = [ kmap[k_kmap, 4], kmap[k_kmap, 6]]
                     [v_acv_index, c_acv_index, cpr_acv_index] = [bandmap[v_bandmap,1], bandmap[c_bandmap,1], bandmap[cpr_bandmap,1]]
                     [v_gkk_index, c_gkk_index, cpr_gkk_index] = [bandmap[v_bandmap,2], bandmap[c_bandmap,2], bandmap[cpr_bandmap,2]]
                     # print(v_acv,c_acv,cpr_acv)
@@ -106,15 +134,19 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
                     # todo: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
                     # kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
                     # kmapout[x] = [Q, k_acv, q, k_gkk]
-                    Q_plus_q_point =  move_k_back_to_BZ_1(kmap[Q_kmap,0:3] + kmap[q_kmap,0:3])
-                    key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
-                    Q_plus_q_kmapout = kmap_dic[key_temp.replace('-','')]
-                    Q_plus_q_plus_k_point = move_k_back_to_BZ_1(Q_plus_q_point + kmap[k_kmap,0:3])
-                    key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_plus_k_point[0], Q_plus_q_plus_k_point[1], Q_plus_q_plus_k_point[2])
-                    Q_plus_q_plus_k_kmapout = kmap_dic[key_temp.replace('-','')]
-                    k_plus_Q_point = move_k_back_to_BZ_1(kmap[k_kmap,0:3] + kmap[Q_kmap,0:3])
-                    key_temp = '  %.5f    %.5f    %.5f'%(k_plus_Q_point[0], k_plus_Q_point[1], k_plus_Q_point[2])
-                    k_plus_Q_kmapout = kmap_dic[key_temp.replace('-','')]
+
+                    # ==================
+                    # Q_plus_q_point =  move_k_back_to_BZ_1(kmap[Q_kmap,0:3] + kmap[q_kmap,0:3])
+                    # key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
+                    # Q_plus_q_kmapout = kmap_dic[key_temp.replace('-','')]
+
+                    # Q_plus_q_plus_k_point = move_k_back_to_BZ_1(Q_plus_q_point + kmap[k_kmap,0:3])
+                    # key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_plus_k_point[0], Q_plus_q_plus_k_point[1], Q_plus_q_plus_k_point[2])
+                    # Q_plus_q_plus_k_kmapout = kmap_dic[key_temp.replace('-','')] # we don't need to use this because momentum conservation
+                    # k_plus_Q_point = move_k_back_to_BZ_1(kmap[k_kmap,0:3] + kmap[Q_kmap,0:3])
+                    # key_temp = '  %.5f    %.5f    %.5f'%(k_plus_Q_point[0], k_plus_Q_point[1], k_plus_Q_point[2])
+                    # k_plus_Q_kmapout = kmap_dic[key_temp.replace('-','')]
+                    # ==================
 
                     # 3.0 Calculation!
                     # acvmat.shape = (nQ,nS,nk,nc,nv,2)
@@ -160,8 +192,8 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
                     # 1.0 get the right index for band and k-points in acv and gkk MATRIX
                     # kmap.shape(nk, information=(kx, ky, kz, Q, k_acv, q, k_gkk))
                     # todo: move Q and q out of loop
-                    [Q_acv_index, q_gkk_index] = [kmap[Q_kmap, 3], kmap[q_kmap, 5]]
-                    [k_acv_index, k_gkk_index] = [kmap[k_kmap, 4], kmap[k_kmap, 6]]
+                    # [Q_acv_index, q_gkk_index] = [kmap[Q_kmap, 3], kmap[q_kmap, 5]]
+                    # [k_acv_index, k_gkk_index] = [kmap[k_kmap, 4], kmap[k_kmap, 6]]
                     [v_acv_index, c_acv_index, vpr_acv_index] = [bandmap[v_bandmap,1], bandmap[c_bandmap,1], bandmap[vpr_bandmap,1]]
                     [v_gkk_index, c_gkk_index, vpr_gkk_index] = [bandmap[v_bandmap,2], bandmap[c_bandmap,2], bandmap[vpr_bandmap,2]]
 
@@ -171,12 +203,17 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
                     # todo: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
                     # kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
                     # kmapout[x] = [Q, k_acv, q, k_gkk]
-                    Q_plus_q_point =  move_k_back_to_BZ_1(kmap[Q_kmap,0:3] + kmap[q_kmap,0:3])
-                    key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
-                    Q_plus_q_kmapout = kmap_dic[key_temp.replace('-','')]
-                    k_minus_q_point = move_k_back_to_BZ_1(kmap[k_kmap,0:3] - kmap[q_kmap,0:3])
-                    key_temp = '  %.5f    %.5f    %.5f'%(k_minus_q_point[0], k_minus_q_point[1], k_minus_q_point[2])
-                    k_minus_q_kmapout = kmap_dic[key_temp.replace('-','')]
+                    #==================
+                    # Q_plus_q_point =  move_k_back_to_BZ_1(kmap[Q_kmap,0:3] + kmap[q_kmap,0:3])
+                    # key_temp = '  %.5f    %.5f    %.5f'%(Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
+                    # Q_plus_q_kmapout = kmap_dic[key_temp.replace('-','')]
+
+                    # k_minus_q_point = move_k_back_to_BZ_1(kmap[k_kmap,0:3] - kmap[q_kmap,0:3])
+                    # key_temp = '  %.5f    %.5f    %.5f'%(k_minus_q_point[0], k_minus_q_point[1], k_minus_q_point[2])
+                    # k_minus_q_kmapout = kmap_dic[key_temp.replace('-','')]
+                    # ==================
+
+
 
                     # 3.0 Calculation!
                     # acvmat.shape = (nQ,nS,nk,nc,nv,2)
