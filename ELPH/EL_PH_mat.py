@@ -50,7 +50,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     # loading acv, gkk, kmap and bandmap
     #     acvmat = read_Acv() # load acv matrix
     #     gkkmat =read_gkk() # load gkk matrix
-    # todo: find some better way to load kmap and bandmap, occ so that we don't have to load this every time (almost done, to be tested)
+    # tododone: find some better way to load kmap and bandmap, occ so that we don't have to load this every time (almost done, to be tested)
 
     #=========================================================================================================
     # kmap = read_kmap() # load kmap matrix
@@ -73,6 +73,17 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
 
     # note: kmap.shape(nk, information=(kx,ky,kz,Q, k_acv, q, k_gkk))
     res = np.complex(0, 0)
+
+    #=============================
+    #todo: discuss with Diana
+    # Skip if q = 0 and nmode = [0,1,2] <- longwave limit
+    if '  %.5f    %.5f    %.5f' % (kmap[q_kmap, 0:3][0], kmap[q_kmap, 0:3][1], kmap[q_kmap, 0:3][2]) == '  0.00000    0.00000    0.00000' and int(v_ph_gkk) in [0,1,2]:
+        print('skip q:',kmap[q_kmap, 0:3][0], kmap[q_kmap, 0:3][1], kmap[q_kmap, 0:3][2])
+        print('skip nmode:', int(v_ph_gkk))
+        return res
+
+    #=============================
+
     for k_kmap in range(kmap.shape[0]):  # k_kmap is the index of kmap from 0-15 (e.g)
         # get the right index in acv and gkk
         # print("k_acv_index: %s, k_acv: " %k_acv_index, acv["exciton_header/kpoints/kpt_for_each_Q"][k_acv_index])
@@ -110,6 +121,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
         key_temp = '  %.5f    %.5f    %.5f' % (k_minus_q_point[0], k_minus_q_point[1], k_minus_q_point[2])
         k_minus_q_kmapout = kmap_dic[key_temp.replace('-', '')]
         #========================
+
 
         # I. first part of equation (5) in Bernardi's paper
         # first_res
