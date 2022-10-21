@@ -1,4 +1,4 @@
-from ELPH.EL_PH_mat import gqQ
+from ELPH.EX_PH_mat import gqQ
 from Parallel.Para_common import plan_maker
 from mpi4py import MPI
 from IO.IO_common import construct_kmap, read_kmap

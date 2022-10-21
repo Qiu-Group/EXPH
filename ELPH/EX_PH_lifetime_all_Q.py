@@ -9,27 +9,27 @@ from IO.IO_common import write_loop
 import os
 
 # input
-def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
+def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./'):
     # n_ext_acv_index = 0 # this is index of exciton state in Acv
     # T = 100 # randomly choosing
     # degaussian = 0.001
     outfilename = 'ex_S%s_lifetime.dat'%(n_ext_acv_index + 1)
 
-    acv = read_Acv()
+    acv = read_Acv(path=path)
 
-    kmap = read_kmap()  # load kmap matrix
-    bandmap, occ = read_bandmap()  # load band map and number of occupation
-    kmap_dic = construct_kmap()  # construct kmap dictionary {'k1 k2 k3':[0 0 0 0]}: this is used for mapping final state of scattering
-    omega_mat = read_omega()  # dimension [meV]
-    exciton_energy = read_Acv_exciton_energy()
+    kmap = read_kmap(path=path)  # load kmap matrix
+    bandmap, occ = read_bandmap(path=path)  # load band map and number of occupation
+    kmap_dic = construct_kmap(path=path)  # construct kmap dictionary {'k1 k2 k3':[0 0 0 0]}: this is used for mapping final state of scattering
+    omega_mat = read_omega(path=path)  # dimension [meV]
+    exciton_energy = read_Acv_exciton_energy(path=path)
     h_bar = 6.582119569E-16  # dimension = [eV.s]
     # number of point, band and phonon mode
     nc = bandmap[:, 0][-1] - occ  # load number of conduction band
     nv = occ + 1 - bandmap[:, 0][0]  # load number of valence band
     n_phonon = omega_mat.shape[1]
     Nqpt = kmap.shape[0]  # number of q-points
-    bvec = read_lattice('b')
-    avec = read_lattice('a')
+    bvec = read_lattice('b',path=path)
+    avec = read_lattice('a',path=path)
 
     # progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)  # progress
 
@@ -58,4 +58,4 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001):
     # os.remove('./'+'TEMP-' + outfilename)
 
 if __name__ == "__main__":
-    Exciton_Life()
+    Exciton_Life(path='../')

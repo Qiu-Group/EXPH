@@ -27,19 +27,19 @@ def readkkqQ(readwhat=0, h5path="./"):
     else:
         raise Exception("input should be: 0-5")
 
-def read_kmap(path="./kkqQmap.dat"):
+def read_kmap(path="./"):
     try:
-        kmap = np.loadtxt(path)
+        kmap = np.loadtxt(path+'kkqQmap.dat')
     except:
         raise Exception("failed to open kmap.dat")
     return kmap
 
-def read_bandmap(path="./bandmap.dat"):
+def read_bandmap(path="./"):
     try:
-        bandmap = np.loadtxt(path)
+        bandmap = np.loadtxt(path+'bandmap.dat')
     except:
         raise Exception("failed to open bandmap.dat")
-    f = open(path,'r')
+    f = open(path+'bandmap.dat','r')
     a = f.readline()
     f.close()
     occ = int(a.split()[-1])
@@ -55,13 +55,13 @@ def write_loop(loop_index,filename,array):
         a.write(np.array2string(array).strip('[').strip(']') + '\n')
         a.close()
 
-def read_lattice(lattice_type='a',path='./Acv.h5'):
+def read_lattice(lattice_type='a',path='./'):
     """
     :param lattice_type: a -> real lattice; b -> reciprocal lattice
     :return:
     """
     try:
-        acv = h5.File(path,'r')
+        acv = h5.File(path+'Acv.h5','r')
     except:
         raise Exception("failed to open Acv.h5")
     if lattice_type == 'a':
@@ -69,10 +69,10 @@ def read_lattice(lattice_type='a',path='./Acv.h5'):
     else:
         return acv['mf_header/crystal/bvec_bohr'][()]
 
-def construct_kmap(path='kkqQmap.dat'):
+def construct_kmap(path='./'):
     #to be filled
     try:
-        kmap = np.loadtxt(path)
+        kmap = np.loadtxt(path+'kkqQmap.dat')
     except:
         raise Exception("failed to open kkqQmap.dat")
     res = {}

@@ -3,9 +3,9 @@ from IO.IO_acv import create_acvsh5
 from Common.h5_status import check_h5_tree
 from Common.kgrid_check import k_grid_summary
 from Common.band_check import band_summary
-from ELPH.EL_PH_mat import gqQ
+from ELPH.EX_PH_mat import gqQ
 from ELPH.EX_Ph_scat import Gamma_scat
-from ELPH.EX_PH_lifetime import Exciton_Life
+from ELPH.EX_PH_lifetime_all_Q import Exciton_Life
 from Common.common import frac2carte
 import numpy as np
 import h5py as h5
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # ==========================================================
 
     # 3.0 g(Q,q) construction
-    gqQ_res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11)
-    # gamma_res = Gamma_scat()
+    # gqQ_res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11)
+    gamma_res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='./')
     # Exciton_Life()
 

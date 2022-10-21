@@ -14,8 +14,8 @@ from Common.progress import ProgressBar
 def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=None, gkkmat=None,
             kmap=None, kmap_dic=None, bandmap_occ=None, muteProgress=False, path='./',k_map_start_para='nopara', k_map_end_para='nopara'):
     """
-    !!! parallel over k_map !!!
-    !!! PARALLEL OVER K_MAP !!!
+    !!! parallel over k_kmap !!!
+    !!! PARALLEL OVER K_kMAP !!!
     This function construct gnmv(Q,q)
     :param n_ex_acv: index of initial exciton state
     :param m_ex_acv: index of final exciton state
@@ -28,18 +28,21 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     :param kmap_dic: kmap dictionary -> kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}:  False -> no input, read it
     :param bandmap_occ: [bandmap_matrix, occ]:  False -> no input, read it
     :param path: path of *h5 and *dat
+    :param k_map_start_para: the start index of k_map (default: 0)
+    :param k_map_end_para= the end index of k_map (default: kmap.shape[0])
+    :param muteProgress determine if enable progress report
     :return: the gkk unit is meV, but return here is eV
     """
     if acvmat is None:
-        acvmat = read_Acv(path=path+'Acv.h5')
+        acvmat = read_Acv(path=path)
     if gkkmat is None:
-        gkkmat = read_gkk(path=path+'gkk.h5')
+        gkkmat = read_gkk(path=path)
     if kmap is None:
-        kmap = read_kmap(path=path+'kkqQmap.dat')
+        kmap = read_kmap(path=path)
     if kmap_dic is None:
-        kmap_dic = construct_kmap(path=path+'kkqQmap.dat')
+        kmap_dic = construct_kmap(path=path)
     if bandmap_occ is None:
-        bandmap_occ = read_bandmap(path=path+'bandmap.dat')
+        bandmap_occ = read_bandmap(path=path)
 
     # input (as variable)
     # !!! Just two example, you need to intensively test on this
@@ -287,4 +290,4 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
 
 if __name__ == "__main__":
     # gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk())
-    res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../',k_map_start_para=77,k_map_end_para=144)
+    res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../',k_map_start_para=0,k_map_end_para=144)
