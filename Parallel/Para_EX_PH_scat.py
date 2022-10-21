@@ -27,7 +27,7 @@ def para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, path='
     size = comm.Get_size()
     plan_list = None
 
-    workload_over_qmap = len(read_kmap('../'))
+    workload_over_qmap = len(read_kmap(path=path))
 
     # 2.0 Plan before calculation
     plan_list, start_time, start_time_proc = before_parallel_job(rk=rank, size=size, workload_para=workload_over_qmap)
