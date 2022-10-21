@@ -3,7 +3,7 @@ from Common.distribution import BE, FD, Dirac_1, Dirac_2
 from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy
 from IO.IO_common import read_bandmap, read_kmap, construct_kmap
-from ELPH.EL_PH_mat import gqQ
+from ELPH.EX_PH_mat import gqQ
 from Common.progress import ProgressBar
 from Common.common import move_k_back_to_BZ_1
 
@@ -15,8 +15,10 @@ from Common.common import move_k_back_to_BZ_1
 # gqQ(n_ex_acv_index, m_ex_acv_index, v_ph_gkk, Q_kmap, q_kmap,
 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
 
-def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=False):
+def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=False, path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
+    !!! parallel over q_kmap !!!
+    !!! PARALLEL OVER q_KMAP !!!
     :param Q_kmap: exciton momentum in kmap
     :param n_ext_acv_index: index of initial exciton state
     :param T: temperature
@@ -31,13 +33,13 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
     # degaussian = 0.001
 
     # (2) load and construct map:
-    acvmat = read_Acv() # load acv matrix
-    gkkmat =read_gkk() # load gkk matrix
-    kmap = read_kmap()  # load kmap matrix
-    [bandmap, occ] = read_bandmap()  # load band map and number of occupation
-    kmap_dic = construct_kmap()  # construct kmap dictionary {'k1 k2 k3':[0 0 0 0]}: this is used for mapping final state of scattering
-    omega_mat = read_omega() # dimension [meV]
-    exciton_energy = read_Acv_exciton_energy()
+    acvmat = read_Acv(path=path) # load acv matrix
+    gkkmat =read_gkk(path=path) # load gkk matrix
+    kmap = read_kmap(path=path)  # load kmap matrix
+    [bandmap, occ] = read_bandmap(path=path)  # load band map and number of occupation
+    kmap_dic = construct_kmap(path=path)  # construct kmap dictionary {'k1 k2 k3':[0 0 0 0]}: this is used for mapping final state of scattering
+    omega_mat = read_omega(path=path) # dimension [meV]
+    exciton_energy = read_Acv_exciton_energy(path=path)
     h_bar = 6.582119569E-16     # dimension = [eV.s]
     # number of point, band and phonon mode
     nc = bandmap[:, 0][-1] - occ  # load number of conduction band
@@ -57,7 +59,19 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
     collect = []
     Gamma_res = 0
     factor = 2*np.pi/(h_bar*Nqpt) # dimension = [eV-1.s-1]
-    for q_kmap in range(kmap.shape[0]):  # q_kmap is the index of kmap from point 0-15 in kmap.dat (e.g)
+
+    #=============================
+    # todo: double check if this is right (parallel unit):
+    if q_map_start_para == 'nopara' and q_map_start_para == 'nopara':
+        q_map_start_para = 0
+        q_map_end_para = kmap.shape[0]
+    else:
+        if type(q_map_start_para) is int and type(q_map_end_para) is int:
+            pass
+        else:
+            raise Exception("the parallel parameter is not int")
+
+    for q_kmap in range(q_map_start_para, q_map_end_para):  # q_kmap is the index of kmap from point 0-15 in kmap.dat (e.g)
         if not muteProgress:
             progress.current += 1
             progress()
@@ -99,9 +113,10 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
 
                 # (2) left part
                 # print(OMEGA_m_Q_plus_q_temp)
-                # todo: check warning: RuntimeWarning: divide by zero encountered
+                # todo: check warning: RuntimeWarning: divide by zero encountered!!!
                 # print(BE(omega=OMEGA_m_Q_plus_q_temp, T=T))
                 # print(OMEGA_m_Q_plus_q_temp)
+                # todo: Dirac normalization!!!!!
                 distribution_temp = (
                                     (BE(omega=omega_v_q_temp, T=T) + 1 + BE(omega=OMEGA_m_Q_plus_q_temp, T=T))
                                      * Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian)
@@ -118,7 +133,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
     return Gamma_res
 
 if __name__ == "__main__":
-    Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001)
+    res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
 
 
 

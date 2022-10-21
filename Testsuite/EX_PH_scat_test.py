@@ -4,7 +4,7 @@ from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy
 from IO.IO_common import read_bandmap, read_kmap
 from Common.kgrid_check import construct_kmap
-from ELPH.EL_PH_mat import gqQ
+from ELPH.EX_PH_mat import gqQ
 from Common.progress import ProgressBar
 from Common.common import move_k_back_to_BZ_1
 

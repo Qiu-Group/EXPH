@@ -11,7 +11,7 @@ from mpl_toolkits import mplot3d
 # path = '../Acv.h5'
 # outfilename = 'exciton.dat'
 
-def plot_exciton_band(nS=2, path= '../',outfilename = 'exciton_band.dat'):
+def plot_exciton_band(nS=2, path= './',outfilename = 'exciton_band.dat'):
     """
     :param nS: quantum number of exciton
     :param path: path of Acv.h5
@@ -21,7 +21,7 @@ def plot_exciton_band(nS=2, path= '../',outfilename = 'exciton_band.dat'):
     f = h5.File(path+'Acv.h5','r')
     Seigenval = f['exciton_data/eigenvalues'][()]
     Qgrid = f['exciton_header/kpoints/Qpt_coor'][()]
-    bvec = read_lattice('b',path+'Acv.h5')
+    bvec = read_lattice('b',path)
 
     res = np.zeros((Qgrid.shape[0],4))
     for iQ in range(Qgrid.shape[0]):
@@ -47,4 +47,4 @@ def plot_exciton_band(nS=2, path= '../',outfilename = 'exciton_band.dat'):
     # plt.show()
 
 if __name__ == "__main__":
-    plot_exciton_band(1)
+    plot_exciton_band(1, path='../')

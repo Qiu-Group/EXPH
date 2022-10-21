@@ -74,18 +74,18 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     f.close()
 
 
-def read_gkk(path="gkk.h5"):
+def read_gkk(path="./"):
     try:
-        f=h5.File(path,'r')
+        f=h5.File(path+'gkk.h5','r')
     except:
         raise Exception("failed to open gkk.h5")
     gkkmat = f['epw_data/elphmat'][()]
     f.close()
     return gkkmat
 
-def read_omega():
+def read_omega(path='./'):
     try:
-        f = h5.File('gkk.h5','r')
+        f = h5.File(path+'gkk.h5','r')
     except:
         raise Exception("failed to open gkk.h5")
     omega_temp = f['epw_header/omega'][()]

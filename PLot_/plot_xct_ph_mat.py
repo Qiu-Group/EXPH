@@ -1,7 +1,7 @@
 from IO.IO_common import write_loop
 from Common.common import frac2carte
 from Common.h5_status import check_h5_tree
-from ELPH.EL_PH_mat import gqQ
+from ELPH.EX_PH_mat import gqQ
 from IO.IO_common import read_kmap, read_lattice
 from IO.IO_acv import read_Acv
 from IO.IO_gkk import read_gkk
@@ -30,7 +30,7 @@ import h5py as h5
 #     """
 
 # :param
-def plot_ex_ph_mat(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk=[0,1,2,3,4,5,6,7,8],path='../',mute=True):
+def plot_ex_ph_mat(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk=[0,1,2,3,4,5,6,7,8],path='./',mute=True):
     # Q_kmap_star = 0 # exciton start momentum Q (index)
     # n_ex_acv = 0 # exciton start quantum state S_i (index): we only allow you to set one single state right now
     # m_ex_acv = [0,1,2,3] # exciton final quantum state S_f (index)
@@ -38,14 +38,14 @@ def plot_ex_ph_mat(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk=[0,1,2
 
     # path = '../'
 
-    bvec = read_lattice('b',path+'Acv.h5')
+    bvec = read_lattice('b',path)
 
 
-    acvmat = read_Acv(path=path+'Acv.h5')
-    gkkmat = read_gkk(path=path+'gkk.h5')
-    kmap = read_kmap(path=path+'kkqQmap.dat')
-    kmap_dic = construct_kmap(path=path+'kkqQmap.dat')
-    bandmap_occ = read_bandmap(path=path+'bandmap.dat')
+    acvmat = read_Acv(path=path)
+    gkkmat = read_gkk(path=path)
+    kmap = read_kmap(path=path)
+    kmap_dic = construct_kmap(path=path)
+    bandmap_occ = read_bandmap(path=path)
     outfilename = "exciton_phonon_mat.dat"
 
     # mapping
@@ -74,4 +74,4 @@ def plot_ex_ph_mat(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk=[0,1,2
     print('done')
 
 if __name__=="__main__":
-    plot_ex_ph_mat(mute=False)
+    plot_ex_ph_mat(mute=False, path='../')
