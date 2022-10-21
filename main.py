@@ -22,20 +22,20 @@ if __name__ == "__main__":
 
     # 1.0 Interface
     # ==========================================================
-    create_acvsh5(nQ, save_path + 'acvs.save/')
-    create_gkkh5(nq, nk, nmode, ni, nj, save_path + 'gkk.save/')
+    # create_acvsh5(nQ, save_path + 'acvs.save/')
+    # create_gkkh5(nq, nk, nmode, ni, nj, save_path + 'gkk.save/')
     # ==========================================================
 
     # 2.0 K-points/band check
     # kmap create
     # bandmap create
     # ==========================================================
-    k_grid_summary()
-    band_summary()
+    # k_grid_summary()
+    # band_summary()
     # ==========================================================
 
     # 3.0 g(Q,q) construction
-    # gqQ_res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11)
+    gqQ_res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11)
     # gamma_res = Gamma_scat()
     # Exciton_Life()
 

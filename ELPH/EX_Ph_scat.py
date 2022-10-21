@@ -34,7 +34,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
     acvmat = read_Acv() # load acv matrix
     gkkmat =read_gkk() # load gkk matrix
     kmap = read_kmap()  # load kmap matrix
-    bandmap, occ = read_bandmap()  # load band map and number of occupation
+    [bandmap, occ] = read_bandmap()  # load band map and number of occupation
     kmap_dic = construct_kmap()  # construct kmap dictionary {'k1 k2 k3':[0 0 0 0]}: this is used for mapping final state of scattering
     omega_mat = read_omega() # dimension [meV]
     exciton_energy = read_Acv_exciton_energy()

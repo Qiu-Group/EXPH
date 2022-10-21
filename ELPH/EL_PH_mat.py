@@ -12,10 +12,10 @@ from Common.progress import ProgressBar
 
 #def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk(), kmap=read_kmap(), kmap_dic=construct_kmap(), bandmap_occ=read_bandmap(),muteProgress=False):
 def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=None, gkkmat=None,
-            kmap=None, kmap_dic=None, bandmap_occ=None, muteProgress=False):
-
+            kmap=None, kmap_dic=None, bandmap_occ=None, muteProgress=False, path='./',k_map_start_para='nopara', k_map_end_para='nopara'):
     """
-    !!! parallel over k_
+    !!! parallel over k_map !!!
+    !!! PARALLEL OVER K_MAP !!!
     This function construct gnmv(Q,q)
     :param n_ex_acv: index of initial exciton state
     :param m_ex_acv: index of final exciton state
@@ -27,18 +27,19 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     :param kmap: kmap matrix (do not read it every time) -> kmap.shape = (kx,ky,kz,Q, k_acv, q, k_gkk):  False -> no input, read it
     :param kmap_dic: kmap dictionary -> kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}:  False -> no input, read it
     :param bandmap_occ: [bandmap_matrix, occ]:  False -> no input, read it
+    :param path: path of *h5 and *dat
     :return: the gkk unit is meV, but return here is eV
     """
     if acvmat is None:
-        acvmat = read_Acv()
+        acvmat = read_Acv(path=path+'Acv.h5')
     if gkkmat is None:
-        gkkmat = read_gkk()
+        gkkmat = read_gkk(path=path+'gkk.h5')
     if kmap is None:
-        kmap = read_kmap()
+        kmap = read_kmap(path=path+'kkqQmap.dat')
     if kmap_dic is None:
-        kmap_dic = construct_kmap()
+        kmap_dic = construct_kmap(path=path+'kkqQmap.dat')
     if bandmap_occ is None:
-        bandmap_occ = read_bandmap()
+        bandmap_occ = read_bandmap(path=path+'bandmap.dat')
 
     # input (as variable)
     # !!! Just two example, you need to intensively test on this
@@ -66,18 +67,11 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     # acv = h5.File("Acv.h5",'r')
     # acv["mf_header/kpoints"]
     # =========================================================================================================
-    if not muteProgress: # progress
-        pass
-        print('  [Constructing ex-ph matrix]: n=', n_ex_acv_index, ' m=', m_ex_acv_index, ' v=', v_ph_gkk, ' Q=',
-              Q_kmap, ' q=', q_kmap)
-        progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)
-        print('\nloop ovef q points:')
 
-    # note: kmap.shape(nk, information=(kx,ky,kz,Q, k_acv, q, k_gkk))
     res = np.complex(0, 0)
 
     #=============================
-    #todo: discuss with Diana
+    #tododone: discuss with Diana
     # Skip if q = 0 and nmode = [0,1,2] <- longwave limit
     if '  %.5f    %.5f    %.5f' % (kmap[q_kmap, 0:3][0], kmap[q_kmap, 0:3][1], kmap[q_kmap, 0:3][2]) == '  0.00000    0.00000    0.00000' and int(v_ph_gkk) in [0,1,2]:
         if not muteProgress:
@@ -87,8 +81,31 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
         return res
 
     #=============================
+    # todo: double check if this is right:
 
-    for k_kmap in range(kmap.shape[0]):  # k_kmap is the index of kmap from 0-15 (e.g)
+    if k_map_start_para == 'nopara' and k_map_start_para == 'nopara':
+        k_map_start_para = 0
+        k_map_end_para = kmap.shape[0]
+    else:
+        if type(k_map_start_para) is int and type(k_map_end_para) is int:
+            pass
+        else:
+            raise Exception("the parallel parameter is not int")
+
+
+
+    if not muteProgress: # progress
+        pass
+        print('  [Constructing ex-ph matrix]: n=', n_ex_acv_index, ' m=', m_ex_acv_index, ' v=', v_ph_gkk, ' Q=',
+              Q_kmap, ' q=', q_kmap)
+        progress = ProgressBar(k_map_end_para-k_map_start_para, fmt=ProgressBar.FULL)
+        print('\nloop ovef q points:')
+
+    # note: kmap.shape(nk, information=(kx,ky,kz,Q, k_acv, q, k_gkk))
+
+    # for k_kmap in range(kmap.shape[0]):  # k_kmap is the index of kmap from 0-15 (e.g)
+    # parallel version:
+    for k_kmap in range(k_map_start_para, k_map_end_para):  # k_kmap is the index of kmap from 0-15 (e.g)
         # get the right index in acv and gkk
         # print("k_acv_index: %s, k_acv: " %k_acv_index, acv["exciton_header/kpoints/kpt_for_each_Q"][k_acv_index])
         # print("k_acv_index: %s "%i_kmap)
@@ -270,4 +287,4 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
 
 if __name__ == "__main__":
     # gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk())
-    res = gqQ(n_ex_acv_index=0,m_ex_acv_index=0,v_ph_gkk=0,Q_kmap=6,q_kmap=8)
+    res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../',k_map_start_para=77,k_map_end_para=144)
