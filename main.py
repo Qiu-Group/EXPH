@@ -4,7 +4,7 @@ from Common.h5_status import check_h5_tree
 from Common.kgrid_check import k_grid_summary
 from Common.band_check import band_summary
 from ELPH.EX_PH_mat import gqQ
-from ELPH.EX_Ph_scat import Gamma_scat
+from ELPH.EX_PH_scat import Gamma_scat
 from ELPH.EX_PH_lifetime_all_Q import Exciton_Life
 from Common.common import frac2carte
 import numpy as np

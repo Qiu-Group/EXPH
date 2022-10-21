@@ -1,4 +1,4 @@
-from ELPH.EX_Ph_scat import Gamma_scat
+from ELPH.EX_PH_scat import Gamma_scat
 from Parallel.Para_common import plan_maker, before_parallel_job, after_parallel_job
 from mpi4py import MPI
 from IO.IO_common import construct_kmap, read_kmap, read_bandmap, readkkqQ

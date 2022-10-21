@@ -56,9 +56,17 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
 
 
     # loop start with q
+    # initialize for loop
     collect = []
+    # it seems that we can directly add first and second together, so we don't need Gamma_res
     Gamma_res = 0
+    # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
+    Gamma_first_res = 0
+    Gamma_second_res = 0
     factor = 2*np.pi/(h_bar*Nqpt) # dimension = [eV-1.s-1]
+    # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
+    dirac_normalize_factor_first = 0.0
+    dirac_normalize_factor_second = 0.0
 
     #=============================
     # todo: double check if this is right (parallel unit):
@@ -107,6 +115,8 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
                 # omega.shape  = (nq, nmode)
                 # exciton_energy.shape = (nQ, nS)
                 # OMEGA_xx has included h_bar
+
+                # todo Check this !!!
                 omega_v_q_temp     = omega_mat[int(q_gkk_index),int(v_ph_gkk_index_loop)] * 10 ** (-3) # dimension [eV]
                 OMEGA_m_Q_plus_q_temp = exciton_energy[int(Qpr_as_Q_plus_q_acv_index), int(m_ext_acv_index_loop)] # dimension [eV]
                 OMEGA_n_Q_temp        = exciton_energy[int(Q_acv_index),               int(m_ext_acv_index_loop)] # dimension [eV]
@@ -117,20 +127,29 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
                 # print(BE(omega=OMEGA_m_Q_plus_q_temp, T=T))
                 # print(OMEGA_m_Q_plus_q_temp)
                 # todo: Dirac normalization!!!!!
-                distribution_temp = (
+                # Here, Dirac 1 is Gaussian; Dirac 2 is Square wave
+                # both of Dirac 1 and Dirac 2 should be normalized
+
+                # here is the normalize factor:
+                dirac_normalize_factor_first = dirac_normalize_factor_first + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian)
+                dirac_normalize_factor_second = dirac_normalize_factor_second + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp + omega_v_q_temp, sigma=degaussian)
+
+                distribution_first_temp = (
                                     (BE(omega=omega_v_q_temp, T=T) + 1 + BE(omega=OMEGA_m_Q_plus_q_temp, T=T))
-                                     * Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian)
+                                     * Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian))
 
-                                     +
 
+                distribution_second_temp = (
                                     (BE(omega=omega_v_q_temp, T=T) - BE(omega=OMEGA_m_Q_plus_q_temp, T=T))
                                     * Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp + omega_v_q_temp, sigma=degaussian)
 
                                      )
+                # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
+                Gamma_first_res = Gamma_first_res + factor * gqQ_sq_temp * distribution_first_temp
+                Gamma_second_res = Gamma_second_res + factor * gqQ_sq_temp * distribution_second_temp
 
-                Gamma_res = Gamma_res + factor * gqQ_sq_temp * distribution_temp
-
-    return Gamma_res
+    # return Gamma_res
+    return Gamma_first_res/dirac_normalize_factor_first + Gamma_second_res/dirac_normalize_factor_second
 
 if __name__ == "__main__":
     res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')

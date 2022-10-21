@@ -1,4 +1,4 @@
-from ELPH.EX_Ph_scat import Gamma_scat
+from ELPH.EX_PH_scat import Gamma_scat
 import numpy as np
 from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy

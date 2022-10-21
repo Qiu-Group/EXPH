@@ -30,6 +30,7 @@ Parallel Efficiency of EX_PH_scat.py (Calculate Scattering Rate of Exciton State
 
 | mpi task    | wall time (s)    | CPU time (s) |
 | :---: |   :---:       | :---: |
+| 1 | 280.088 | 279.437|
 |2 | 156.251 | 155.896|
 |4 |77.328 | 77.139|
 | 8 | 39.579| 39.215|
@@ -38,3 +39,15 @@ Parallel Efficiency of EX_PH_scat.py (Calculate Scattering Rate of Exciton State
 |40 | 8.068 | 8.057|
 |48| 6.130  | 6.119|
 |56| 6.382 | 6.148|
+
+![avatar](./fig/para_eff.jpg)
+
+Todo:
+
+ (i) check everything of EX_PH_scat and EX_PH_lifetime
+ 
+ (ii) normalization has been added, test more about it 
+    
+    (i) convergence
+    (ii) compare it with non-renormalized situation!
+    
