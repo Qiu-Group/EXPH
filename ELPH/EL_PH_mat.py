@@ -15,6 +15,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
             kmap=None, kmap_dic=None, bandmap_occ=None, muteProgress=False):
 
     """
+    !!! parallel over k_
     This function construct gnmv(Q,q)
     :param n_ex_acv: index of initial exciton state
     :param m_ex_acv: index of final exciton state
@@ -66,6 +67,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     # acv["mf_header/kpoints"]
     # =========================================================================================================
     if not muteProgress: # progress
+        pass
         print('  [Constructing ex-ph matrix]: n=', n_ex_acv_index, ' m=', m_ex_acv_index, ' v=', v_ph_gkk, ' Q=',
               Q_kmap, ' q=', q_kmap)
         progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)
@@ -78,8 +80,10 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     #todo: discuss with Diana
     # Skip if q = 0 and nmode = [0,1,2] <- longwave limit
     if '  %.5f    %.5f    %.5f' % (kmap[q_kmap, 0:3][0], kmap[q_kmap, 0:3][1], kmap[q_kmap, 0:3][2]) == '  0.00000    0.00000    0.00000' and int(v_ph_gkk) in [0,1,2]:
-        print('skip q:',kmap[q_kmap, 0:3][0], kmap[q_kmap, 0:3][1], kmap[q_kmap, 0:3][2])
-        print('skip nmode:', int(v_ph_gkk))
+        if not muteProgress:
+            pass
+            print('skip q:',kmap[q_kmap, 0:3][0], kmap[q_kmap, 0:3][1], kmap[q_kmap, 0:3][2])
+            print('skip nmode:', int(v_ph_gkk))
         return res
 
     #=============================
