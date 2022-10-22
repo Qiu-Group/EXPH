@@ -59,7 +59,7 @@ def paral():
     plan_list, start_time, start_time_proc = before_parallel_job(rk=rank,size=size,workload_para=workld)
     plan_list = comm.scatter(plan_list,root=0)
 
-    print('process= %d. plan is '%rank, plan_list)
+    print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1]-plan_list[0])
     # print('process= %d. plan is '%rank, plan_list)
     #-----------------------------------------------------
 

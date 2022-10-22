@@ -18,13 +18,13 @@ Parallel Efficiency of EX_PH_scat.py (Calculate Scattering Rate of Exciton State
 
 (a) Test on PC Windows
 
-| mpi task    | wall time (s)    | CPU time (s) |
-| :---: |   :---:       | :---: |
-| 1        | 197.743        | 196.203   |
-| 2        | 124.767         | 120.906   |
-| 4 | 83.884 | 82.344|
-| 6| 66.071|  64.609|
-| 8 | 53.952 |  48.594
+| mpi task | wall time (s) | CPU time (s) |
+|:--------:|:-------------:|:------------:|
+|    1     |    197.743    |   196.203    |
+|    2     |    124.767    |   120.906    |
+|    4     |    83.884     |    82.344    |
+|    6     |    66.071     |    64.609    |
+|    8     |    53.952     |    48.594    |
 
 (b) Test on Frontera
 

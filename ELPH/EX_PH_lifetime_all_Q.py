@@ -9,7 +9,17 @@ from IO.IO_common import write_loop
 import os
 
 # input
-def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./'):
+def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./',Q_kmap_start_para='nopara',Q_kmap_end_para='nopara',mute=False):
+    """
+    !!! Para Over Q_kmap!!!
+    :param n_ext_acv_index:
+    :param T:
+    :param degaussian:
+    :param path:
+    :param Q_kmap_start_para:
+    :param Q_kmap_end_para:
+    :return:
+    """
     # n_ext_acv_index = 0 # this is index of exciton state in Acv
     # T = 100 # randomly choosing
     # degaussian = 0.001
@@ -31,17 +41,30 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./'):
     bvec = read_lattice('b',path=path)
     avec = read_lattice('a',path=path)
 
-    # progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)  # progress
 
+
+    # progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)  # progress
+    if Q_kmap_start_para == 'nopara' and Q_kmap_start_para == 'nopara':
+        Q_kmap_start_para = 0
+        Q_kmap_end_para = kmap.shape[0]
+    else:
+        if type(Q_kmap_start_para) is int and type(Q_kmap_end_para) is int:
+            pass
+        else:
+            raise Exception("the parallel parameter is not int")
+
+    # this is good enough for parallel!!!
+    # we can directly add res of every procs togather, then we can have final collected res_total
     res = np.zeros((kmap.shape[0],4))
-    for Q_kmap in range(kmap.shape[0]):
+
+    for Q_kmap in range(Q_kmap_start_para,Q_kmap_end_para):
 
         # progress.current += 1
         # progress()
 
 
         res[Q_kmap,:3] = frac2carte(bvec,kmap[Q_kmap, 0:3]) # give out bohr lattice in reciprocal space
-        res[Q_kmap, 3] = 1/Gamma_scat(Q_kmap=Q_kmap, n_ext_acv_index=n_ext_acv_index, T=T, degaussian=degaussian,muteProgress=False)
+        res[Q_kmap, 3] = 1/Gamma_scat(Q_kmap=Q_kmap, n_ext_acv_index=n_ext_acv_index, T=T, degaussian=degaussian,muteProgress=mute,path=path)
 
         # save temp file
         # if Q_kmap == 0:
@@ -52,9 +75,12 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./'):
         #     a = open('TEMP-' + outfilename, 'a')
         #     a.write(np.array2string(res[Q_kmap]).strip('[').strip(']')+'\n')
         #     a.close()
-        write_loop(loop_index=Q_kmap,filename=outfilename,array=res[Q_kmap])
+        if Q_kmap_start_para == 'nopara' and Q_kmap_start_para == 'nopara':
+            # tododone: turn off this file after this loop
+            write_loop(loop_index=Q_kmap,filename=outfilename,array=res[Q_kmap])
 
-    np.savetxt(outfilename,res)
+    return res
+    # np.savetxt(outfilename,res)
     # os.remove('./'+'TEMP-' + outfilename)
 
 if __name__ == "__main__":

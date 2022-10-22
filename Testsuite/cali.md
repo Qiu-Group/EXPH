@@ -7,7 +7,7 @@ res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,pa
 res = 0.0159358508119-0.000852284450595j
 
 
-(2) EX_PH_cat:
+(2) EX_PH_cat (w/o normalization):
 
 series:
 [Exciton Scattering]: n= 2  Q= 15 T= 100
@@ -21,13 +21,13 @@ parallel efficiency benchmark:
 
 (a) Test on PC Windows
 
-| mpi task    | wall time (s)    | CPU time (s) |
-| :---: |   :---:       | :---: |
-| 1        | 197.743        | 196.203   |
-| 2        | 124.767         | 120.906   |
-| 4 | 83.884 | 82.344|
-| 6| 66.071|  64.609|
-| 8 | 53.952 |  48.594
+| mpi task | wall time (s) | CPU time (s) |
+|:--------:|:-------------:|:------------:|
+|    1     |    197.743    |   196.203    |
+|    2     |    124.767    |   120.906    |
+|    4     |    83.884     |    82.344    |
+|    6     |    66.071     |    64.609    |
+|    8     |    53.952     |    48.594    |
 
 (b) Test on Frontera
 

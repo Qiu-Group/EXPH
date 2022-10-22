@@ -86,7 +86,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acv
     #=============================
     # todo: double check if this is right:
 
-    if k_map_start_para == 'nopara' and k_map_start_para == 'nopara':
+    if k_map_start_para == 'nopara' and k_map_end_para == 'nopara':
         k_map_start_para = 0
         k_map_end_para = kmap.shape[0]
     else:

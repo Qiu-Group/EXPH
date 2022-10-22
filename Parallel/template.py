@@ -3,7 +3,7 @@ import time
 from time import process_time
 from mpi4py import MPI
 from Common.progress import ProgressBar
-from Parallel.Para_common import plan_maker, before_parallel_job, after_parallel_job
+from Parallel.Para_common import plan_maker, before_parallel_job, after_parallel_sum_job
 
 # ========================def: input===================
 
@@ -29,7 +29,7 @@ workload_over_kmap = 'something'
 plan_list, start_time, start_time_proc = before_parallel_job(rk=rank, size=size, workload_para=workload_over_kmap)
 # (b) distribute plan
 plan_list = comm.scatter(plan_list, root=0)
-print('process_%d. plan is ' % rank, plan_list)
+print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1] - plan_list[0])
 
 #======================calculation=====================
 # 3.0 calculation
@@ -41,7 +41,7 @@ res = "job_func(kwarg)" # job_func needed to be divided
 res_rcev_to_0 = comm.gather('res for each job',root=0)
 
 # ======================collection=====================
-value = after_parallel_job(rk=rank, size=size, receive_res=res_rcev_to_0, start_time=start_time,
+value = after_parallel_sum_job(rk=rank, size=size, receive_res=res_rcev_to_0, start_time=start_time,
                            start_time_proc=start_time_proc)
 # if rank == 0:
 #     return value

@@ -1,5 +1,5 @@
 from ELPH.EX_PH_scat import Gamma_scat
-from Parallel.Para_common import plan_maker, before_parallel_job, after_parallel_job
+from Parallel.Para_common import plan_maker, before_parallel_job, after_parallel_sum_job
 from mpi4py import MPI
 from IO.IO_common import construct_kmap, read_kmap, read_bandmap, readkkqQ
 from IO.IO_gkk import read_gkk
@@ -33,7 +33,7 @@ def para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, path='
     plan_list, start_time, start_time_proc = before_parallel_job(rk=rank, size=size, workload_para=workload_over_qmap)
     # (b) distribute plan
     plan_list = comm.scatter(plan_list, root=0)
-    print('process_%d. plan is ' % rank, plan_list)
+    print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1]-plan_list[0])
 
     # ======================calculation=====================
     # 3.0 calculation
@@ -52,7 +52,7 @@ def para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, path='
 
 
     # ======================collection=====================
-    value = after_parallel_job(rk=rank, size=size, receive_res=res_rcev_to_0, start_time=start_time,
+    value = after_parallel_sum_job(rk=rank, size=size, receive_res=res_rcev_to_0, start_time=start_time,
                                start_time_proc=start_time_proc)
     if rank==0:
         return value
