@@ -17,9 +17,22 @@ parallel (1 task):
 [Exciton Scattering]: n= 2  Q= 15 T= 100
 res is 8.46375798951e+12
 
-res is 1052445809218.0406 (w/ normalization)
+(3) EX_PH_Cat (w/ normalization)
+(a): 4-4-1
+[Exciton Scattering]: n= 2  Q= 15 T= 100
+[========================================] 16/16 (100%)  0 to go>>> res
+193574848.4561666
+
+(b): 12 12 1
+res is 45145155828.4
+
+
+
+
 
 parallel efficiency benchmark:
+
+
 
 (a) Test on PC Windows
 

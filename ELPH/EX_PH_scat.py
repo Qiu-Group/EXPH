@@ -61,6 +61,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
     # it seems that we can directly add first and second together, so we don't need Gamma_res
     Gamma_res = 0
     # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
+
     Gamma_first_res = 0
     Gamma_second_res = 0
     factor = 2*np.pi/(h_bar*Nqpt) # dimension = [eV-1.s-1]
@@ -71,9 +72,11 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
     #=============================
     # todo: double check if this is right (parallel unit):
     if q_map_start_para == 'nopara' and q_map_end_para == 'nopara':
+        status_for_para = 'nopara'
         q_map_start_para = 0
         q_map_end_para = kmap.shape[0]
     else:
+        status_for_para = 'para'
         if type(q_map_start_para) is int and type(q_map_end_para) is int:
             pass
         else:
@@ -149,11 +152,21 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
                 Gamma_second_res = Gamma_second_res + factor * gqQ_sq_temp * distribution_second_temp
 
     # return Gamma_res
-
+    # IF this is a series test:
+    if status_for_para == 'nopara':
+        return Gamma_first_res / dirac_normalize_factor_first + Gamma_second_res / dirac_normalize_factor_second
+        # Warniing: only for debug
+        # return Gamma_first_res + Gamma_second_res
     # (a) w/ normalization
-    return Gamma_first_res/dirac_normalize_factor_first + Gamma_second_res/dirac_normalize_factor_second
-    # (b) w/o normalization
-    # TODO: TODO: TODO: do not use this!!
+    # return Gamma_first_res/dirac_normalize_factor_first + Gamma_second_res/dirac_normalize_factor_second
+    # Warning: normalization factor should be added at the last step
+    else:
+        return  [Gamma_first_res, Gamma_second_res,dirac_normalize_factor_first,dirac_normalize_factor_second]
+        #Warniing: only for debug
+        #return [Gamma_first_res, Gamma_second_res,1,1]
+
+    # (b) w/o normalization deprecated debug:
+    # TODOdone: TODOdone: TODOdone: do not use this!!
     # return Gamma_first_res + Gamma_second_res
 if __name__ == "__main__":
     res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')

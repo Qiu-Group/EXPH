@@ -50,31 +50,35 @@ def before_parallel_job(rk,size, workload_para):
     else:
         return None, None, None
 
-def after_parallel_sum_job(rk,size,receive_res,start_time,start_time_proc):
+def after_parallel_sum_job(rk,size,receive_res,start_time,start_time_proc, mute=False):
     if rk == 0:
         value = receive_res[0]
+        if not mute:
+            print('type of value',type(value))
 
-        print('type of value',type(value))
+            print('===================================')
+            print('process= %d is summarizing ' % rk)
 
-        print('===================================')
-        print('process= %d is summarizing ' % rk)
         for k in range(1,size):
             value = value + receive_res[k]
         if type(value) is not np.ndarray:
-            print("sub_res is", receive_res)
-            print("res is",value)
+            if not mute:
+                print("sub_res is", receive_res)
+                print("res is",value)
 
         else:
             # which means value is a matrix, and head of res is usually stored at [0,-1]
             # print("head of sub_res is", receive_res[k][0, -1])
-            print("head of res is", value[0, -1])
-            print("tail of res is", value[-1, -1])
+            if not mute:
+                print("head of res is", value[0, -1])
+                print("tail of res is", value[-1, -1])
         end_time = time.time()
         end_time_proc = process_time()
-        print("the wall time is: %.3f s"%(end_time - start_time))
-        print("the proc time is: %.3f s"%(end_time_proc - start_time_proc))
-        print('===================================')
-        print('hello')
+        if not mute:
+            print("the wall time is: %.3f s"%(end_time - start_time))
+            print("the proc time is: %.3f s"%(end_time_proc - start_time_proc))
+            print('===================================')
+            print('hello')
         return value
     else:
         pass
