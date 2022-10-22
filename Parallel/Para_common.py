@@ -50,15 +50,25 @@ def before_parallel_job(rk,size, workload_para):
     else:
         return None, None, None
 
-def after_parallel_job(rk,size,receive_res,start_time,start_time_proc):
+def after_parallel_sum_job(rk,size,receive_res,start_time,start_time_proc):
     if rk == 0:
-        value = 0
+        value = receive_res[0]
+
+        print('type of value',type(value))
+
         print('===================================')
         print('process= %d is summarizing ' % rk)
-        for k in range(size):
+        for k in range(1,size):
             value = value + receive_res[k]
-        print("sub_res is", receive_res)
-        print("res is",value)
+        if type(value) is not np.ndarray:
+            print("sub_res is", receive_res)
+            print("res is",value)
+
+        else:
+            # which means value is a matrix, and head of res is usually stored at [0,-1]
+            # print("head of sub_res is", receive_res[k][0, -1])
+            print("head of res is", value[0, -1])
+            print("tail of res is", value[-1, -1])
         end_time = time.time()
         end_time_proc = process_time()
         print("the wall time is: %.3f s"%(end_time - start_time))
@@ -66,5 +76,29 @@ def after_parallel_job(rk,size,receive_res,start_time,start_time_proc):
         print('===================================')
         print('hello')
         return value
+    else:
+        pass
+
+# WARNING: do not use this in EX_PH_lifetime!!! Do not use it!!!
+def after_parallel_concatenate_job(rk,size,receive_res,start_time,start_time_proc):
+    if rk == 0:
+        # initialize value
+        rk0size = receive_res[0].shape
+        value = np.zeros(rk0size)
+        print('===================================')
+        print('process= %d is summarizing ' % rk)
+        for k in range(size):
+            # value = value + receive_res[k]
+            value = np.concatenate((value, receive_res[k]))
+        # print("head of sub_res is", receive_res[k][0,-1])
+        print("head of res is",value[0,-1])
+        print("tail of res is",value[-1,-1])
+        end_time = time.time()
+        end_time_proc = process_time()
+        print("the wall time is: %.3f s"%(end_time - start_time))
+        print("the proc time is: %.3f s"%(end_time_proc - start_time_proc))
+        print('===================================')
+        print('hello')
+        return value[rk0size[0]:,:]
     else:
         pass

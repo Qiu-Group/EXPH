@@ -1,5 +1,5 @@
 from ELPH.EX_PH_mat import gqQ
-from Parallel.Para_common import plan_maker, before_parallel_job, after_parallel_job
+from Parallel.Para_common import plan_maker, before_parallel_job, after_parallel_sum_job
 from mpi4py import MPI
 from IO.IO_common import construct_kmap, read_kmap, read_bandmap, readkkqQ
 from IO.IO_gkk import read_gkk
@@ -77,7 +77,7 @@ def para_gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11
 
     # (b) distribute plan
     plan_list = comm.scatter(plan_list,root=0)
-    print('process_%d. plan is ' % rank, plan_list)
+    print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1]-plan_list[0])
     # print('process= %d. plan is '%rank, plan_list)
 
 
@@ -119,7 +119,7 @@ def para_gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11
     #     print('===================================')
     #     print('para version')
     #     return value
-    value = after_parallel_job(rk=rank, size=size, receive_res=res_rcev_to_0, start_time=start_time,
+    value = after_parallel_sum_job(rk=rank, size=size, receive_res=res_rcev_to_0, start_time=start_time,
                                start_time_proc=start_time_proc)
     if rank==0:
         return value

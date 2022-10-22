@@ -70,7 +70,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
 
     #=============================
     # todo: double check if this is right (parallel unit):
-    if q_map_start_para == 'nopara' and q_map_start_para == 'nopara':
+    if q_map_start_para == 'nopara' and q_map_end_para == 'nopara':
         q_map_start_para = 0
         q_map_end_para = kmap.shape[0]
     else:
@@ -149,8 +149,12 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
                 Gamma_second_res = Gamma_second_res + factor * gqQ_sq_temp * distribution_second_temp
 
     # return Gamma_res
-    return Gamma_first_res/dirac_normalize_factor_first + Gamma_second_res/dirac_normalize_factor_second
 
+    # (a) w/ normalization
+    return Gamma_first_res/dirac_normalize_factor_first + Gamma_second_res/dirac_normalize_factor_second
+    # (b) w/o normalization
+    # TODO: TODO: TODO: get it back!!
+    # return Gamma_first_res + Gamma_second_res
 if __name__ == "__main__":
     res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
 

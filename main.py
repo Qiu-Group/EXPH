@@ -14,28 +14,28 @@ if __name__ == "__main__":
     # todo: 0.0 find a way to get all of this
     # 0.0 setting:
     #==========================================================
-    save_path = './save/'
+    save_path = './save_441/'
     h5_path = './'
-    [nQ, nq, nk, nmode, ni, nj] = [144, 144, 144, 9, 4, 4]
+    [nQ, nq, nk, nmode, ni, nj] = [144, 16, 144, 9, 4, 4]
     # ==========================================================
 
 
     # 1.0 Interface
     # ==========================================================
-    # create_acvsh5(nQ, save_path + 'acvs.save/')
-    # create_gkkh5(nq, nk, nmode, ni, nj, save_path + 'gkk.save/')
+    create_acvsh5(nQ, save_path + 'acvs.save/')
+    create_gkkh5(nq, nk, nmode, ni, nj, save_path + 'gkk.save/')
     # ==========================================================
 
     # 2.0 K-points/band check
     # kmap create
     # bandmap create
     # ==========================================================
-    # k_grid_summary()
-    # band_summary()
+    k_grid_summary()
+    band_summary()
     # ==========================================================
 
     # 3.0 g(Q,q) construction
     # gqQ_res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11)
-    gamma_res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='./')
+    # gamma_res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='./')
     # Exciton_Life()
 
