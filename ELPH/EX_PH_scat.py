@@ -153,7 +153,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
     # (a) w/ normalization
     return Gamma_first_res/dirac_normalize_factor_first + Gamma_second_res/dirac_normalize_factor_second
     # (b) w/o normalization
-    # TODO: TODO: TODO: get it back!!
+    # TODO: TODO: TODO: do not use this!!
     # return Gamma_first_res + Gamma_second_res
 if __name__ == "__main__":
     res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')

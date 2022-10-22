@@ -106,5 +106,5 @@ def paral():
     # print("the running time is: %.3f s"%(end_time - start_time))
     # print(res)
 
-
-paral()
+if __name__ == "__main__":
+    paral()
