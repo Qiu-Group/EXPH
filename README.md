@@ -50,4 +50,7 @@ Todo:
     
     (i) convergence
     (ii) compare it with non-renormalized situation!
-    
+
+ (iii) add some input file and rading system
+
+ (iv) double check this: skip q=0 and omega = 0
