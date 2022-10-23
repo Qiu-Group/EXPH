@@ -1,4 +1,4 @@
-# import time
+import time
 #
 # if __name__ =="__main__":
 #
@@ -14,13 +14,18 @@
 #
 #     print("the running time is: %.3f s"%(end_time - start_time))
 #     print(res)
+start_time = time.time()
+res= 0
+res1 = 0
+res2 = 0
+for i in range(144):
+    for j in range(144):
+        for k in range(144):
+            res += 1
+            res1 += 1
+            res2 += 1
 
-def add(x,y):
-    return x + y
+end_time = time.time()
 
-def multi(x,y):
-    return  x * y
-
-def call_add_mul(nihao=lambda x,y:add(x,y)):
-    return nihao
-
+print("the running time is: %.3f s"%(end_time - start_time))
+print(res)

@@ -9,6 +9,11 @@ res = 0.0159358508119-0.000852284450595j
 
 (2) EX_PH_cat (w/o normalization):
 
+(a) 4 4 1
+193574848.4561666??
+7839570641.3534737
+
+(b) 12 12 1
 series:
 [Exciton Scattering]: n= 2  Q= 15 T= 100
 8463757989509.6123
@@ -16,6 +21,9 @@ series:
 parallel (1 task):
 [Exciton Scattering]: n= 2  Q= 15 T= 100
 res is 8.46375798951e+12
+
+
+
 
 (3) EX_PH_Cat (w/ normalization)
 (a): 4-4-1
