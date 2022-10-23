@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="parallel-1.0 done!">
-      <change afterPath="$PROJECT_DIR$/Utilities/getData_finite_Q.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Utilities/make_finite_Q.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Testsuite/cali.md" beforeDir="false" afterPath="$PROJECT_DIR$/Testsuite/cali.md" afterDir="false" />
-    </list>
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="new utilities has been added" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -99,7 +92,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666413112266</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="new utilities has been added">
+      <created>1666491234022</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1666491234022</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -115,6 +115,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="parallel-1.0 done!" />
-    <option name="LAST_COMMIT_MESSAGE" value="parallel-1.0 done!" />
+    <MESSAGE value="new utilities has been added" />
+    <option name="LAST_COMMIT_MESSAGE" value="new utilities has been added" />
   </component>
 </project>
