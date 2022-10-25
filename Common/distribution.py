@@ -19,7 +19,7 @@ def Dirac_1(x,sigma):
     :param sigma: the variance of Gaussian function
     :return:
     """
-    return np.exp( (-1/2) * (x/sigma)**2 )
+    return np.exp( (-1/2) * (x/sigma)**2 ) * (1/sigma)
 
 def Dirac_2(x, tolerance):
     """

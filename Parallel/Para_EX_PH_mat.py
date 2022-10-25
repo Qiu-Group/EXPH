@@ -86,6 +86,7 @@ def para_gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11
     # 3.0 calculation
     # (a) each proc is doing job!
     # (b) progress
+    t_s = time.time()
     res_each_proc=gqQ(n_ex_acv_index=n_ex_acv_index,
                       m_ex_acv_index=m_ex_acv_index,
                       v_ph_gkk=v_ph_gkk,
@@ -100,9 +101,12 @@ def para_gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11
                       k_map_start_para=plan_list[0],
                       k_map_end_para=plan_list[-1],
                       muteProgress=True)
-
+    t_e1 =time.time()
     res_rcev_to_0 = comm.gather(res_each_proc,root=0)
+    t_e2 = time.time()
 
+    print('te1 - ts:', t_e1-t_s)
+    print("te2 - ts:", t_e2-t_s)
     # ======================collection=====================
     # if rank == 0:
     #     value = 0

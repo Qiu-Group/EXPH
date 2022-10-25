@@ -16,14 +16,12 @@ import time
 #     print(res)
 start_time = time.time()
 res= 0
-res1 = 0
+res1 = 14689.54854
 res2 = 0
-for i in range(144):
-    for j in range(144):
-        for k in range(144):
-            res += 1
-            res1 += 1
-            res2 += 1
+for i in range(100):
+    for j in range(100):
+        for k in range(100):
+            res1 += res**3
 
 end_time = time.time()
 
