@@ -6,7 +6,7 @@ from IO.IO_common import read_bandmap, read_kmap, construct_kmap
 from ELPH.EX_PH_mat import gqQ
 from Common.progress import ProgressBar
 from Common.common import move_k_back_to_BZ_1
-
+import time
 # calculate the scattering rate
 # omega.shape  = (nq, nmode)
 # exciton_energy.shape = (nQ, nS)
@@ -92,6 +92,9 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
                 # (1) ex-ph matrix
                 # gqQ(n_ex_acv_index, m_ex_acv_index, v_ph_gkk, Q_kmap, q_kmap,
                 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
+                #===============================================
+                # t_s = time.time()
+
                 gqQ_sq_temp = np.abs(gqQ(n_ex_acv_index=n_ext_acv_index,
                            m_ex_acv_index=m_ext_acv_index_loop,
                            v_ph_gkk= v_ph_gkk_index_loop,
@@ -104,7 +107,13 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
                            bandmap_occ= [bandmap,occ],
                            muteProgress=True
                            ))**2 # dimension [eV^2]
+                # ===============================================
+                # only for test
+                # gqQ_sq_temp = 1.564949**2
+                # t_e2 = time.time()
 
+                # print('te1 - ts:', t_e1 - t_s)
+                # print("te2 - ts:", t_e2 - t_s)
                 # q_gkk and Q+q_acv index
                 # kmapout[x] = [Q, k_acv, q, k_gkk]
 
@@ -134,8 +143,8 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
                 # both of Dirac 1 and Dirac 2 should be normalized
 
                 # here is the normalize factor:
-                # dirac_normalize_factor_first = dirac_normalize_factor_first + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian)
-                # dirac_normalize_factor_second = dirac_normalize_factor_second + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp + omega_v_q_temp, sigma=degaussian)
+                dirac_normalize_factor_first = dirac_normalize_factor_first + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian)
+                dirac_normalize_factor_second = dirac_normalize_factor_second + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp + omega_v_q_temp, sigma=degaussian)
 
                 distribution_first_temp = (
                                     (BE(omega=omega_v_q_temp, T=T) + 1 + BE(omega=OMEGA_m_Q_plus_q_temp, T=T))
@@ -160,16 +169,16 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
     # TODO: Discuss with Diana!!!
 
     if status_for_para == 'nopara':
-        # return Gamma_first_res / dirac_normalize_factor_first + Gamma_second_res / dirac_normalize_factor_second
+        return Gamma_first_res / dirac_normalize_factor_first + Gamma_second_res / dirac_normalize_factor_second
         # Warning: gamma should not be normalized
-        return Gamma_first_res + Gamma_second_res
+        # return Gamma_first_res + Gamma_second_res
     # (a) w/ normalization
     # return Gamma_first_res/dirac_normalize_factor_first + Gamma_second_res/dirac_normalize_factor_second
     # Warning: normalization factor should be added at the last step
     else:
-        # return  [Gamma_first_res, Gamma_second_res,dirac_normalize_factor_first,dirac_normalize_factor_second]
+        return  [Gamma_first_res, Gamma_second_res,dirac_normalize_factor_first,dirac_normalize_factor_second]
         # Warning: gamma should not be normalized
-        return [Gamma_first_res, Gamma_second_res,1,1]
+        # return [Gamma_first_res, Gamma_second_res,1,1]
 
     # (b) w/o normalization deprecated debug:
     # TODOdone: TODOdone: TODOdone: do not use this!!
