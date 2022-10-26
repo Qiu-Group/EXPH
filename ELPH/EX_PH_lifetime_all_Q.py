@@ -9,7 +9,8 @@ from IO.IO_common import write_loop
 import os
 
 # input
-def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./',Q_kmap_start_para='nopara',Q_kmap_end_para='nopara',mute=False):
+def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001,
+                 path='./',Q_kmap_start_para='nopara',Q_kmap_end_para='nopara',mute=False):
     """
     !!! Para Over Q_kmap!!!
     :param n_ext_acv_index:

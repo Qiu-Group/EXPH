@@ -15,7 +15,8 @@ import time
 # gqQ(n_ex_acv_index, m_ex_acv_index, v_ph_gkk, Q_kmap, q_kmap,
 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
 
-def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=False, path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
+def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
+               muteProgress=False, path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
     !!! parallel over q_kmap !!!
     !!! PARALLEL OVER q_KMAP !!!
@@ -143,8 +144,8 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
                 # both of Dirac 1 and Dirac 2 should be normalized
 
                 # here is the normalize factor:
-                dirac_normalize_factor_first = dirac_normalize_factor_first + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian)
-                dirac_normalize_factor_second = dirac_normalize_factor_second + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp + omega_v_q_temp, sigma=degaussian)
+                # dirac_normalize_factor_first = dirac_normalize_factor_first + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian)
+                # dirac_normalize_factor_second = dirac_normalize_factor_second + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp + omega_v_q_temp, sigma=degaussian)
 
                 distribution_first_temp = (
                                     (BE(omega=omega_v_q_temp, T=T) + 1 + BE(omega=OMEGA_m_Q_plus_q_temp, T=T))
@@ -169,16 +170,17 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,muteProgress=
     # TODO: Discuss with Diana!!!
 
     if status_for_para == 'nopara':
-        return Gamma_first_res / dirac_normalize_factor_first + Gamma_second_res / dirac_normalize_factor_second
+        # return Gamma_first_res / dirac_normalize_factor_first + Gamma_second_res / dirac_normalize_factor_second
         # Warning: gamma should not be normalized
-        # return Gamma_first_res + Gamma_second_res
+        return Gamma_first_res + Gamma_second_res
     # (a) w/ normalization
     # return Gamma_first_res/dirac_normalize_factor_first + Gamma_second_res/dirac_normalize_factor_second
     # Warning: normalization factor should be added at the last step
     else:
-        return  [Gamma_first_res, Gamma_second_res,dirac_normalize_factor_first,dirac_normalize_factor_second]
+        # return  [Gamma_first_res, Gamma_second_res,dirac_normalize_factor_first,dirac_normalize_factor_second]
         # Warning: gamma should not be normalized
         # return [Gamma_first_res, Gamma_second_res,1,1]
+        return Gamma_first_res + Gamma_second_res
 
     # (b) w/o normalization deprecated debug:
     # TODOdone: TODOdone: TODOdone: do not use this!!

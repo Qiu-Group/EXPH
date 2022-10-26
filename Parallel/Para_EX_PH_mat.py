@@ -9,8 +9,8 @@ import time
 
 #def func:------input to be passed to function
 
-def para_gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11, acvmat=None, gkkmat=None,
-            kmap=None, kmap_dic=None, bandmap_occ=None,  path='./'):
+def para_gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,
+             acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,  path='./'):
     """
     !!! parallel over k_map !!!
     !!! PARALLEL OVER K_MAP !!!
