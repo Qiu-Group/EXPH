@@ -11,8 +11,9 @@ from Common.progress import ProgressBar
 
 
 #def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk(), kmap=read_kmap(), kmap_dic=construct_kmap(), bandmap_occ=read_bandmap(),muteProgress=False):
-def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=None, gkkmat=None,
-            kmap=None, kmap_dic=None, bandmap_occ=None, muteProgress=False, path='./',k_map_start_para='nopara', k_map_end_para='nopara'):
+def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
+        acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,
+        muteProgress=False, path='./',k_map_start_para='nopara', k_map_end_para='nopara'):
     """
     !!! parallel over k_kmap !!!
     !!! PARALLEL OVER K_kMAP !!!
