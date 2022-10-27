@@ -118,6 +118,15 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
                 # q_gkk and Q+q_acv index
                 # kmapout[x] = [Q, k_acv, q, k_gkk]
 
+
+                print('gqQ_sq_temp is', gqQ_sq_temp)
+                # print("gqQ_sq_temp == 0",gqQ_sq_temp == 0)
+
+                # Skip if q = 0 and nmode = [0,1,2] <- longwave limit
+                if gqQ_sq_temp == 0:
+                    continue
+
+
                 [Q_acv_index, q_gkk_index] = [kmap[Q_kmap, 3], kmap[q_kmap, 5]]
                 Q_plus_q_point = move_k_back_to_BZ_1(kmap[Q_kmap, 0:3] + kmap[q_kmap, 0:3])
                 key_temp = '  %.5f    %.5f    %.5f' % (Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
@@ -136,16 +145,18 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
 
                 # (2) left part
                 # print(OMEGA_m_Q_plus_q_temp)
-                # todo: check warning: RuntimeWarning: divide by zero encountered!!!
+                # tododone: check warning: RuntimeWarning: divide by zero encountered!!!
                 # print(BE(omega=OMEGA_m_Q_plus_q_temp, T=T))
                 # print(OMEGA_m_Q_plus_q_temp)
-                # todo: Dirac normalization!!!!!
+                # tododone: Dirac normalization!!!!!
                 # Here, Dirac 1 is Gaussian; Dirac 2 is Square wave
                 # both of Dirac 1 and Dirac 2 should be normalized
 
                 # here is the normalize factor:
                 # dirac_normalize_factor_first = dirac_normalize_factor_first + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian)
                 # dirac_normalize_factor_second = dirac_normalize_factor_second + Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp + omega_v_q_temp, sigma=degaussian)
+
+
 
                 distribution_first_temp = (
                                     (BE(omega=omega_v_q_temp, T=T) + 1 + BE(omega=OMEGA_m_Q_plus_q_temp, T=T))

@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="no normalization">
-      <change afterPath="$PROJECT_DIR$/Common/inteqp.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ELPH/EX_PH_mat_inteqp_q.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="interpolation is working">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Common/kgrid_check.py" beforeDir="false" afterPath="$PROJECT_DIR$/Common/kgrid_check.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLot_/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -179,7 +173,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666835926623</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="interpolation is working">
+      <created>1666887659635</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1666887659635</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -198,6 +199,7 @@
     <MESSAGE value="new utilities has been added" />
     <MESSAGE value="normalization over delta function has been added" />
     <MESSAGE value="no normalization" />
-    <option name="LAST_COMMIT_MESSAGE" value="no normalization" />
+    <MESSAGE value="interpolation is working" />
+    <option name="LAST_COMMIT_MESSAGE" value="interpolation is working" />
   </component>
 </project>

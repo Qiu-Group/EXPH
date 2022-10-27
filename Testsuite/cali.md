@@ -10,8 +10,10 @@ res = 0.0159358508119-0.000852284450595j
 (2) EX_PH_cat (w/o normalization):
 
 (a) 4 4 1
-193574848.4561666??
+193574848.4561666?? should be wrong
 7839570641.3534737
+newest!!!! (skip omega=0, delta_function sigma=0.001): 8876085809266.0039
+
 
 (b) 12 12 1
 series:
