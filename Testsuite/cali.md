@@ -22,7 +22,8 @@ parallel (1 task):
 [Exciton Scattering]: n= 2  Q= 15 T= 100
 res is 8.46375798951e+12
 
-
+[Exciton Scattering]: n= 2  Q= 15 T= 100 (Gaussian)
+!!!!8.46375798951e+15<<<
 
 
 (3) EX_PH_Cat (w/ normalization)
