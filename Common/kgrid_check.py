@@ -78,7 +78,7 @@ def firstGridCheck(h5path='./'):
     return notMatch
 
 
-def kmap_generate(Q, k_acv, q, k_gkk, readwhat=1):
+def kmap_generate(Q, k_acv, q, k_gkk, readwhat=3):
     """
     :param Q: Q-grid in acv
     :param k_acv: k-grid in acv
