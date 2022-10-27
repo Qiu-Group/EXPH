@@ -74,4 +74,5 @@ def plot_ex_ph_mat(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk=[0,1,2
     print('done')
 
 if __name__=="__main__":
-    plot_ex_ph_mat(mute=False, path='../')
+    # plot_ex_ph_mat(mute=False, path='../')
+    plot_ex_ph_mat(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[1],v_ph_gkk=[3],mute=False, path='../')

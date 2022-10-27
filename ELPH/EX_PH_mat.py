@@ -78,11 +78,13 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
     #tododone: discuss with Diana
     # Skip if q = 0 and nmode = [0,1,2] <- longwave limit
     if '  %.5f    %.5f    %.5f' % (kmap[q_kmap, 0:3][0], kmap[q_kmap, 0:3][1], kmap[q_kmap, 0:3][2]) == '  0.00000    0.00000    0.00000' and int(v_ph_gkk) in [0,1,2]:
+    # just skip all omega=0 point (phonon)!!
+    # if '  %.5f    %.5f    %.5f' % (kmap[q_kmap, 0:3][0], kmap[q_kmap, 0:3][1], kmap[q_kmap, 0:3][2]) == '  0.00000    0.00000    0.00000':
         if not muteProgress:
             pass
             print('skip q:',kmap[q_kmap, 0:3][0], kmap[q_kmap, 0:3][1], kmap[q_kmap, 0:3][2])
             print('skip nmode:', int(v_ph_gkk))
-        return res
+        return 0
 
     #=============================
     # todo: double check if this is right:

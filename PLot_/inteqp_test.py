@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy import interpolate
 from Common.inteqp import interqp_2D
 
-interpo_size =  12
+interpo_size =  64
 #
 f = np.loadtxt("exciton_phonon_mat.dat")
 nk = f.shape[0]
