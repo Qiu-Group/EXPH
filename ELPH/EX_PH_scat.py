@@ -16,6 +16,7 @@ import time
 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
 
 
+
 #==============================================================================================================>>>>>>>
 def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
                muteProgress=False, path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
@@ -173,6 +174,13 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
                 # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
                 Gamma_first_res = Gamma_first_res + factor * gqQ_sq_temp * distribution_first_temp
                 Gamma_second_res = Gamma_second_res + factor * gqQ_sq_temp * distribution_second_temp
+
+                # print("distribution_first_temp", distribution_first_temp)
+                # print("BE part:", (BE(omega=omega_v_q_temp, T=T) + 1 + BE(omega=OMEGA_m_Q_plus_q_temp, T=T)))
+                # print("DIrac:", Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian))
+                # print("dirac energy",OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp)
+                # print("\n")
+
 
     # print('1st factor:',dirac_normalize_factor_first)
     # print('2nd factor:',dirac_normalize_factor_second)

@@ -74,7 +74,8 @@ def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, inter
         if new_q_out:
             res[q_kmap,:3] = kmap[q_kmap,:3]
         res[q_kmap,3] = np.abs(gqQ(n_ex_acv_index=n_ex_acv_index, m_ex_acv_index=m_ex_acv_index,v_ph_gkk=v_ph_gkk,Q_kmap=Q_kmap,q_kmap=q_kmap,
-                                                        acvmat=acvmat, gkkmat=gkkmat, kmap=kmap, kmap_dic=kmap_dic, bandmap_occ=bandmap_occ, muteProgress=True))
+                                    acvmat=acvmat, gkkmat=gkkmat, kmap=kmap, kmap_dic=kmap_dic, bandmap_occ=bandmap_occ, muteProgress=True
+                                   ))
 
     # interpolation for q-grid
     qxx_new = "None"
