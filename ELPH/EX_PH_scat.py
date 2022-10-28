@@ -15,6 +15,8 @@ import time
 # gqQ(n_ex_acv_index, m_ex_acv_index, v_ph_gkk, Q_kmap, q_kmap,
 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
 
+
+#==============================================================================================================>>>>>>>
 def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
                muteProgress=False, path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
@@ -119,7 +121,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
                 # kmapout[x] = [Q, k_acv, q, k_gkk]
 
 
-                print('gqQ_sq_temp is', gqQ_sq_temp)
+                # print('gqQ_sq_temp is', gqQ_sq_temp)
                 # print("gqQ_sq_temp == 0",gqQ_sq_temp == 0)
 
                 # Skip if q = 0 and nmode = [0,1,2] <- longwave limit
@@ -196,6 +198,15 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
     # (b) w/o normalization deprecated debug:
     # TODOdone: TODOdone: TODOdone: do not use this!!
     # return Gamma_first_res + Gamma_second_res
+#==============================================================================================================>>>>>>>
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
 
