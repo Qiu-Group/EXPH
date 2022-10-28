@@ -75,7 +75,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
 
     if interposize**2 != kmap.shape[0]:
         print("[interpolation] yes")
-        print(" (%s, %s, 1) -> (%s, %s, 1)"%(kmap.shape[0],kmap.shape[0],interposize,interposize))
+        print(" (%s, %s, 1) -> (%s, %s, 1)"%(int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])),interposize,interposize))
     else:
         print("[interpolation] no")
 
