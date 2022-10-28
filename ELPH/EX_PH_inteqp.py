@@ -10,7 +10,8 @@ from IO.IO_acv import read_Acv, read_Acv_exciton_energy
 from IO.IO_gkk import read_gkk, read_omega
 from IO.IO_common import read_bandmap, read_kmap,construct_kmap
 from Common.progress import ProgressBar
-from Common.common import frac2carte
+from Common.common import equivalence_order, equivalence_no_order, move_k_back_to_BZ_1, isDoubleCountK, frac2carte
+
 
 # These functions offer good linear interpolation for gqQ, omega(q) and OMEGA(Q)
 # (1) gqQ_inteqp_q  --> interpolate to a fine q-grid given n,m,v,Q
@@ -18,8 +19,8 @@ from Common.common import frac2carte
 # (3) OMEGA_inteqp_Q --> interpolate  to a find Q-grid given nS (quantum number of exciton)
 
 #input
-def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=True,
-        acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,muteProgress=False,
+def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,
+        acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,muteProgress=True,
         path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
     !!! parallel is not added !!!
@@ -91,8 +92,8 @@ def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, inter
     resres_new = interqp_2D(resres,interpo_size=interpo_size)
 
     if new_q_out:
-        if qxx_new == "None" or qyy_new == "None":
-            raise Exception("qxx_new == None or qyy_new == None")
+        # if qxx_new == "None" or qyy_new == "None":
+        #     raise Exception("qxx_new == None or qyy_new == None")
         return [qxx_new, qyy_new, resres_new]
     else:
         return resres_new # interpolate_size * interpolate_size
@@ -135,8 +136,8 @@ def omega_inteqp_q(interpo_size=12, new_q_out=False,path="./"):
         qyy_new = interqp_2D(qyy, interpo_size=interpo_size)
 
     if new_q_out:
-        if qxx_new == "None" or qyy_new == "None":
-            raise Exception("qxx_new == None or qyy_new == None")
+        # if qxx_new == "None" or qyy_new == "None":
+        #     raise Exception("qxx_new == None or qyy_new == None")
         return [qxx_new, qyy_new, omega_res]
     else:
         return omega_res
@@ -182,8 +183,74 @@ def OMEGA_inteqp_Q(interpo_size=12, new_Q_out=False, path="./"):
 
 # (3) inteqp for exciton dispersion OMEGA(Q)
 
+# TODO: realize Gamma_itneqp!!
+
+def interpolation_check_for_Gamma_calculation(interpo_size, path='./'):
+    """
+    WARNING: we only support integer multiple interpolation: k-grid after interpolation could cover k-grid before interpolation
+    WARNING: interpolation following such rule (only for 2D):
+        coarse gird: n_co * n_co * 1
+        fine   grid: n_fi * n_fi * 1 (n_fi = interpo_size)
+        n_fi = (n_co - 1) * m + 1, where m is the multiple of coarse grid
+    Run this before interpolate any interpolation for Gamma
+    :param interpo_size: ..
+    :param path: 'kkqQmap.dat', 'Acv.h5', 'gkk.h5'
+    :return:
+     (0) interpolated q/Q-grid
+     (1) Qq_dic: Qq_DIC = {'  %.5f    %.5f    %.5f' : Qq_fine}, where Qq_fine is index of interpolated index in gqQ_interpolated(q), omega(q) and OMEGA(Q)
+     (2) interpolated phonon frequency
+     (3) interpolated exciton frequency
+    """
+    kmap = read_kmap(path=path)
+    n_co = int(np.sqrt(kmap.shape[0]))
+    n_fi = interpo_size
+    if (n_fi - 1) % (n_co -1) != 0:
+        raise Exception("Only support integer multiple interpolation: k-grid after interpolation should cover k-grid before interpolation (e.g.: (4,4,1) --×10--> (31, 31, 1))")
+    else:
+        print("[interpolation size]: check")
+    res_gqQ = gqQ_inteqp_q(interpo_size=interpo_size,path=path,new_q_out=True)
+    res_omega = omega_inteqp_q(interpo_size=interpo_size, path=path,new_q_out=True)
+    res_OMEGA = OMEGA_inteqp_Q(interpo_size=interpo_size,path=path,new_Q_out=True)
+    grid_q_gqQ = np.array([res_gqQ[0].flatten(), res_gqQ[1].flatten()]).T
+    grid_q_omega = np.array([res_omega[0].flatten(), res_omega[1].flatten()]).T
+    grid_q_OMEGA = np.array([res_OMEGA[0].flatten(), res_OMEGA[1].flatten()]).T
+    # print("A-E-B?", equivalence_no_order(grid_q_gqQ, grid_q_omega))
+    non_equal_count = 0
+    if not equivalence_order(grid_q_gqQ, grid_q_omega):
+        non_equal_count += 1
+    if not equivalence_order(grid_q_gqQ, grid_q_OMEGA):
+        non_equal_count += 1
+    if not equivalence_order(grid_q_omega, grid_q_OMEGA):
+        non_equal_count += 1
+    if non_equal_count == 0:
+        print("[qQ-grid (interpolated) check]: pass")
+        print("interpolated qQ-grid of (%s, %s, 1) are in the same order!"%(interpo_size, interpo_size))
+        grid_q_gqQ_res = np.vstack( (grid_q_gqQ.T,np.zeros((grid_q_gqQ.shape[0])).T)).T
+
+        Qq_dic = {}
+        for i in range(grid_q_gqQ_res.shape[0]):
+            Qq_dic['  %.5f    %.5f    %.5f' % (grid_q_gqQ_res[i, 0:3][0], grid_q_gqQ_res[i, 0:3][1], grid_q_gqQ_res[i, 0:3][2])] = i
+
+        return [grid_q_gqQ_res, Qq_dic, res_omega[2], res_OMEGA[2]]
+
+#todo: suggestion function for interpolation size
+# rewrite Gamma Calculation, write document for kmap, k_dic, Qq_dic
+
+# def Qpoints_2_Qfi_dic_generate(Q_grid, q_grid):
+#     pass
+
+
 if __name__ =="__main__":
     # res = gqQ_inteqp_q(path='../',new_q_out=False)
     # res = omega_inteqp_q(interpo_size=4, path='../')
-    res = OMEGA_inteqp_Q(interpo_size=4,path='../')
+    # res = OMEGA_inteqp_Q(interpo_size=24,path='../',new_Q_out=True)
+
+
+    # grid = np.array([res[0].flatten(), res[1].flatten()]).T
+    # print('is double count:',isDoubleCountK(grid))
+    # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    # surf = ax.plot_surface(res[0], res[1], res[2][1], cmap=cm.cool)
+    # plt.show()
+    res = interpolation_check_for_Gamma_calculation(interpo_size=4,path='../')
+
     pass
