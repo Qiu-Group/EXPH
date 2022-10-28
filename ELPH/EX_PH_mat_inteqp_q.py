@@ -1,16 +1,24 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator
+from mpl_toolkits.mplot3d import Axes3D
 from ELPH.EX_PH_mat import gqQ
 from Common.inteqp import interqp_2D
 from IO.IO_common import read_kmap, read_lattice
-from IO.IO_acv import read_Acv
+from IO.IO_acv import read_Acv, read_Acv_exciton_energy
 from IO.IO_gkk import read_gkk, read_omega
 from IO.IO_common import read_bandmap, read_kmap,construct_kmap
 from Common.progress import ProgressBar
 from Common.common import frac2carte
 
+# These functions offer good linear interpolation for gqQ, omega(q) and OMEGA(Q)
+# (1) gqQ_inteqp_q  --> interpolate to a fine q-grid given n,m,v,Q
+# (2) omega_inteqp_q --> interpolate to a fine q-grid given v (quantum number of phonon)
+# (3) OMEGA_inteqp_Q --> interpolate  to a find Q-grid given nS (quantum number of exciton)
+
 #input
-def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=4 ,new_q_out=True,
+def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=True,
         acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,muteProgress=False,
         path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
@@ -30,7 +38,7 @@ def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, inter
     :param k_map_start_para: the start index of k_map (default: 0)
     :param k_map_end_para= the end index of k_map (default: kmap.shape[0])
     :param muteProgress determine if enable progress report
-    :return: |gqQ|. The |gkk| unit is meV, but return here is eV
+    :return: |gqQ| interpoated by q: interpo_size * interpo_size
     """
     # Q_kmap_star = 0 # exciton start momentum Q (index)
     # n_ex_acv = 0 # exciton start quantum state S_i (index): we only allow you to set one single state right now
@@ -57,6 +65,7 @@ def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, inter
     progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)
     res = np.zeros((kmap.shape[0],4))
 
+    # loop over k_kmap
     for q_kmap in range(kmap.shape[0]):
         if not muteProgress:
             progress.current += 1
@@ -67,34 +76,114 @@ def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, inter
                                                         acvmat=acvmat, gkkmat=gkkmat, kmap=kmap, kmap_dic=kmap_dic, bandmap_occ=bandmap_occ, muteProgress=True))
 
     # interpolation for q-grid
+    qxx_new = "None"
+    qyy_new = "None"
     if new_q_out:
         qxx = res[:,0].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qx
         qyy = res[:,1].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qy
-        qzz = res[:,2].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qz
+        # qzz = res[:,2].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qz
         qxx_new = interqp_2D(qxx, interpo_size=interpo_size)
         qyy_new = interqp_2D(qyy, interpo_size=interpo_size)
-        qzz_new = interqp_2D(qzz, interpo_size=interpo_size)
+        # qzz_new = interqp_2D(qzz, interpo_size=interpo_size)
 
     # interpolation for result
     resres = res[:,3].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #res
     resres_new = interqp_2D(resres,interpo_size=interpo_size)
 
     if new_q_out:
-        return [qxx_new, qyy_new, qzz_new, resres_new]
+        if qxx_new == "None" or qyy_new == "None":
+            raise Exception("qxx_new == None or qyy_new == None")
+        return [qxx_new, qyy_new, resres_new]
     else:
-        return resres_new
+        return resres_new # interpolate_size * interpolate_size
 
 
     # np.savetxt('qxx_new.dat',qxx_new[:,0])
     # np.savetxt('qyy_new.dat',qyy_new[0,:])
 
 # (2) todo: inteqp for phonon dispersion omega(q)
-# def omega_inteqp_q
-# todo: read omega from gkk (the order of value keeps same as gkk, and unit is meV like this:
-#  omega_mat[int(q_gkk_index),int(v_ph_gkk_index_loop)] * 10 ** (-3) # dimension [eV] )
+def omega_inteqp_q(interpo_size=12, new_q_out=False,path="./"):
+    """
+    :param interpo_size: ..
+    :param new_q_out: output new q-grid or not?
+    :param path: ..
+    :return:
+    """
+    # interpo_size = 36
+    # new_q_out = True
+    # path = '../'
 
+    omega_mat = read_omega(path=path) # dimension [meV]
+    n_phonon = omega_mat.shape[1]
+    kmap = read_kmap(path=path)  # load kmap matrix
+
+
+    omega_res = np.zeros((n_phonon,interpo_size,interpo_size))
+    for j_phonon in range(n_phonon):
+        omega_q_index_list = list(map(int,kmap[:,5])) # kmap[:,5] is for q !!!
+        # use array as index can have better efficiency!!
+        # todo: use index to find omega instead of directly using it!!!
+        temp_omega = omega_mat[:,j_phonon][np.array(omega_q_index_list)].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qx
+        omega_res[j_phonon] = interqp_2D(temp_omega, interpo_size=interpo_size)
+
+    qxx_new = "None"
+    qyy_new = "None"
+    if new_q_out:
+        qxx = kmap[:, 0].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))
+        qyy = kmap[:, 1].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))
+        qxx_new = interqp_2D(qxx, interpo_size=interpo_size)
+        qyy_new = interqp_2D(qyy, interpo_size=interpo_size)
+
+    if new_q_out:
+        if qxx_new == "None" or qyy_new == "None":
+            raise Exception("qxx_new == None or qyy_new == None")
+        return [qxx_new, qyy_new, omega_res]
+    else:
+        return omega_res
+    # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    # # surf = ax.plot_surface(qxx, qyy, omega_mat[:,3].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) , cmap=cm.cool)
+    # surf = ax.plot_surface(qxx_new, qyy_new, omega_res[3], cmap=cm.cool)
+    # plt.show()
+# exciton_energy = read_Acv_exciton_energy(path=path)
+
+def OMEGA_inteqp_Q(interpo_size=12, new_Q_out=False, path="./"):
+    # interpo_size = 12
+    # new_Q_out = True
+    # path = '../'
+    exciton_energy = read_Acv_exciton_energy(path=path)
+    n_exciton= exciton_energy.shape[1]
+    kmap = read_kmap(path=path)  # load kmap matrix
+
+    OMEGA_res = np.zeros((n_exciton, interpo_size, interpo_size))
+    for j_xt in range(n_exciton):
+        OMEGA_Q_index_list = list(map(int, kmap[:, 3]))  # kmap[:,5] is for q !!!
+        temp_OMEGA = exciton_energy[:, j_xt][np.array(OMEGA_Q_index_list)].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))  # qx
+        OMEGA_res[j_xt] = interqp_2D(temp_OMEGA, interpo_size=interpo_size)
+
+
+    Qxx_new = "None"
+    Qyy_new = "None"
+    if new_Q_out:
+        Qxx = kmap[:, 0].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))
+        Qyy = kmap[:, 1].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))
+        Qxx_new = interqp_2D(Qxx, interpo_size=interpo_size)
+        Qyy_new = interqp_2D(Qyy, interpo_size=interpo_size)
+
+    # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    # surf = ax.plot_surface(qxx, qyy, omega_mat[:,3].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) , cmap=cm.cool)
+    # surf = ax.plot_surface(Qxx_new, Qyy_new, OMEGA_res[2], cmap=cm.cool)
+    # surf = ax.plot_surface(Qxx, Qyy, exciton_energy[:, 2][np.array(OMEGA_Q_index_list)].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0])))), cmap=cm.cool)
+    # plt.show()
+
+    if new_Q_out:
+        return [Qxx_new, Qyy_new, OMEGA_res]
+    else:
+        return OMEGA_res
 
 # (3) inteqp for exciton dispersion OMEGA(Q)
 
 if __name__ =="__main__":
-    res = gqQ_inteqp_q(path='../',new_q_out=False)
+    # res = gqQ_inteqp_q(path='../',new_q_out=False)
+    # res = omega_inteqp_q(interpo_size=4, path='../')
+    res = OMEGA_inteqp_Q(interpo_size=4,path='../')
+    pass
