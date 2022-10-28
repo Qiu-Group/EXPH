@@ -49,7 +49,7 @@ def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, inter
     # interpo_size = 4
 
     # outfilename = "exciton_phonon_mat_inteqp.dat"
-
+    interpo_size = interpo_size + 1
 
     if acvmat is None:
         acvmat = read_Acv(path=path)
@@ -84,13 +84,22 @@ def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, inter
         qxx = res[:,0].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qx
         qyy = res[:,1].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qy
         # qzz = res[:,2].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qz
-        qxx_new = interqp_2D(qxx, interpo_size=interpo_size)
-        qyy_new = interqp_2D(qyy, interpo_size=interpo_size)
+#================================================
+        #boundary condition
+        qxx_temp = kgrid_inteqp_complete(qxx)
+        qyy_temp = kgrid_inteqp_complete(qyy)
+# ----------------------------------------------
+        qxx_new = interqp_2D(qxx_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+        qyy_new = interqp_2D(qyy_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
         # qzz_new = interqp_2D(qzz, interpo_size=interpo_size)
 
     # interpolation for result
     resres = res[:,3].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #res
-    resres_new = interqp_2D(resres,interpo_size=interpo_size)
+# ================================================
+    # boundary condition
+    resres_temp = dispersion_inteqp_complete(resres)
+# ------------------------------------------------
+    resres_new = interqp_2D(resres_temp,interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
 
     if new_q_out:
         # if qxx_new == "None" or qyy_new == "None":
@@ -114,27 +123,37 @@ def omega_inteqp_q(interpo_size=12, new_q_out=False,path="./"):
     # interpo_size = 36
     # new_q_out = True
     # path = '../'
+    interpo_size = interpo_size + 1
 
     omega_mat = read_omega(path=path) # dimension [meV]
     n_phonon = omega_mat.shape[1]
     kmap = read_kmap(path=path)  # load kmap matrix
 
 
-    omega_res = np.zeros((n_phonon,interpo_size,interpo_size))
+    omega_res = np.zeros((n_phonon,interpo_size-1,interpo_size-1))
     for j_phonon in range(n_phonon):
+        # print(j_phonon)
         omega_q_index_list = list(map(int,kmap[:,5])) # kmap[:,5] is for q !!!
         # use array as index can have better efficiency!!
         # todo: use index to find omega instead of directly using it!!!
         temp_omega = omega_mat[:,j_phonon][np.array(omega_q_index_list)].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qx
-        omega_res[j_phonon] = interqp_2D(temp_omega, interpo_size=interpo_size)
+        # ================================================
+        # boundary condition
+        omega_res_temp = dispersion_inteqp_complete(temp_omega)
+        omega_res[j_phonon] = interqp_2D(omega_res_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
 
     qxx_new = "None"
     qyy_new = "None"
     if new_q_out:
         qxx = kmap[:, 0].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))
         qyy = kmap[:, 1].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))
-        qxx_new = interqp_2D(qxx, interpo_size=interpo_size)
-        qyy_new = interqp_2D(qyy, interpo_size=interpo_size)
+# ================================================
+        # boundary condition
+        qxx_temp = kgrid_inteqp_complete(qxx)
+        qyy_temp = kgrid_inteqp_complete(qyy)
+# ----------------------------------------------
+        qxx_new = interqp_2D(qxx_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+        qyy_new = interqp_2D(qyy_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
 
     if new_q_out:
         # if qxx_new == "None" or qyy_new == "None":
@@ -149,6 +168,7 @@ def omega_inteqp_q(interpo_size=12, new_q_out=False,path="./"):
 # exciton_energy = read_Acv_exciton_energy(path=path)
 
 def OMEGA_inteqp_Q(interpo_size=12, new_Q_out=False, path="./"):
+    interpo_size = interpo_size + 1
     # interpo_size = 12
     # new_Q_out = True
     # path = '../'
@@ -156,11 +176,14 @@ def OMEGA_inteqp_Q(interpo_size=12, new_Q_out=False, path="./"):
     n_exciton= exciton_energy.shape[1]
     kmap = read_kmap(path=path)  # load kmap matrix
 
-    OMEGA_res = np.zeros((n_exciton, interpo_size, interpo_size))
+    OMEGA_res = np.zeros((n_exciton, interpo_size-1, interpo_size-1))
     for j_xt in range(n_exciton):
         OMEGA_Q_index_list = list(map(int, kmap[:, 3]))  # kmap[:,5] is for q !!!
         temp_OMEGA = exciton_energy[:, j_xt][np.array(OMEGA_Q_index_list)].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))  # qx
-        OMEGA_res[j_xt] = interqp_2D(temp_OMEGA, interpo_size=interpo_size)
+        # ================================================
+        # boundary condition
+        OMEGA_res_temp = dispersion_inteqp_complete(temp_OMEGA)
+        OMEGA_res[j_xt] = interqp_2D(OMEGA_res_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
 
 
     Qxx_new = "None"
@@ -168,8 +191,15 @@ def OMEGA_inteqp_Q(interpo_size=12, new_Q_out=False, path="./"):
     if new_Q_out:
         Qxx = kmap[:, 0].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))
         Qyy = kmap[:, 1].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))
-        Qxx_new = interqp_2D(Qxx, interpo_size=interpo_size)
-        Qyy_new = interqp_2D(Qyy, interpo_size=interpo_size)
+
+        # ================================================
+        # boundary condition
+        Qxx_temp = kgrid_inteqp_complete(Qxx)
+        Qyy_temp = kgrid_inteqp_complete(Qyy)
+        # ----------------------------------------------
+
+        Qxx_new = interqp_2D(Qxx_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+        Qyy_new = interqp_2D(Qyy_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
 
     # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     # surf = ax.plot_surface(qxx, qyy, omega_mat[:,3].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) , cmap=cm.cool)
@@ -205,8 +235,8 @@ def interpolation_check_for_Gamma_calculation(interpo_size, path='./'):
     kmap = read_kmap(path=path)
     n_co = int(np.sqrt(kmap.shape[0]))
     n_fi = interpo_size
-    if (n_fi - 1) % (n_co -1) != 0:
-        raise Exception("Only support integer multiple interpolation: k-grid after interpolation should cover k-grid before interpolation (e.g.: (4,4,1) --×10--> (31, 31, 1))")
+    if (n_fi ) % (n_co ) != 0:
+        raise Exception("Only support integer multiple interpolation: k-grid after interpolation should cover k-grid before interpolation (e.g.: (4,4,1) --×10--> (32, 32, 1))")
     else:
         print("[interpolation size]: check")
     res_gqQ = gqQ_inteqp_q(interpo_size=interpo_size,path=path,new_q_out=True)
@@ -217,6 +247,8 @@ def interpolation_check_for_Gamma_calculation(interpo_size, path='./'):
     grid_q_OMEGA = np.array([res_OMEGA[0].flatten(), res_OMEGA[1].flatten()]).T
     # print("A-E-B?", equivalence_no_order(grid_q_gqQ, grid_q_omega))
     non_equal_count = 0
+    # if grid_q_gqQ.shape != res_omega[2].flatten().shape:
+    #     non_equal_count += 1
     if not equivalence_order(grid_q_gqQ, grid_q_omega):
         non_equal_count += 1
     if not equivalence_order(grid_q_gqQ, grid_q_OMEGA):
@@ -233,6 +265,8 @@ def interpolation_check_for_Gamma_calculation(interpo_size, path='./'):
             Qq_dic['  %.5f    %.5f    %.5f' % (grid_q_gqQ_res[i, 0:3][0], grid_q_gqQ_res[i, 0:3][1], grid_q_gqQ_res[i, 0:3][2])] = i
 
         return [grid_q_gqQ_res, Qq_dic, res_omega[2], res_OMEGA[2]]
+    else:
+        raise Exception("[qQ-grid (interpolated) check]: failed")
 
 #todo: suggestion function for interpolation size
 # rewrite Gamma Calculation, write document for kmap, k_dic, Qq_dic
@@ -241,17 +275,59 @@ def interpolation_check_for_Gamma_calculation(interpo_size, path='./'):
 #     pass
 
 
+# todo: add boundary condition !!
+def kgrid_inteqp_complete(k_grid_2D):
+    """
+    input should be 2D_array k-grid
+    :param k_grid_2D: k_grid_2D.shape = (n, n)
+    :return: k_grid_2D_boundar.shape = (n+1, n+1)
+    """
+    size = k_grid_2D.shape[0]
+    k_grid_2D_new = np.zeros((size+1,size+1))
+    k_grid_2D_new[:size,:size] = k_grid_2D
+    if k_grid_2D[0,0] != 0:
+        raise Exception("k_grid[0,0] should start with 0!, check k_grid before interpolation!!")
+    if k_grid_2D[0,-1] == 0:
+        delta = k_grid_2D[1,0] - k_grid_2D[0,0]
+        # print(k_grid_2D_new.shape, k_grid_2D)
+        k_grid_2D_new[size,:size] = np.ones((size)) * (delta + k_grid_2D_new[size-1,0])
+        k_grid_2D_new[:,size] = k_grid_2D_new[:,0]
+    else:
+        delta = k_grid_2D[0,1] - k_grid_2D[0,0]
+        # print(k_grid_2D_new)
+        # print(k_grid_2D)
+        k_grid_2D_new[:size,size] = np.ones((size)) * (delta + k_grid_2D_new[0,size-1])
+        k_grid_2D_new[size,:] = k_grid_2D_new[0,:]
+
+    return k_grid_2D_new
+
+def dispersion_inteqp_complete(dispersion_2D):
+    """
+    input should be 2D_array dispersion
+    :param k_grid_2D: k_grid_2D.shape = (n, n)
+    :return: k_grid_2D_boundar.shape = (n+1, n+1)
+    """
+    size = dispersion_2D.shape[0]
+    dispersion_2D_new = np.zeros((size+1,size+1))
+    dispersion_2D_new[:size,:size] = dispersion_2D
+
+    dispersion_2D_new[:size,size] = dispersion_2D_new[:size,0]
+    dispersion_2D_new[size,:] = dispersion_2D_new[0,:]
+
+    return dispersion_2D_new
+
 if __name__ =="__main__":
-    # res = gqQ_inteqp_q(path='../',new_q_out=False)
-    # res = omega_inteqp_q(interpo_size=4, path='../')
-    # res = OMEGA_inteqp_Q(interpo_size=24,path='../',new_Q_out=True)
+    # res = gqQ_inteqp_q(path='../',new_q_out=True,interpo_size=24)
+    # res = omega_inteqp_q(interpo_size=4,new_q_out=True, path='../')
+    res = OMEGA_inteqp_Q(interpo_size=144,path='../',new_Q_out=True)
 
 
-    # grid = np.array([res[0].flatten(), res[1].flatten()]).T
+    grid = np.array([res[0].flatten(), res[1].flatten()]).T
     # print('is double count:',isDoubleCountK(grid))
-    # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-    # surf = ax.plot_surface(res[0], res[1], res[2][1], cmap=cm.cool)
-    # plt.show()
-    res = interpolation_check_for_Gamma_calculation(interpo_size=4,path='../')
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    surf = ax.plot_surface(res[0], res[1], res[2][0], cmap=cm.cool)
+    plt.show()
+
+    # res = interpolation_check_for_Gamma_calculation(interpo_size=4,path='../')
 
     pass
