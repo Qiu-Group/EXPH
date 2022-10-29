@@ -17,7 +17,9 @@ from Common.common import equivalence_order, equivalence_no_order, move_k_back_t
 # (1) gqQ_inteqp_q  --> interpolate to a fine q-grid given n,m,v,Q
 # (2) omega_inteqp_q --> interpolate to a fine q-grid given v (quantum number of phonon)
 # (3) OMEGA_inteqp_Q --> interpolate  to a find Q-grid given nS (quantum number of exciton)
-
+# (4) interpolation_check_for_Gamma_calculation(interpo_size, path='./'):
+# (5) kgrid_inteqp_complete(k_grid_2D):
+# (6) dispersion_inteqp_complete(dispersion_2D):
 #input
 def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,
         acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,muteProgress=True,
@@ -216,7 +218,7 @@ def OMEGA_inteqp_Q(interpo_size=12, new_Q_out=False, path="./"):
 
 # TODO: realize Gamma_itneqp!!
 
-def interpolation_check_for_Gamma_calculation(interpo_size, path='./'):
+def interpolation_check_for_Gamma_calculation(interpo_size, path='./', mute=False):
     """
     WARNING: we only support integer multiple interpolation: k-grid after interpolation could cover k-grid before interpolation
     WARNING: interpolation following such rule (only for 2D):
@@ -238,7 +240,8 @@ def interpolation_check_for_Gamma_calculation(interpo_size, path='./'):
     if (n_fi ) % (n_co ) != 0:
         raise Exception("Only support integer multiple interpolation: k-grid after interpolation should cover k-grid before interpolation (e.g.: (4,4,1) --×10--> (32, 32, 1))")
     else:
-        print("[interpolation size]: check")
+        if not mute:
+            print("[interpolation size]: check")
     res_gqQ = gqQ_inteqp_q(interpo_size=interpo_size,path=path,new_q_out=True)
     res_omega = omega_inteqp_q(interpo_size=interpo_size, path=path,new_q_out=True)
     res_OMEGA = OMEGA_inteqp_Q(interpo_size=interpo_size,path=path,new_Q_out=True)
@@ -256,8 +259,9 @@ def interpolation_check_for_Gamma_calculation(interpo_size, path='./'):
     if not equivalence_order(grid_q_omega, grid_q_OMEGA):
         non_equal_count += 1
     if non_equal_count == 0:
-        print("[qQ-grid (interpolated) check]: pass")
-        print("interpolated qQ-grid of (%s, %s, 1) are in the same order!"%(interpo_size, interpo_size))
+        if not mute:
+            print("[qQ-grid (interpolated) check]: pass")
+            print("interpolated qQ-grid of (%s, %s, 1) are in the same order!"%(interpo_size, interpo_size))
         grid_q_gqQ_res = np.vstack( (grid_q_gqQ.T,np.zeros((grid_q_gqQ.shape[0])).T)).T
 
         Qq_dic = {}
@@ -319,13 +323,13 @@ def dispersion_inteqp_complete(dispersion_2D):
 if __name__ =="__main__":
     # res = gqQ_inteqp_q(path='../',new_q_out=True,interpo_size=24)
     # res = omega_inteqp_q(interpo_size=4,new_q_out=True, path='../')
-    res = OMEGA_inteqp_Q(interpo_size=144,path='../',new_Q_out=True)
+    res = OMEGA_inteqp_Q(interpo_size=160,path='../',new_Q_out=True)
 
 
     grid = np.array([res[0].flatten(), res[1].flatten()]).T
     # print('is double count:',isDoubleCountK(grid))
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-    surf = ax.plot_surface(res[0], res[1], res[2][0], cmap=cm.cool)
+    surf = ax.plot_surface(res[0], res[1], res[2][2], cmap=cm.cool)
     plt.show()
 
     # res = interpolation_check_for_Gamma_calculation(interpo_size=4,path='../')
