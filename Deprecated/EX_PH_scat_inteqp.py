@@ -16,6 +16,8 @@ import time
 # gqQ(n_ex_acv_index, m_ex_acv_index, v_ph_gkk, Q_kmap, q_kmap,
 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
 
+#todo: merge this Gamma_scat with EX_PH_scat.Gamma_scat
+#todo: test parallel
 
 #==============================================================================================================>>>>>>>
 def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=4, interpolation_check_res = None,
@@ -37,7 +39,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
         # this will take longer life, so when calculating lifetime, please pass int_check_result to this function out of Q loop
         # (parameters below is noe depending on specific Q point)
         # interposize is from reading parameter
-        [grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA] = interpolation_check_for_Gamma_calculation(interpo_size=interposize,path=path)
+        [grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA] = interpolation_check_for_Gamma_calculation(interpo_size=interposize,path=path,mute=muteProgress)
     else:
         # this function get parameter outside
         # interposize is from interpolation_check_res
@@ -74,10 +76,12 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
     Nqpt = interposize**2
 
     if interposize**2 != kmap.shape[0]:
-        print("[interpolation] yes")
-        print(" (%s, %s, 1) -> (%s, %s, 1)"%(int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])),interposize,interposize))
+        if not muteProgress:
+            print("[interpolation] yes")
+            print(" (%s, %s, 1) -> (%s, %s, 1)"%(int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])),interposize,interposize))
     else:
-        print("[interpolation] no")
+        if not muteProgress:
+            print("[interpolation] no")
 
     # (3) calculate scattering rate
     # note: kmap.shape(nk, information=(kx,ky,kz,Q, k_acv, q, k_gkk))
@@ -179,7 +183,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
 
                 # Qpr_as_Q_plus_q_acv_index = Q_plus_q_kmapout[0]
 
-                # todo: double check this!!!
+                # tododone: double check this!!!
 
 
                 # find energy for exciton and phonon (you should use index_acv and index_gkk)
@@ -205,7 +209,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
                 OMEGA_n_Q_temp = res_OMEGA[int(m_ext_acv_index_loop)].flatten()[Q_inteqp_index] # dimension [eV]
                 OMEGA_m_Q_plus_q_temp = res_OMEGA[int(m_ext_acv_index_loop)].flatten()[Qpr_as_Q_plus_q_inteqp_index] # dimension [eV]
 
-                # todo Check this !!!
+                # tododone Check this !!!
                 # omega_v_q_temp     = omega_mat[int(q_gkk_index),int(v_ph_gkk_index_loop)] * 10 ** (-3) # dimension [eV]
                 # OMEGA_m_Q_plus_q_temp = exciton_energy[int(Qpr_as_Q_plus_q_acv_index), int(m_ext_acv_index_loop)] # dimension [eV]
                 # OMEGA_n_Q_temp        = exciton_energy[int(Q_acv_index),               int(m_ext_acv_index_loop)] # dimension [eV]
@@ -243,7 +247,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
 
 
 if __name__ == "__main__":
-    res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../',interposize=4)
+    res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2, T=100, degaussian=0.001, path='../', interposize=4)
 
 
 

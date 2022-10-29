@@ -8,7 +8,7 @@ from time import  process_time
 import time
 
 
-def para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, path='./'):
+def para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001 , interposize=4, path='./'):
     # input===================
     # Q_kmap=15
     # n_ext_acv_index=2
@@ -27,10 +27,11 @@ def para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, path='
     size = comm.Get_size()
     plan_list = None
 
-    workload_over_qmap = len(read_kmap(path=path))
+    # workload_over_qmap = len(read_kmap(path=path))
+    workload_over_qQmap = interposize**2
 
     # 2.0 Plan before calculation
-    plan_list, start_time, start_time_proc = before_parallel_job(rk=rank, size=size, workload_para=workload_over_qmap)
+    plan_list, start_time, start_time_proc = before_parallel_job(rk=rank, size=size, workload_para=workload_over_qQmap)
     # (b) distribute plan
     plan_list = comm.scatter(plan_list, root=0)
     print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1]-plan_list[0])
@@ -56,11 +57,12 @@ def para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, path='
                                n_ext_acv_index=n_ext_acv_index,
                                T=T,
                                degaussian=degaussian,
+                               interposize=interposize,
                                muteProgress=True,
                                path=path,
                                q_map_start_para=plan_list[0],
                                q_map_end_para=plan_list[-1])
-
+    print(res_each_proc)
     # res_first_rcev_to_0 = comm.gather(res_first_each_proc, root=0)
     # res_second_rcev_to_0 = comm.gather(res_second_each_proc, root=0)
     # factor_first_rcev_to_0 = comm.gather(factor_first_each_proc, root=0)
@@ -94,8 +96,11 @@ def para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, path='
         return value
 
 
-# todo: find a parallel_over_sum!!! use this as a test suite
-# todo: intensive test needed to be done after lunch
-# todo: para_fun(job_fun, *kwarg): use *kwarg to pass parameters to job_func
+# tododone: find a parallel_over_sum!!! use this as a test suite
+# tododone: intensive test needed to be done after lunch
+# tododone: para_fun(job_fun, *kwarg): use *kwarg to pass parameters to job_func
+# TODO: test parallel efficiency for interpolation!!
+#  the worst part of parallel is from 321-333 lines EX_PH_scat.py,
+#  which leands to a non-Linear parallel, since use interpolation for many times.
 if __name__ == "__main__":
-    res_para = para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, path='../')
+    res_para = para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=128, path='../')
