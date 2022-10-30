@@ -7,9 +7,11 @@ from Common.common import move_k_back_to_BZ_1
 from Common.h5_status import check_h5_tree
 import h5py as h5
 from Common.progress import ProgressBar
+from ELPH.EX_PH_inteqp import kgrid_inteqp_complete,dispersion_inteqp_complete
+from Common.inteqp import interqp_2D
 
-
-
+# (1) gqQ --> gqQ for given q,Q,m,n,v
+# (2) gqQ_inteqp_q  --> gqQ for given Q,m,n,v (interpolate to a fine q-grid given n,m,v,Q)
 
 #def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk(), kmap=read_kmap(), kmap_dic=construct_kmap(), bandmap_occ=read_bandmap(),muteProgress=False):
 def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
@@ -292,6 +294,110 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
         res = res + first_res + second_res
     return res * 10**(-3) # meV to eV
 
+def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,
+        acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,muteProgress=True,
+        path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
+    """
+    !!! parallel is not added !!!
+    This function construct gnmv(Q,q)
+    :param n_ex_acv: index of initial exciton state
+    :param m_ex_acv: index of final exciton state
+    :param v_ph_gkk: index of phonon mode
+    :param Q_kmap: exciton momentum in kmap
+    :param q_kmap: phonon momentumB in kmap
+    :param acvmat: acv matrix (do not read it every time): False -> no input, read it
+    :param gkkmat: gkk matrix (do not read it every time):  False -> no input, read it
+    :param kmap: kmap matrix (do not read it every time) -> kmap.shape = (kx,ky,kz,Q, k_acv, q, k_gkk):  False -> no input, read it
+    :param kmap_dic: kmap dictionary -> kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}:  False -> no input, read it
+    :param bandmap_occ: [bandmap_matrix, occ]:  False -> no input, read it
+    :param path: path of *h5 and *dat
+    :param k_map_start_para: the start index of k_map (default: 0)
+    :param k_map_end_para= the end index of k_map (default: kmap.shape[0])
+    :param muteProgress determine if enable progress report
+    :return: |gqQ| interpoated by q: interpo_size * interpo_size
+    """
+    # Q_kmap_star = 0 # exciton start momentum Q (index)
+    # n_ex_acv = 0 # exciton start quantum state S_i (index): we only allow you to set one single state right now
+    # m_ex_acv = 1 # exciton final quantum state S_f (index)
+    # v_ph_gkk = 3 # phonon mode (index)
+    # mute = True
+    # interpo_size = 4
+
+    # outfilename = "exciton_phonon_mat_inteqp.dat"
+    interpo_size = interpo_size + 1
+
+    if acvmat is None:
+        acvmat = read_Acv(path=path)
+    if gkkmat is None:
+        gkkmat = read_gkk(path=path)
+    if kmap is None:
+        kmap = read_kmap(path=path)
+    if kmap_dic is None:
+        kmap_dic = construct_kmap(path=path)
+    if bandmap_occ is None:
+        bandmap_occ = read_bandmap(path=path)
+
+
+    progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)
+    res = np.zeros((kmap.shape[0],4))
+
+    # loop over k_kmap
+    for q_kmap in range(kmap.shape[0]):
+        if not muteProgress:
+            progress.current += 1
+            progress()
+        if new_q_out:
+            res[q_kmap,:3] = kmap[q_kmap,:3]
+        res[q_kmap,3] = np.abs(gqQ(n_ex_acv_index=n_ex_acv_index,
+                                   m_ex_acv_index=m_ex_acv_index,
+                                   v_ph_gkk=v_ph_gkk,Q_kmap=Q_kmap,
+                                   q_kmap=q_kmap,
+                                   acvmat=acvmat,
+                                   gkkmat=gkkmat,
+                                   kmap=kmap,
+                                   kmap_dic=kmap_dic,
+                                   bandmap_occ=bandmap_occ,
+                                   muteProgress=True
+                                   ))
+
+    # interpolation for q-grid
+    qxx_new = "None"
+    qyy_new = "None"
+    if new_q_out:
+        qxx = res[:,0].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qx
+        qyy = res[:,1].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qy
+        # qzz = res[:,2].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qz
+#================================================
+        #boundary condition
+        qxx_temp = kgrid_inteqp_complete(qxx)
+        qyy_temp = kgrid_inteqp_complete(qyy)
+# ----------------------------------------------
+        qxx_new = interqp_2D(qxx_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+        qyy_new = interqp_2D(qyy_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+        # qzz_new = interqp_2D(qzz, interpo_size=interpo_size)
+
+    # interpolation for result
+    resres = res[:,3].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #res
+# ================================================
+    # boundary condition
+    resres_temp = dispersion_inteqp_complete(resres)
+# ------------------------------------------------
+    resres_new = interqp_2D(resres_temp,interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+
+    if new_q_out:
+        # if qxx_new == "None" or qyy_new == "None":
+        #     raise Exception("qxx_new == None or qyy_new == None")
+        return [qxx_new, qyy_new, resres_new]
+    else:
+        return resres_new # interpolate_size * interpolate_size
+
+
+    # np.savetxt('qxx_new.dat',qxx_new[:,0])
+    # np.savetxt('qyy_new.dat',qyy_new[0,:])
+
+# (2) tododone: inteqp for phonon dispersion omega(q)
+
 if __name__ == "__main__":
     # gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk())
     res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../')
+    # res = gqQ_inteqp_q(path='../')

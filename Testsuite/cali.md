@@ -6,6 +6,8 @@ res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,pa
 
 newest!! res = [0.0159358508119-0.000852284450595j]
 
+4 4 1
+[(-0.00029862310477371133-0.00022746828154937592j)]
 
 2. EX_PH_cat (w/o normalization):
 

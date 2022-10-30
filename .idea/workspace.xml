@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="interpolation parallel for scattering rate calculations:&#10;&#10;todo (1) improve parallel efficiency for scattering rate">
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="save">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Common/band_check.py" beforeDir="false" afterPath="$PROJECT_DIR$/Common/band_check.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Common/distribution.py" beforeDir="false" afterPath="$PROJECT_DIR$/Common/distribution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Deprecated/EX_PH_scat_inteqp.py" beforeDir="false" afterPath="$PROJECT_DIR$/Deprecated/EX_PH_scat_inteqp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_inteqp.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_inteqp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_mat.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_scat.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Testsuite/cali.md" beforeDir="false" afterPath="$PROJECT_DIR$/Testsuite/cali.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -50,14 +46,29 @@
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.EX_PH_scat">
+  <component name="RunManager" selected="Python.Para_EX_PH_scat">
+    <configuration name="EX_PH_inteqp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code_exph" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ELPH" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ELPH/EX_PH_inteqp.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="EX_PH_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ELPH" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -76,9 +87,6 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ELPH" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -97,9 +105,6 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -118,9 +123,6 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -135,34 +137,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code_exph" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Para_EX_PH_scat" />
+        <item itemvalue="Python.Para_EX_PH_mat" />
         <item itemvalue="Python.EX_PH_scat" />
         <item itemvalue="Python.EX_PH_mat" />
-        <item itemvalue="Python.main" />
-        <item itemvalue="Python.Para_EX_PH_mat" />
-        <item itemvalue="Python.Para_EX_PH_scat" />
+        <item itemvalue="Python.EX_PH_inteqp" />
       </list>
     </recent_temporary>
   </component>
