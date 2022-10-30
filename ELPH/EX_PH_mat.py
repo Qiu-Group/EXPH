@@ -12,7 +12,11 @@ from Common.inteqp import interqp_2D
 # from ELPH.EX_PH_mat import gqQ
 
 # (1) gqQ --> gqQ for given q,Q,m,n,v
-# (2) gqQ_inteqp_q  --> gqQ for given Q,m,n,v (interpolate to a fine q-grid given n,m,v,Q)
+# (2) gqQ_inteqp_q_low_parallel_effieciency  --> gqQ for given Q,m,n,v (interpolate to a fine q-grid given n,m,v,Q); low parallel efficiency
+# (3) gqQ_inteqp_get_coarse_grid --> job function of parallel, which could calculate gqQ for each q-grid for given Q,m,n,v , which is the slowest part of Scat calculation
+# (4) gqQ_inteqp_q --> series: do interpolation for gqQ for given Q,m,n,v
+# note: (2) = (3) + (4)
+
 
 #def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk(), kmap=read_kmap(), kmap_dic=construct_kmap(), bandmap_occ=read_bandmap(),muteProgress=False):
 def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
@@ -295,7 +299,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
         res = res + first_res + second_res
     return res * 10**(-3) # meV to eV
 
-def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,
+def gqQ_inteqp_q_low_parallel_effieciency(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,
         acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,muteProgress=True,
         path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
@@ -478,7 +482,7 @@ def gqQ_inteqp_get_coarse_grid(n_ex_acv_index=2, m_ex_acv_index=0, v_ph_gkk=3, Q
     return res, new_q_out
 
 
-def gqQ_inteqp_q(res, new_q_out=False, interpo_size=12, kmap=None, path='./'):
+def gqQ_inteqp_q_series(res, new_q_out=False, interpo_size=12, kmap=None, path='./'):
     """
     :param res:
         !! res = np.zeros((kmap.shape[0],4)), which is from output of gqQ_inteqp_get_coarse_grid
@@ -537,10 +541,10 @@ if __name__ == "__main__":
     # res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../')
     # res = gqQ_inteqp_q(path='../', new_q_out=True)
     # gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk())
-    # res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../')
+    res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../')
 
-    res0, new_q_out = gqQ_inteqp_get_coarse_grid(path='../',new_q_out=False) # res is result from each process!
-    # gather all result |
-    #                   |
-    #                   \/
-    res = gqQ_inteqp_q(res=res0, new_q_out=new_q_out, path='../')
+    # res0, new_q_out = gqQ_inteqp_get_coarse_grid(path='../',new_q_out=False) # res is result from each process!
+    # # gather all result |
+    # #                   |
+    # #                   \/
+    # res = gqQ_inteqp_q_series(res=res0, new_q_out=new_q_out, path='../')

@@ -1,4 +1,3 @@
-from ELPH.EX_PH_scat import Gamma_scat_low_efficiency_inteqp
 import numpy as np
 from Common.distribution import BE, FD, Dirac_1, Dirac_2
 from IO.IO_gkk import read_omega, read_gkk
@@ -13,101 +12,18 @@ from mpi4py import MPI
 from ELPH.EX_PH_mat import gqQ_inteqp_get_coarse_grid, gqQ_inteqp_q_series
 from Parallel.Para_common import before_parallel_job, after_parallel_sum_job
 
-# (1) para_Gamma_scat_low_efficiency_inteqp: it could calculate Gamma scat, but efficiency is pretty low! It is not good for parallel
+# Q_kmap=6
+# n_ext_acv_index=0
+# T=100
+# degaussian=0.001
+# interposize=4
+# interpolation_check_res = None
+# muteProgress=False
+# path='./'
+# q_map_start_para='nopara'
+# q_map_end_para='nopara'
 
-# --> (2) para_Gamma_scat_inteqp: it is used for parallel!
-
-
-
-def para_Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001 , interposize=4, path='./'):
-    # input===================
-    # Q_kmap=15
-    # n_ext_acv_index=2
-    # T=100
-    # degaussian=0.001
-    # path='../'
-
-
-    # ===================initialization=====================
-    # 1.0 initialization:
-    # (1) create comm
-    # (2) set plan_list as None for every one
-    # (3) load data for every proc tododone: summarize to a template or function
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    size = comm.Get_size()
-    plan_list = None
-
-    # workload_over_qmap = len(read_kmap(path=path))
-    workload_over_qQmap = interposize**2
-
-    # 2.0 Plan before calculation
-    plan_list, start_time, start_time_proc = before_parallel_job(rk=rank, size=size, workload_para=workload_over_qQmap)
-    # (b) distribute plan
-    plan_list = comm.scatter(plan_list, root=0)
-    print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1]-plan_list[0])
-
-    # ======================calculation=====================
-    # 3.0 calculation
-    # (a) each proc is doing job!
-    # (b) progress
-    # print(type(plan_list[0]))
-    # print(plan_list)
-    # print(plan_list[0],plan_list[-1])
-    # [res_first_each_proc, res_second_each_proc, factor_first_each_proc, factor_second_each_proc]= Gamma_scat(Q_kmap=Q_kmap,
-    #                            n_ext_acv_index=n_ext_acv_index,
-    #                            T=T,
-    #                            degaussian=degaussian,
-    #                            muteProgress=True,
-    #                            path=path,
-    #                            q_map_start_para=plan_list[0],
-    #                            q_map_end_para=plan_list[-1])
-
-    #Warning: since we need to add all normalization after finishing all loops, so here we need pass them separately, and assemble them together after finishi all
-    res_each_proc = Gamma_scat_low_efficiency_inteqp(Q_kmap=Q_kmap,
-                               n_ext_acv_index=n_ext_acv_index,
-                               T=T,
-                               degaussian=degaussian,
-                               interposize=interposize,
-                               muteProgress=True,
-                               path=path,
-                               q_map_start_para=plan_list[0],
-                               q_map_end_para=plan_list[-1])
-    print(res_each_proc)
-    # res_first_rcev_to_0 = comm.gather(res_first_each_proc, root=0)
-    # res_second_rcev_to_0 = comm.gather(res_second_each_proc, root=0)
-    # factor_first_rcev_to_0 = comm.gather(factor_first_each_proc, root=0)
-    # factor_second_rcev_to_0 = comm.gather(factor_second_each_proc, root=0)
-    res_rcev_to_0 = comm.gather(res_each_proc, root=0)
-
-    # ======================collection=====================
-    # value_first = after_parallel_sum_job(rk=rank, size=size, receive_res=res_first_rcev_to_0 , start_time=start_time,
-    #                            start_time_proc=start_time_proc,mute=True)
-    # value_second = after_parallel_sum_job(rk=rank, size=size, receive_res=res_second_rcev_to_0 , start_time=start_time,
-    #                            start_time_proc=start_time_proc,mute=True)
-    # factor_first = after_parallel_sum_job(rk=rank, size=size, receive_res=factor_first_rcev_to_0 , start_time=start_time,
-    #                            start_time_proc=start_time_proc,mute=True)
-    # factor_second = after_parallel_sum_job(rk=rank, size=size, receive_res=factor_second_rcev_to_0 , start_time=start_time,
-    #                            start_time_proc=start_time_proc,mute=True)
-    value = after_parallel_sum_job(rk=rank, size=size, receive_res=res_rcev_to_0 , start_time=start_time,
-                               start_time_proc=start_time_proc,mute=False)
-    if rank==0:
-        # print('===================================')
-        # print('process= %d is summarizing ' % rank)
-        # value = value_first/factor_first + value_second/factor_second
-        # # value =value_first + value_second
-        # print("res is", value)
-        # end_time = time.time()
-        # end_time_proc = process_time()
-        # print("the wall time is: %.3f s" % (end_time - start_time))
-        # print("the proc time is: %.3f s" % (end_time_proc - start_time_proc))
-        # print('===================================')
-        # print('hello')
-
-        return value
-
-
-def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=4, interpolation_check_res = None,
+def Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=4, interpolation_check_res = None,
                muteProgress=True, path='./'):
     """
     !!! this is not a job parallel function in reality, but this is good enough for test!!!
@@ -370,14 +286,8 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 #==============================================================================================================>>>>>>>
 
 
-
-# tododone: find a parallel_over_sum!!! use this as a test suite
-# tododone: intensive test needed to be done after lunch
-# tododone: para_fun(job_fun, *kwarg): use *kwarg to pass parameters to job_func
-# TODO: test parallel efficiency for interpolation!!
-#  the worst part of parallel is from 321-333 lines EX_PH_scat.py,
-#  which leands to a non-Linear parallel, since use interpolation for many times.
 if __name__ == "__main__":
-    # res_para = para_Gamma_scat_low_efficiency(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=4, path='../')
-    res = para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2, T=100, degaussian=0.001,path='../',interposize=12)
+    # res0= Gamma_scat_for_test(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
+    # res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
+    res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2, T=100, degaussian=0.001, path='../', interposize=4)
     pass

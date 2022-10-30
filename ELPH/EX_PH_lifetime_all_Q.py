@@ -1,4 +1,4 @@
-from ELPH.EX_PH_scat import Gamma_scat
+from ELPH.EX_PH_scat import Gamma_scat_test_nointeqp
 import numpy as np
 from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy
@@ -65,7 +65,7 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001,
 
 
         res[Q_kmap,:3] = frac2carte(bvec,kmap[Q_kmap, 0:3]) # give out bohr lattice in reciprocal space
-        res[Q_kmap, 3] = 1/Gamma_scat(Q_kmap=Q_kmap, n_ext_acv_index=n_ext_acv_index, T=T, degaussian=degaussian,muteProgress=mute,path=path)
+        res[Q_kmap, 3] = 1/Gamma_scat_test_nointeqp(Q_kmap=Q_kmap, n_ext_acv_index=n_ext_acv_index, T=T, degaussian=degaussian,muteProgress=mute,path=path)
 
         # save temp file
         # if Q_kmap == 0:

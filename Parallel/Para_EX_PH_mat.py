@@ -128,8 +128,8 @@ def para_gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11
     if rank==0:
         return value
 
-# todo: find a parallel_over_sum!!! use this as a testsuite
-# todo: intensive test needed to be done after lunch
-# todo: para_fun(job_fun, *kwarg): use *kwarg to pass parameters to job_func
+# tododone: find a parallel_over_sum!!! use this as a testsuite
+# tododone: intensive test needed to be done after lunch
+# tododone: para_fun(job_fun, *kwarg): use *kwarg to pass parameters to job_func
 if __name__ == "__main__":
     res_para = para_gqQ(path='../')
