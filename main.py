@@ -34,6 +34,7 @@ if __name__ == "__main__":
     band_summary()
     # ==========================================================
 
+
     # 3.0 g(Q,q) construction
     # gqQ_res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11)
     # gamma_res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='./')
