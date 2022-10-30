@@ -103,4 +103,4 @@ def para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001 , inter
 #  the worst part of parallel is from 321-333 lines EX_PH_scat.py,
 #  which leands to a non-Linear parallel, since use interpolation for many times.
 if __name__ == "__main__":
-    res_para = para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=128, path='../')
+    res_para = para_Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=12, path='../')

@@ -2,7 +2,7 @@ import numpy as np
 # todo: check if nmode should be 1 for BE and FD
 
 # def BE(omega, T, mode_num=1):
-#     # todo: check this!!! u should be 0, but some times, it goes diverence when omega = 0
+#     # tododone: check this!!! u should be 0, but some times, it goes diverence when omega = 0
 #     u = -0.1
 #     K_B = 8.617343e-05  ### Dimension: eV/K
 #     with np.errstate(divide='ignore'):
