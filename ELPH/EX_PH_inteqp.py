@@ -171,14 +171,14 @@ def dispersion_inteqp_complete(dispersion_2D):
 
 if __name__ =="__main__":
     # res = gqQ_inteqp_q(path='../',new_q_out=True,interpo_size=24)
-    res = omega_inteqp_q(interpo_size=160,new_q_out=True, path='../')
-    # res = OMEGA_inteqp_Q(interpo_size=160,path='../',new_Q_out=True)
+    # res = omega_inteqp_q(interpo_size=160,new_q_out=True, path='../')
+    res = OMEGA_inteqp_Q(interpo_size=4,path='../',new_Q_out=True)
 
 
     grid = np.array([res[0].flatten(), res[1].flatten()]).T
     # print('is double count:',isDoubleCountK(grid))
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-    surf = ax.plot_surface(res[0], res[1], res[2][2], cmap=cm.cool)
+    surf = ax.plot_surface(res[0], res[1], res[2][0], cmap=cm.cool)
     plt.show()
 
     # res = interpolation_check_for_Gamma_calculation(interpo_size=4,path='../')

@@ -23,7 +23,7 @@ import time
 # (3) interpolation_check_for_Gamma_calculation(interpo_size, path='./') --> run it before scattering calculation
 
 #==============================================================================================================>>>>>>>
-def Gamma_scat_for_test(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
+def Gamma_scat_test_nointeqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
                muteProgress=False, path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
     !!! parallel over q_kmap !!!
@@ -219,8 +219,8 @@ def Gamma_scat_for_test(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
 def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=4, interpolation_check_res = None,
                muteProgress=False, path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
-    !!! parallel over q_kmap !!!
-    !!! PARALLEL OVER q_KMAP !!!
+    !!! this is not a job parallel function in reality, but this is good enough for test!!!
+    !!! this is a low-effienciency job parallel function!!!
     :param interposize: interpo_size
     :param int_che_res: if None: grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA will be read by this function
                         else: these parameters wiil be pass by outer loop! (lifetime)
@@ -322,7 +322,10 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
             # get gqQ_inteqp before loop of q
             # Therefore, no q_kmap needed in this equation!!!
             # TODO: parallel over this!!!! write a function: para_gqQ_inteqp_()!!
-            # TODO: this step takes longest time!!!
+            # TODO: this step takes the longest time!!!
+            #  replace this with new gqQ_inteqp_q, which can realize parallel, it seems Gamma_Scat can only be a series function since it can not achieve
+            #  for this part: see EX_PH_mat_para_inteqp.py 150-154 lines
+            # we need to define another Gamma_scat_inteqp_q in parallel
             gqQ_sq_inteqp_temp = np.abs(gqQ_inteqp_q(n_ex_acv_index=n_ext_acv_index,
                                               m_ex_acv_index=m_ext_acv_index_loop,
                                               v_ph_gkk=v_ph_gkk_index_loop,
@@ -432,6 +435,9 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
                 # print("dirac energy",OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp)
                 # print("\n")
     # TODO: Discuss with Diana!!!
+
+    # print(Gamma_first_res)
+    # print(Gamma_second_res)
 
     if status_for_para == 'nopara':
         return Gamma_first_res + Gamma_second_res
