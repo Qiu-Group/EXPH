@@ -4,7 +4,7 @@ from Common.h5_status import check_h5_tree
 from Common.kgrid_check import k_grid_summary
 from Common.band_check import band_summary
 from ELPH.EX_PH_mat import gqQ
-from ELPH.EX_PH_scat import Gamma_scat
+from ELPH.EX_PH_scat import Gamma_scat_test_nointeqp
 from ELPH.EX_PH_lifetime_all_Q import Exciton_Life
 from Common.common import frac2carte
 import numpy as np
@@ -14,9 +14,9 @@ if __name__ == "__main__":
     # todo: 0.0 find a way to get all of this
     # 0.0 setting:
     #==========================================================
-    save_path = './save_441/'
+    save_path = './save/'
     h5_path = './'
-    [nQ, nq, nk, nmode, ni, nj] = [144, 16, 144, 9, 4, 4]
+    [nQ, nq, nk, nmode, ni, nj] = [144, 144, 144, 9, 4, 4]
     # ==========================================================
 
 

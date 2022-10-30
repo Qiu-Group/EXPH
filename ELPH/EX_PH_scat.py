@@ -3,7 +3,7 @@ from Common.distribution import BE, FD, Dirac_1, Dirac_2
 from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy
 from IO.IO_common import read_bandmap, read_kmap, construct_kmap
-from ELPH.EX_PH_mat import gqQ, gqQ_inteqp_q
+from ELPH.EX_PH_mat import gqQ, gqQ_inteqp_q_series, gqQ_inteqp_get_coarse_grid, gqQ_inteqp_q_low_parallel_effieciency
 from Common.progress import ProgressBar
 from Common.common import move_k_back_to_BZ_1, equivalence_order
 from ELPH.EX_PH_inteqp import omega_inteqp_q,OMEGA_inteqp_Q
@@ -18,8 +18,8 @@ import time
 # gqQ(n_ex_acv_index, m_ex_acv_index, v_ph_gkk, Q_kmap, q_kmap,
 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
 
-# (1) Gamma_scat_for_test --> no interpoaltion
-# (2) Gamma_scat --> w/ interpolation
+# (1) Gamma_scat_test_nointeqp --> no interpoaltion
+# (2) Gamma_scat_low_efficiency --> w/ interpolation and it is a parallel job function (do not use it!), but this is good for series. For para_Gamma_inteqp: see Para_EX_PH_scat
 # (3) interpolation_check_for_Gamma_calculation(interpo_size, path='./') --> run it before scattering calculation
 
 #==============================================================================================================>>>>>>>
@@ -216,7 +216,7 @@ def Gamma_scat_test_nointeqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001
 
 
 #==============================================================================================================>>>>>>>
-def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=4, interpolation_check_res = None,
+def Gamma_scat_low_efficiency_inteqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=4, interpolation_check_res = None,
                muteProgress=False, path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
     !!! this is not a job parallel function in reality, but this is good enough for test!!!
@@ -235,6 +235,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
         # this will take longer life, so when calculating lifetime, please pass int_check_result to this function out of Q loop
         # (parameters below is noe depending on specific Q point)
         # interposize is from reading parameter
+        # print(interposize)
         [grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA] = interpolation_check_for_Gamma_calculation(interpo_size=interposize,path=path,mute=muteProgress)
     else:
         # this function get parameter outside
@@ -326,7 +327,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
             #  replace this with new gqQ_inteqp_q, which can realize parallel, it seems Gamma_Scat can only be a series function since it can not achieve
             #  for this part: see EX_PH_mat_para_inteqp.py 150-154 lines
             # we need to define another Gamma_scat_inteqp_q in parallel
-            gqQ_sq_inteqp_temp = np.abs(gqQ_inteqp_q(n_ex_acv_index=n_ext_acv_index,
+            gqQ_sq_inteqp_temp = np.abs(gqQ_inteqp_q_low_parallel_effieciency(n_ex_acv_index=n_ext_acv_index,
                                               m_ex_acv_index=m_ext_acv_index_loop,
                                               v_ph_gkk=v_ph_gkk_index_loop,
                                               Q_kmap=Q_kmap, #!!! this Q_kmap from function parameter
@@ -466,11 +467,14 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
     n_co = int(np.sqrt(kmap.shape[0]))
     n_fi = interpo_size
     if (n_fi ) % (n_co ) != 0:
+        # print("n_fi:",n_fi)
+        # print('n_co:',n_co)
         raise Exception("Only support integer multiple interpolation: k-grid after interpolation should cover k-grid before interpolation (e.g.: (4,4,1) --10--> (32, 32, 1))")
     else:
         if not mute:
             print("[interpolation size]: check")
-    res_gqQ = gqQ_inteqp_q(interpo_size=interpo_size,path=path,new_q_out=True)
+    res0, new_q_out = gqQ_inteqp_get_coarse_grid(path='../', new_q_out=True)
+    res_gqQ = gqQ_inteqp_q_series(res=res0,interpo_size=interpo_size,path=path,new_q_out=new_q_out)
     res_omega = omega_inteqp_q(interpo_size=interpo_size, path=path,new_q_out=True)
     res_OMEGA = OMEGA_inteqp_Q(interpo_size=interpo_size,path=path,new_Q_out=True)
     grid_q_gqQ = np.array([res_gqQ[0].flatten(), res_gqQ[1].flatten()]).T
@@ -508,8 +512,8 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
 
 
 if __name__ == "__main__":
-    # res0= Gamma_scat_for_test(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
-    res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
+    # res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
+    res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=12,path='../')
     # res = interpolation_check_for_Gamma_calculation(path='../')
 
 
