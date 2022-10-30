@@ -3,10 +3,11 @@ from Common.distribution import BE, FD, Dirac_1, Dirac_2
 from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy
 from IO.IO_common import read_bandmap, read_kmap, construct_kmap
-from ELPH.EX_PH_mat import gqQ
+from ELPH.EX_PH_mat import gqQ, gqQ_inteqp_q
 from Common.progress import ProgressBar
-from Common.common import move_k_back_to_BZ_1
-from ELPH.EX_PH_inteqp import interpolation_check_for_Gamma_calculation, gqQ_inteqp_q
+from Common.common import move_k_back_to_BZ_1, equivalence_order
+from ELPH.EX_PH_inteqp import omega_inteqp_q,OMEGA_inteqp_Q
+
 
 import time
 # calculate the scattering rate
@@ -17,7 +18,9 @@ import time
 # gqQ(n_ex_acv_index, m_ex_acv_index, v_ph_gkk, Q_kmap, q_kmap,
 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
 
-
+# (1) Gamma_scat_for_test --> no interpoaltion
+# (2) Gamma_scat --> w/ interpolation
+# (3) interpolation_check_for_Gamma_calculation(interpo_size, path='./') --> run it before scattering calculation
 
 #==============================================================================================================>>>>>>>
 def Gamma_scat_for_test(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
@@ -437,13 +440,71 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
 
 #==============================================================================================================>>>>>>>
 
+def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=False):
+    """
+    WARNING: we only support integer multiple interpolation: k-grid after interpolation could cover k-grid before interpolation
+    WARNING: interpolation following such rule (only for 2D):
+        coarse gird: n_co * n_co * 1
+        fine   grid: n_fi * n_fi * 1 (n_fi = interpo_size)
+        n_fi = (n_co - 1) * m + 1, where m is the multiple of coarse grid
+    Run this before interpolate any interpolation for Gamma
+    :param interpo_size: ..
+    :param path: 'kkqQmap.dat', 'Acv.h5', 'gkk.h5'
+    :return:
+     (0) interpolated q/Q-grid
+     (1) Qq_dic: Qq_DIC = {'  %.5f    %.5f    %.5f' : Qq_fine}, where Qq_fine is index of interpolated index in gqQ_interpolated(q), omega(q) and OMEGA(Q)
+     (2) interpolated phonon frequency
+     (3) interpolated exciton frequency
+    """
+    kmap = read_kmap(path=path)
+    n_co = int(np.sqrt(kmap.shape[0]))
+    n_fi = interpo_size
+    if (n_fi ) % (n_co ) != 0:
+        raise Exception("Only support integer multiple interpolation: k-grid after interpolation should cover k-grid before interpolation (e.g.: (4,4,1) --10--> (32, 32, 1))")
+    else:
+        if not mute:
+            print("[interpolation size]: check")
+    res_gqQ = gqQ_inteqp_q(interpo_size=interpo_size,path=path,new_q_out=True)
+    res_omega = omega_inteqp_q(interpo_size=interpo_size, path=path,new_q_out=True)
+    res_OMEGA = OMEGA_inteqp_Q(interpo_size=interpo_size,path=path,new_Q_out=True)
+    grid_q_gqQ = np.array([res_gqQ[0].flatten(), res_gqQ[1].flatten()]).T
+    grid_q_omega = np.array([res_omega[0].flatten(), res_omega[1].flatten()]).T
+    grid_q_OMEGA = np.array([res_OMEGA[0].flatten(), res_OMEGA[1].flatten()]).T
+    # print("A-E-B?", equivalence_no_order(grid_q_gqQ, grid_q_omega))
+    non_equal_count = 0
+    # if grid_q_gqQ.shape != res_omega[2].flatten().shape:
+    #     non_equal_count += 1
+    if not equivalence_order(grid_q_gqQ, grid_q_omega):
+        non_equal_count += 1
+    if not equivalence_order(grid_q_gqQ, grid_q_OMEGA):
+        non_equal_count += 1
+    if not equivalence_order(grid_q_omega, grid_q_OMEGA):
+        non_equal_count += 1
+    if non_equal_count == 0:
+        if not mute:
+            print("[qQ-grid (interpolated) check]: pass")
+            print("interpolated qQ-grid of (%s, %s, 1) are in the same order!"%(interpo_size, interpo_size))
+        grid_q_gqQ_res = np.vstack( (grid_q_gqQ.T,np.zeros((grid_q_gqQ.shape[0])).T)).T
 
+        Qq_dic = {}
+        for i in range(grid_q_gqQ_res.shape[0]):
+            Qq_dic['  %.5f    %.5f    %.5f' % (grid_q_gqQ_res[i, 0:3][0], grid_q_gqQ_res[i, 0:3][1], grid_q_gqQ_res[i, 0:3][2])] = i
+
+        return [grid_q_gqQ_res, Qq_dic, res_omega[2], res_OMEGA[2]]
+    else:
+        raise Exception("[qQ-grid (interpolated) check]: failed")
+
+#tododone: suggestion function for interpolation size
+# rewrite Gamma Calculation, write document for kmap, k_dic, Qq_dic
+
+# def Qpoints_2_Qfi_dic_generate(Q_grid, q_grid):
+#     pass
 
 
 if __name__ == "__main__":
     # res0= Gamma_scat_for_test(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
-    res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=12,path='../')
-
+    res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
+    # res = interpolation_check_for_Gamma_calculation(path='../')
 
 
 
