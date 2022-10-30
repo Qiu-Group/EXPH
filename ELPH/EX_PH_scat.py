@@ -473,7 +473,7 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
     else:
         if not mute:
             print("[interpolation size]: check")
-    res0, new_q_out = gqQ_inteqp_get_coarse_grid(path='../', new_q_out=True)
+    res0, new_q_out = gqQ_inteqp_get_coarse_grid(path=path, new_q_out=True)
     res_gqQ = gqQ_inteqp_q_series(res=res0,interpo_size=interpo_size,path=path,new_q_out=new_q_out)
     res_omega = omega_inteqp_q(interpo_size=interpo_size, path=path,new_q_out=True)
     res_OMEGA = OMEGA_inteqp_Q(interpo_size=interpo_size,path=path,new_Q_out=True)
