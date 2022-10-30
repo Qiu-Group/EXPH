@@ -16,8 +16,8 @@ import time
 # gqQ(n_ex_acv_index, m_ex_acv_index, v_ph_gkk, Q_kmap, q_kmap,
 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
 
-#todo: merge this Gamma_scat with EX_PH_scat.Gamma_scat
-#todo: test parallel
+#tododone: merge this Gamma_scat with EX_PH_scat.Gamma_scat
+#tododone: test parallel
 
 #==============================================================================================================>>>>>>>
 def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=4, interpolation_check_res = None,
@@ -104,7 +104,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
     dirac_normalize_factor_second = 0.0
 
     #=============================
-    # todo: double check if this is right (parallel unit):
+    # tododone: double check if this is right (parallel unit):
     if q_map_start_para == 'nopara' and q_map_end_para == 'nopara':
         status_for_para = 'nopara'
         q_map_start_para = 0
@@ -233,7 +233,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
                 # print("DIrac:", Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian))
                 # print("dirac energy",OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp)
                 # print("\n")
-    # TODO: Discuss with Diana!!!
+    # TODOdone: Discuss with Diana!!!
 
     if status_for_para == 'nopara':
         return Gamma_first_res + Gamma_second_res

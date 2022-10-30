@@ -76,7 +76,7 @@ def Gamma_scat_for_test(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
     dirac_normalize_factor_second = 0.0
 
     #=============================
-    # todo: double check if this is right (parallel unit):
+    # tododone: double check if this is right (parallel unit):
     if q_map_start_para == 'nopara' and q_map_end_para == 'nopara':
         status_for_para = 'nopara'
         q_map_start_para = 0
@@ -143,7 +143,7 @@ def Gamma_scat_for_test(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
                 # exciton_energy.shape = (nQ, nS)
                 # OMEGA_xx has included h_bar
 
-                # todo Check this !!!
+                # tododone Check this !!!
                 omega_v_q_temp     = omega_mat[int(q_gkk_index),int(v_ph_gkk_index_loop)] * 10 ** (-3) # dimension [eV]
                 OMEGA_m_Q_plus_q_temp = exciton_energy[int(Qpr_as_Q_plus_q_acv_index), int(m_ext_acv_index_loop)] # dimension [eV]
                 OMEGA_n_Q_temp        = exciton_energy[int(Q_acv_index),               int(m_ext_acv_index_loop)] # dimension [eV]
@@ -190,7 +190,7 @@ def Gamma_scat_for_test(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001,
     # IF this is a series test:
     # print(status_for_para)
 
-    # TODO: Discuss with Diana!!!
+    # TODOdone: Discuss with Diana!!!
 
     if status_for_para == 'nopara':
         # return Gamma_first_res / dirac_normalize_factor_first + Gamma_second_res / dirac_normalize_factor_second
@@ -297,7 +297,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
     dirac_normalize_factor_second = 0.0
 
     #=============================
-    # todo: double check if this is right (parallel unit):
+    # tododone: double check if this is right (parallel unit):
     if q_map_start_para == 'nopara' and q_map_end_para == 'nopara':
         status_for_para = 'nopara'
         q_map_start_para = 0
@@ -318,6 +318,8 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
 
             # get gqQ_inteqp before loop of q
             # Therefore, no q_kmap needed in this equation!!!
+            # TODO: parallel over this!!!! write a function: para_gqQ_inteqp_()!!
+            # TODO: this step takes longest time!!!
             gqQ_sq_inteqp_temp = np.abs(gqQ_inteqp_q(n_ex_acv_index=n_ext_acv_index,
                                               m_ex_acv_index=m_ext_acv_index_loop,
                                               v_ph_gkk=v_ph_gkk_index_loop,
@@ -440,7 +442,7 @@ def Gamma_scat(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001, interposize=
 
 if __name__ == "__main__":
     # res0= Gamma_scat_for_test(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
-    res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=144,path='../')
+    res = Gamma_scat(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=12,path='../')
 
 
 

@@ -14,6 +14,8 @@ Exciton-Phonon Interaction
 
 (3) Parallel is available!!
 
+(4) Interpolation is available for exciton scattering rate calculations (parallel is working!)
+
 Parallel Efficiency of EX_PH_scat.py (Calculate Scattering Rate of Exciton State over 1st BZ):
 
 (a) Test on PC Windows

@@ -75,8 +75,16 @@ def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, inter
             progress()
         if new_q_out:
             res[q_kmap,:3] = kmap[q_kmap,:3]
-        res[q_kmap,3] = np.abs(gqQ(n_ex_acv_index=n_ex_acv_index, m_ex_acv_index=m_ex_acv_index,v_ph_gkk=v_ph_gkk,Q_kmap=Q_kmap,q_kmap=q_kmap,
-                                    acvmat=acvmat, gkkmat=gkkmat, kmap=kmap, kmap_dic=kmap_dic, bandmap_occ=bandmap_occ, muteProgress=True
+        res[q_kmap,3] = np.abs(gqQ(n_ex_acv_index=n_ex_acv_index,
+                                   m_ex_acv_index=m_ex_acv_index,
+                                   v_ph_gkk=v_ph_gkk,Q_kmap=Q_kmap,
+                                   q_kmap=q_kmap,
+                                   acvmat=acvmat,
+                                   gkkmat=gkkmat,
+                                   kmap=kmap,
+                                   kmap_dic=kmap_dic,
+                                   bandmap_occ=bandmap_occ,
+                                   muteProgress=True
                                    ))
 
     # interpolation for q-grid
@@ -114,7 +122,7 @@ def gqQ_inteqp_q(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, inter
     # np.savetxt('qxx_new.dat',qxx_new[:,0])
     # np.savetxt('qyy_new.dat',qyy_new[0,:])
 
-# (2) todo: inteqp for phonon dispersion omega(q)
+# (2) tododone: inteqp for phonon dispersion omega(q)
 def omega_inteqp_q(interpo_size=12, new_q_out=False,path="./"):
     """
     :param interpo_size: ..
@@ -137,7 +145,7 @@ def omega_inteqp_q(interpo_size=12, new_q_out=False,path="./"):
         # print(j_phonon)
         omega_q_index_list = list(map(int,kmap[:,5])) # kmap[:,5] is for q !!!
         # use array as index can have better efficiency!!
-        # todo: use index to find omega instead of directly using it!!!
+        # tododone: use index to find omega instead of directly using it!!!
         temp_omega = omega_mat[:,j_phonon][np.array(omega_q_index_list)].reshape((int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])))) #qx
         # ================================================
         # boundary condition
@@ -216,7 +224,7 @@ def OMEGA_inteqp_Q(interpo_size=12, new_Q_out=False, path="./"):
 
 # (3) inteqp for exciton dispersion OMEGA(Q)
 
-# TODO: realize Gamma_itneqp!!
+# TODOdone: realize Gamma_itneqp!!
 
 def interpolation_check_for_Gamma_calculation(interpo_size, path='./', mute=False):
     """
@@ -238,7 +246,7 @@ def interpolation_check_for_Gamma_calculation(interpo_size, path='./', mute=Fals
     n_co = int(np.sqrt(kmap.shape[0]))
     n_fi = interpo_size
     if (n_fi ) % (n_co ) != 0:
-        raise Exception("Only support integer multiple interpolation: k-grid after interpolation should cover k-grid before interpolation (e.g.: (4,4,1) --×10--> (32, 32, 1))")
+        raise Exception("Only support integer multiple interpolation: k-grid after interpolation should cover k-grid before interpolation (e.g.: (4,4,1) --10--> (32, 32, 1))")
     else:
         if not mute:
             print("[interpolation size]: check")
@@ -272,14 +280,14 @@ def interpolation_check_for_Gamma_calculation(interpo_size, path='./', mute=Fals
     else:
         raise Exception("[qQ-grid (interpolated) check]: failed")
 
-#todo: suggestion function for interpolation size
+#tododone: suggestion function for interpolation size
 # rewrite Gamma Calculation, write document for kmap, k_dic, Qq_dic
 
 # def Qpoints_2_Qfi_dic_generate(Q_grid, q_grid):
 #     pass
 
 
-# todo: add boundary condition !!
+# tododone: add boundary condition !!
 def kgrid_inteqp_complete(k_grid_2D):
     """
     input should be 2D_array k-grid

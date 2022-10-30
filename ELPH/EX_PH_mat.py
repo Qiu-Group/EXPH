@@ -10,6 +10,7 @@ from Common.progress import ProgressBar
 
 
 
+
 #def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk(), kmap=read_kmap(), kmap_dic=construct_kmap(), bandmap_occ=read_bandmap(),muteProgress=False):
 def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
         acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,
@@ -87,7 +88,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
         return 0
 
     #=============================
-    # todo: double check if this is right:
+    # tododone: double check if this is right:
 
     if k_map_start_para == 'nopara' and k_map_end_para == 'nopara':
         k_map_start_para = 0
@@ -160,7 +161,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
 
                     # 1.0 get the right index for band and k-points in acv and gkk MATRIX
                     # kmap.shape(nk, information=(kx, ky, kz, Q, k_acv, q, k_gkk))
-                    # todo Done: move Q and q out of loop
+                    # tododone Done: move Q and q out of loop
                     # [Q_acv_index, q_gkk_index] = [ kmap[Q_kmap, 3], kmap[q_kmap,5]]
                     # [k_acv_index, k_gkk_index] = [ kmap[k_kmap, 4], kmap[k_kmap, 6]]
                     [v_acv_index, c_acv_index, cpr_acv_index] = [bandmap[v_bandmap,1], bandmap[c_bandmap,1], bandmap[cpr_bandmap,1]]
@@ -170,7 +171,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
 
                     # 2.0 we need to find these new k/q/Q in the 1s BZ:
                     # res1 <- [Q+q, k+Q+q, k+Q]; res2 <- [Q+q, k-q, k+Q]
-                    # todo: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
+                    # tododone: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
                     # kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
                     # kmapout[x] = [Q, k_acv, q, k_gkk]
 
@@ -230,7 +231,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
 
                     # 1.0 get the right index for band and k-points in acv and gkk MATRIX
                     # kmap.shape(nk, information=(kx, ky, kz, Q, k_acv, q, k_gkk))
-                    # todo: move Q and q out of loop
+                    # tododone: move Q and q out of loop
                     # [Q_acv_index, q_gkk_index] = [kmap[Q_kmap, 3], kmap[q_kmap, 5]]
                     # [k_acv_index, k_gkk_index] = [kmap[k_kmap, 4], kmap[k_kmap, 6]]
                     [v_acv_index, c_acv_index, vpr_acv_index] = [bandmap[v_bandmap,1], bandmap[c_bandmap,1], bandmap[vpr_bandmap,1]]
@@ -239,7 +240,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
 
                     # 2.0 we need to find these new k/q/Q in the 1s BZ:
                     # res1 <- [Q+q, k+Q+q, k+Q]; res2 <- [Q+q, k-q, k+Q]
-                    # todo: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
+                    # tododone: actually, we can move Q+q out of this loop, since this is actually a constan for the given Q and q
                     # kmap_dic = {'  %.5f    %.5f    %.5f' : [Q, k_acv, q, k_gkk], ...}
                     # kmapout[x] = [Q, k_acv, q, k_gkk]
                     #==================
