@@ -81,4 +81,4 @@ def para_Exciton_Life_low_efficiency(n_ext_acv_index=0, T=100, degaussian = 0.00
         return value
 
 if __name__ == "__main__":
-    para_Exciton_Life_low_efficiency(path='../',interposize=16)
+    para_Exciton_Life_low_efficiency(path='../',interposize=12)

@@ -46,6 +46,7 @@ Time: 10/10/2022
 
 ![avatar](./fig/para_eff.jpg)
 
+---
 Todo:
 
  (i) check everything of EX_PH_scat and EX_PH_lifetime

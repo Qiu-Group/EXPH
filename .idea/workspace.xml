@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="reconstruct mat.py, scat.py and inteqp.py&#10;&#10;(1) mat.py: add gqQ_inteqp_q&#10;(2) scat.py: add interpolation_check_for_Gamma_calculation&#10;(3) inteqp.py: rm gqQ_inteqp_q; rm interpolation_check_for_Gamma_calculation">
-      <change afterPath="$PROJECT_DIR$/Deprecated/para_lifetime_inteqp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="v1.3: lifetime is tested!&#10;&#10;todo: &#10;(1) finish input system&#10;(2) parallel more for lifetime!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Common/help.py" beforeDir="false" afterPath="$PROJECT_DIR$/Common/help.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_inteqp.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_inteqp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_lifetime_all_Q.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_lifetime_all_Q.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_scat.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_lifetime_all_Q.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_lifetime_all_Q.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Deprecated/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/test2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Deprecated/test2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,14 +33,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/bwhou/Desktop/temp",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/bwhou/Desktop/temp&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
@@ -96,6 +87,9 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -114,6 +108,9 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -132,6 +129,9 @@
       <module name="temp" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$USER_HOME$/Desktop/temp" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -207,7 +207,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667092939141</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="v1.3: lifetime is tested!&#10;&#10;todo: &#10;(1) finish input system&#10;(2) parallel more for lifetime!">
+      <created>1667182553068</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1667182553068</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -228,6 +235,7 @@
     <MESSAGE value="no normalization" />
     <MESSAGE value="interpolation is working" />
     <MESSAGE value="reconstruct mat.py, scat.py and inteqp.py&#10;&#10;(1) mat.py: add gqQ_inteqp_q&#10;(2) scat.py: add interpolation_check_for_Gamma_calculation&#10;(3) inteqp.py: rm gqQ_inteqp_q; rm interpolation_check_for_Gamma_calculation" />
-    <option name="LAST_COMMIT_MESSAGE" value="reconstruct mat.py, scat.py and inteqp.py&#10;&#10;(1) mat.py: add gqQ_inteqp_q&#10;(2) scat.py: add interpolation_check_for_Gamma_calculation&#10;(3) inteqp.py: rm gqQ_inteqp_q; rm interpolation_check_for_Gamma_calculation" />
+    <MESSAGE value="v1.3: lifetime is tested!&#10;&#10;todo: &#10;(1) finish input system&#10;(2) parallel more for lifetime!" />
+    <option name="LAST_COMMIT_MESSAGE" value="v1.3: lifetime is tested!&#10;&#10;todo: &#10;(1) finish input system&#10;(2) parallel more for lifetime!" />
   </component>
 </project>
