@@ -1,22 +1,24 @@
 # EXPH
-EXPH_v1.2
+
+EXPH_v1.3
 
 Author: Bowen Hou
 
 Time: 10/10/2022
 
+---
+## Exciton-Phonon Interaction
 
-Exciton-Phonon Interaction
+(1) Exciton lifetime (scattring rate) over 1st BZ could be calculated
 
-(1) Exciton life time over 1st BZ could be calculated
-
-(2) Exciton-Phonon scattering matrix could be calculated
+(2) Exciton-Phonon scattering matrix 
 
 (3) Parallel is available!!
 
-(4) Interpolation is available for exciton scattering rate calculations (parallel is working!)
+(4) Interpolation is available (parallel is working for interpolation!)
 
-Parallel Efficiency of EX_PH_scat.py (Calculate Scattering Rate of Exciton State over 1st BZ):
+---
+## Parallel Efficiency of EX_PH_scat.py (Calculate Scattering Rate of Exciton State over 1st BZ):
 
 (a) Test on PC Windows
 

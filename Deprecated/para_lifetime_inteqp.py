@@ -6,11 +6,11 @@ from IO.IO_common import read_bandmap, read_kmap, read_lattice,construct_kmap
 from Common.common import frac2carte
 from Common.progress import ProgressBar
 from IO.IO_common import write_loop
-import os
+from mpi4py import MPI
+import  time
 
-# input
-def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, interposize=4,
-                 path='./',Q_kmap_start_para='nopara',Q_kmap_end_para='nopara',mute=False):
+def para_Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, interposize=4,
+                 path='./',mute=False):
     """
     !!! Para Over Q_kmap!!!
     :param n_ext_acv_index:
@@ -21,13 +21,17 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, interposize=4,
     :param Q_kmap_end_para:
     :return:
     """
+    start_time = time.time()
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
     # n_ext_acv_index = 0 # this is index of exciton state in Acv
     # T = 100 # randomly choosing
     # degaussian = 0.001
     outfilename = 'ex_S%s_lifetime.dat'%(n_ext_acv_index + 1)
 
     acv = read_Acv(path=path)
-
     kmap = read_kmap(path=path)  # load kmap matrix
     bandmap, occ = read_bandmap(path=path)  # load band map and number of occupation
     kmap_dic = construct_kmap(path=path)  # construct kmap dictionary {'k1 k2 k3':[0 0 0 0]}: this is used for mapping final state of scattering
@@ -42,19 +46,6 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, interposize=4,
     bvec = read_lattice('b',path=path)
     avec = read_lattice('a',path=path)
 
-
-    para_status = "nopara"
-    # progress = ProgressBar(kmap.shape[0], fmt=ProgressBar.FULL)  # progress
-    if Q_kmap_start_para == 'nopara' and Q_kmap_start_para == 'nopara':
-        Q_kmap_start_para = 0
-        Q_kmap_end_para = kmap.shape[0]
-    else:
-        para_status='para'
-        if type(Q_kmap_start_para) is int and type(Q_kmap_end_para) is int:
-            pass
-        else:
-            raise Exception("the parallel parameter is not int")
-
     # this is good enough for parallel!!!
     # we can directly add res of every procs togather, then we can have final collected res_total
     res = np.zeros((kmap.shape[0],4))
@@ -62,17 +53,12 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, interposize=4,
     interpolation_check_res = interpolation_check_for_Gamma_calculation(interpo_size=interposize,
                                                                         path=path,
                                                                         mute=True)
-
-    for Q_kmap in range(Q_kmap_start_para,Q_kmap_end_para):
-
+    for Q_kmap in range(kmap.shape[0]):
         # progress.current += 1
         # progress()
-
-
+        #todo: check why this is so slow!
         res[Q_kmap,:3] = frac2carte(bvec,kmap[Q_kmap, 0:3]) # give out bohr lattice in reciprocal space
         # res[Q_kmap, 3] = 1/Gamma_scat_test_nointeqp(Q_kmap=Q_kmap, n_ext_acv_index=n_ext_acv_index, T=T, degaussian=degaussian,muteProgress=mute,path=path)
-
-
         res[Q_kmap, 3] = 1 / Gamma_scat_low_efficiency_inteqp(Q_kmap=Q_kmap,
                                                               n_ext_acv_index=n_ext_acv_index,
                                                               T=T,
@@ -81,26 +67,20 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, interposize=4,
                                                               path=path,
                                                               interpolation_check_res=interpolation_check_res)
 
-        # save temp file
-        # if Q_kmap == 0:
-        #     a = open('TEMP-' + outfilename, 'w')
-        #     a.write(np.array2string(res[Q_kmap]).strip('[').strip(']')+'\n')
-        #     a.close()
-        # else:
-        #     a = open('TEMP-' + outfilename, 'a')
-        #     a.write(np.array2string(res[Q_kmap]).strip('[').strip(']')+'\n')
-        #     a.close()
-        # print(Q_kmap_start_para)
-        # print(Q_kmap_end_para)
-        # if Q_kmap_start_para == 'nopara' and Q_kmap_start_para == 'nopara':
-            # tododone: turn off this file after this loop
-        if para_status == "nopara":
-            print("write!")
-            write_loop(loop_index=Q_kmap,filename=outfilename,array=res[Q_kmap])
 
-    return res
+
+        # if rank == 0:
+        #     print("write!")
+        #     write_loop(loop_index=Q_kmap,filename=outfilename,array=res[Q_kmap])
+
+
+    if rank == 0:
+        np.savetxt(outfilename, res)
+        end_time = time.time()
+        print("the running time is: %.3f s" % (end_time - start_time))
+        return res
     # np.savetxt(outfilename,res)
     # os.remove('./'+'TEMP-' + outfilename)
 
 if __name__ == "__main__":
-    res = Exciton_Life(path='../')
+    res = para_Exciton_Life(path='../', mute=True)

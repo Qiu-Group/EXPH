@@ -19,7 +19,7 @@ import time
 #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
 
 # (1) Gamma_scat_test_nointeqp --> no interpoaltion
-# (2) Gamma_scat_low_efficiency --> w/ interpolation and it is a parallel job function (do not use it!), but this is good for series. For para_Gamma_inteqp: see Para_EX_PH_scat
+# --> (2) Gamma_scat_low_efficiency --> w/ interpolation and it is a parallel job function (do not use it!), but this is good for series. For para_Gamma_inteqp: see Para_EX_PH_scat
 # (3) interpolation_check_for_Gamma_calculation(interpo_size, path='./') --> run it before scattering calculation
 
 #==============================================================================================================>>>>>>>
@@ -514,7 +514,7 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
 if __name__ == "__main__":
     # res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
     res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=12,path='../')
-    # res = interpolation_check_for_Gamma_calculation(path='../')
+    # res = interpolation_check_for_Gamma_calculation(path='../',interpo_size=12)
 
 
 
