@@ -3,7 +3,7 @@ from Common.distribution import BE, FD, Dirac_1, Dirac_2
 from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy
 from IO.IO_common import read_bandmap, read_kmap, construct_kmap
-from ELPH.EX_PH_mat import gqQ, gqQ_inteqp_q_series, gqQ_inteqp_get_coarse_grid, gqQ_inteqp_q_low_parallel_effieciency
+from ELPH.EX_PH_mat import gqQ, gqQ_inteqp_q_series, gqQ_inteqp_get_coarse_grid, gqQ_inteqp_q_nopara
 from Common.progress import ProgressBar
 from Common.common import move_k_back_to_BZ_1, equivalence_order
 from ELPH.EX_PH_inteqp import omega_inteqp_q,OMEGA_inteqp_Q
@@ -327,7 +327,7 @@ def Gamma_scat_low_efficiency_inteqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussi
             #  replace this with new gqQ_inteqp_q, which can realize parallel, it seems Gamma_Scat can only be a series function since it can not achieve
             #  for this part: see EX_PH_mat_para_inteqp.py 150-154 lines
             # we need to define another Gamma_scat_inteqp_q in parallel
-            gqQ_sq_inteqp_temp = np.abs(gqQ_inteqp_q_low_parallel_effieciency(n_ex_acv_index=n_ext_acv_index,
+            gqQ_sq_inteqp_temp = np.abs(gqQ_inteqp_q_nopara(n_ex_acv_index=n_ext_acv_index,
                                               m_ex_acv_index=m_ext_acv_index_loop,
                                               v_ph_gkk=v_ph_gkk_index_loop,
                                               Q_kmap=Q_kmap, #!!! this Q_kmap from function parameter
@@ -513,7 +513,7 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
 
 if __name__ == "__main__":
     # res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
-    res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=12,path='../')
+    res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
     # res = interpolation_check_for_Gamma_calculation(path='../',interpo_size=12)
 
 
