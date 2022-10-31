@@ -8,5 +8,5 @@
 
 # (4) kmapout = [Q, k_acv, q, k_gkk] given ['  %.5f    %.5f    %.5f'] in kmap_dic
 
-# (5) Qq_DIC = {'  %.5f    %.5f    %.5f' : Qq_fine}, where Qq_fine is index of interpolated index in gqQ_interpolated(q), omega(q) and OMEGA(Q)
+# (5) Qq_dic = {'  %.5f    %.5f    %.5f' : Qq_fine}, where Qq_fine is index of interpolated index in gqQ_interpolated(q), omega(q) and OMEGA(Q)
 

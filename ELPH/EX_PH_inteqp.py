@@ -87,7 +87,7 @@ def OMEGA_inteqp_Q(interpo_size=12, new_Q_out=False, path="./"):
 
     OMEGA_res = np.zeros((n_exciton, interpo_size-1, interpo_size-1))
     for j_xt in range(n_exciton):
-        OMEGA_Q_index_list = list(map(int, kmap[:, 3]))  # kmap[:,5] is for q !!!
+        OMEGA_Q_index_list = list(map(int, kmap[:, 3]))  # kmap[:,5] is for Q !!!
         temp_OMEGA = exciton_energy[:, j_xt][np.array(OMEGA_Q_index_list)].reshape((int(np.sqrt(kmap.shape[0])), int(np.sqrt(kmap.shape[0]))))  # qx
         # ================================================
         # boundary condition

@@ -4,7 +4,7 @@ from time import process_time
 from mpi4py import MPI
 from Common.progress import ProgressBar
 from Parallel.Para_common import plan_maker
-from Parallel.Para_common import before_parallel_job, after_parallel_job
+from Parallel.Para_common import before_parallel_job, after_parallel_sum_job
 
 
 def paral():
@@ -97,7 +97,7 @@ def paral():
     #     print('===================================')
     #     print('hello')
     #     return value
-    value = after_parallel_job(rk=rank,size=size,receive_res=res_rcev,start_time=start_time,start_time_proc=start_time_proc)
+    value = after_parallel_sum_job(rk=rank,size=size,receive_res=res_rcev,start_time=start_time,start_time_proc=start_time_proc)
     #-----------------------------------------------------
     if rank==0:
         return value

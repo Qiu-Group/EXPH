@@ -10,7 +10,17 @@ from time import  process_time
 import time
 
 
-def para_Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./',mute=True):
+def para_Exciton_Life_low_efficiency(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./',mute=True, interposize=4):
+    """
+    !!! Only parallel over Q!!!
+    !!!todo: parallel further over q!!!
+    :param n_ext_acv_index:
+    :param T:
+    :param degaussian:
+    :param path:
+    :param mute:
+    :return:
+    """
     # n_ext_acv_index=0
     # T=100
     # degaussian = 0.001
@@ -57,7 +67,8 @@ def para_Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./',mu
                                  path=path,
                                  Q_kmap_start_para=plan_list[0],
                                  Q_kmap_end_para=plan_list[-1],
-                                 mute=mute)
+                                 mute=mute,
+                                 interposize=interposize)
 
     res_rcev_to_0 = comm.gather(res_each_proc, root=0)
 
@@ -67,7 +78,7 @@ def para_Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./',mu
     # write down value
     if rank == 0:
         np.savetxt(outfilename,value)
-    return value
+        return value
 
 if __name__ == "__main__":
-    para_Exciton_Life(path='../')
+    para_Exciton_Life_low_efficiency(path='../',interposize=16)

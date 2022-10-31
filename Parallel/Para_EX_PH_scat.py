@@ -365,7 +365,8 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     # TODO: Discuss with Diana!!!
     # print("final value is",Gamma_fisrt_val)
     # print("final value is",Gamma_second_val)
-    return Gamma_res_val
+    if rank == 0:
+        return Gamma_res_val
 
 #==============================================================================================================>>>>>>>
 
@@ -379,5 +380,5 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 #  which leands to a non-Linear parallel, since use interpolation for many times.
 if __name__ == "__main__":
     # res_para = para_Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=12, path='../')
-    res = para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2, T=100, degaussian=0.001,path='../',interposize=12)
+    res = para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2, T=100, degaussian=0.001,path='../',interposize=4)
     pass
