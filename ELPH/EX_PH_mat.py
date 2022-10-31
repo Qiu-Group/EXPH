@@ -12,10 +12,10 @@ from Common.inteqp import interqp_2D
 # from ELPH.EX_PH_mat import gqQ
 
 # (1) gqQ --> gqQ for given q,Q,m,n,v
-# (2) gqQ_inteqp_q_low_parallel_effieciency  --> gqQ for given Q,m,n,v (interpolate to a fine q-grid given n,m,v,Q); low parallel efficiency
+# --> (2) gqQ_inteqp_q_nopara  --> gqQ for given Q,m,n,v (interpolate to a fine q-grid given n,m,v,Q); low parallel efficiency
 # (3) gqQ_inteqp_get_coarse_grid --> job function of parallel, which could calculate gqQ for each q-grid for given Q,m,n,v , which is the slowest part of Scat calculation
 # (4) gqQ_inteqp_q --> series: do interpolation for gqQ for given Q,m,n,v
-# note: (2) = (3) + (4)
+# note: (2) = (3) + (4) !!!
 
 
 #def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk(), kmap=read_kmap(), kmap_dic=construct_kmap(), bandmap_occ=read_bandmap(),muteProgress=False):
@@ -299,7 +299,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
         res = res + first_res + second_res
     return res * 10**(-3) # meV to eV
 
-def gqQ_inteqp_q_low_parallel_effieciency(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,
+def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,
         acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,muteProgress=True,
         path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """

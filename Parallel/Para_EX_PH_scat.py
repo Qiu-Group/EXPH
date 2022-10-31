@@ -380,5 +380,5 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 #  which leands to a non-Linear parallel, since use interpolation for many times.
 if __name__ == "__main__":
     # res_para = para_Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=12, path='../')
-    res = para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2, T=100, degaussian=0.001,path='../',interposize=4)
+    res = para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2, T=100, degaussian=0.001,path='../',interposize=12)
     pass
