@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="new plot function added:&#10;&#10;(1) lifetime_inteqp_plot">
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="bug fixed!&#10;&#10;todo:&#10;(1) band_check.py need to add variable to contrl v_start_gkk and c_end_gkk">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Common/band_check.py" beforeDir="false" afterPath="$PROJECT_DIR$/Common/band_check.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Common/distribution.py" beforeDir="false" afterPath="$PROJECT_DIR$/Common/distribution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_scat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PLot_/plot_xct_lifetime.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_xct_lifetime.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -49,7 +45,7 @@
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.EX_PH_scat">
+  <component name="RunManager" selected="Python.plot_xct_lifetime">
     <configuration name="EX_PH_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -104,16 +100,16 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_xct_band" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_xct_band.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -122,7 +118,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_xct_ph_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="plot_xct_lifetime" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -131,7 +127,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_xct_lifetime.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -142,11 +138,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.plot_xct_lifetime" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.EX_PH_scat" />
         <item itemvalue="Python.Para_EX_PH_scat" />
         <item itemvalue="Python.EX_PH_mat" />
-        <item itemvalue="Python.plot_xct_ph_mat" />
-        <item itemvalue="Python.plot_xct_band" />
       </list>
     </recent_temporary>
   </component>
@@ -215,7 +211,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667268736045</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="bug fixed!&#10;&#10;todo:&#10;(1) band_check.py need to add variable to contrl v_start_gkk and c_end_gkk">
+      <created>1667273552931</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1667273552931</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -238,6 +241,7 @@
     <MESSAGE value="reconstruct mat.py, scat.py and inteqp.py&#10;&#10;(1) mat.py: add gqQ_inteqp_q&#10;(2) scat.py: add interpolation_check_for_Gamma_calculation&#10;(3) inteqp.py: rm gqQ_inteqp_q; rm interpolation_check_for_Gamma_calculation" />
     <MESSAGE value="v1.3: lifetime is tested!&#10;&#10;todo: &#10;(1) finish input system&#10;(2) parallel more for lifetime!" />
     <MESSAGE value="new plot function added:&#10;&#10;(1) lifetime_inteqp_plot" />
-    <option name="LAST_COMMIT_MESSAGE" value="new plot function added:&#10;&#10;(1) lifetime_inteqp_plot" />
+    <MESSAGE value="bug fixed!&#10;&#10;todo:&#10;(1) band_check.py need to add variable to contrl v_start_gkk and c_end_gkk" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixed!&#10;&#10;todo:&#10;(1) band_check.py need to add variable to contrl v_start_gkk and c_end_gkk" />
   </component>
 </project>
