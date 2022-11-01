@@ -513,7 +513,7 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
 
 if __name__ == "__main__":
     # res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
-    res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
+    res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=48,path='../')
     # res = interpolation_check_for_Gamma_calculation(path='../',interpo_size=12)
 
 

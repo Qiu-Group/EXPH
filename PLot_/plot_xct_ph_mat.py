@@ -146,4 +146,4 @@ def plot_ex_ph_mat_nointeqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_g
 if __name__=="__main__":
     # plot_ex_ph_mat(mute=False, path='../')
     # plot_ex_ph_mat_nointeqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[1],v_ph_gkk=[3],mute=False, path='../')
-    plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk=[0,1,2,3,4,5,6,7,8],mute=False, path='../', interposize=132)
+    plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk=[0,1,2,3,4,5],mute=False, path='../', interposize=132)

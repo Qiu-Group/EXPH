@@ -1,7 +1,7 @@
 import numpy as np
 import h5py as h5
 
-def band_summary():
+def band_summary(v_start_gkk=11, c_end_gkk=14):
     """
     todo: write some function to find v_start_gkk and c_end_gkk
     """
@@ -14,8 +14,8 @@ def band_summary():
     occ = int(np.sum(acv['mf_header/kpoints/occ'][0][0]))
     nc_acv = acv['exciton_header/params/nc'][()]
     nv_acv = acv['exciton_header/params/nv'][()]
-    v_start_gkk = 11  # tododone: write  some function to find this
-    c_end_gkk = 14  # tododone: write  some function to find this
+    # v_start_gkk = 11  # tododone: write  some function to find this
+    # c_end_gkk = 14  # tododone: write  some function to find this
     if v_start_gkk > occ or c_end_gkk <= occ:
         raise Exception("There is no conduction or valence band in gkk")
     # i) get boundary for c and v
