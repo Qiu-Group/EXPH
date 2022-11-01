@@ -14,9 +14,9 @@ if __name__ == "__main__":
     # todo: 0.0 find a way to get all of this
     # 0.0 setting:
     #==========================================================
-    save_path = './save_441/'
+    save_path = './save_hBN/'
     h5_path = './'
-    [nQ, nq, nk, nmode, ni, nj] = [144, 16, 144, 9, 4, 4]
+    [nQ, nq, nk, nmode, ni, nj] = [144, 144, 144, 6, 5, 5]
     # ==========================================================
 
 
@@ -31,7 +31,9 @@ if __name__ == "__main__":
     # bandmap create
     # ==========================================================
     k_grid_summary()
-    band_summary()
+    # TODO, write something to find this!!
+    band_summary(v_start_gkk=2, c_end_gkk=6)
+    # band_summary(v_start_gkk=11, c_end_gkk=14)
     # ==========================================================
 
 

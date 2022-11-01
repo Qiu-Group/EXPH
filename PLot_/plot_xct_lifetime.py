@@ -73,4 +73,4 @@ def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, path='
 
 
 if __name__ == "__main__":
-    res = plot_ex_lifetime_inteqp(path='../',start_from_zero=True,mute=False, interposize_for_Lifetime=120,interposize_for_LifetimeGamma=48)
+    res = plot_ex_lifetime_inteqp(path='../',start_from_zero=True, mute=False, interposize_for_Lifetime=120,interposize_for_LifetimeGamma=48)

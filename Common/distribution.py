@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 # todo: check if nmode should be 1 for BE and FD
 
 # def BE(omega, T, mode_num=1):
@@ -11,6 +12,8 @@ import numpy as np
 def BE(omega, T, mode_num=1):
     u = 0.0
     K_B = 8.617343e-05  ### Dimension: eV/K
+    # TODO: Check this!!!
+    warnings.filterwarnings('ignore')
     return (mode_num / (np.exp((omega - u) / (K_B * T)) - 1))
 
 
