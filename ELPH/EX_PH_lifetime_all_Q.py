@@ -103,4 +103,4 @@ def Exciton_Life(n_ext_acv_index=0, T=100, degaussian = 0.001, interposize=4,
     # os.remove('./'+'TEMP-' + outfilename)
 
 if __name__ == "__main__":
-    res = Exciton_Life(path='../',interposize=12)
+    res = Exciton_Life(path='../',interposize=4)

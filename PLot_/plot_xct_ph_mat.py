@@ -46,8 +46,14 @@ def plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk
 
     count = 0
     res = np.zeros((size,4))
-    for j_final_S in m_ex_acv:
-        for j_phonon in v_ph_gkk:
+    progress = ProgressBar(len(v_ph_gkk), fmt=ProgressBar.FULL)
+
+    for j_phonon in v_ph_gkk:
+        if not mute:
+            progress.current += 1
+            progress()
+        for j_final_S in m_ex_acv:
+
             if count == 0:
                 [qxx_new, qyy_new, resres_new] = gqQ_inteqp_q_nopara(n_ex_acv_index=n_ex_acv,
                                                                      m_ex_acv_index=j_final_S,
@@ -63,7 +69,7 @@ def plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk
                                                                      muteProgress=True,
                                                                      path=path) # |gqQ|
                 res = np.zeros((size, 4))
-                print(qxx_new)
+                # print(qxx_new)
                 res[:, 0] = qxx_new.flatten()
                 res[:, 1] = qyy_new.flatten()
                 res[:, 3] = resres_new.flatten()
@@ -140,4 +146,4 @@ def plot_ex_ph_mat_nointeqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_g
 if __name__=="__main__":
     # plot_ex_ph_mat(mute=False, path='../')
     # plot_ex_ph_mat_nointeqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[1],v_ph_gkk=[3],mute=False, path='../')
-    plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[1],v_ph_gkk=[3],mute=False, path='../', interposize=120)
+    plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk=[0,1,2,3,4,5,6,7,8],mute=False, path='../', interposize=132)
