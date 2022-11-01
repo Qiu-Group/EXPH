@@ -14,14 +14,15 @@ from matplotlib import cm
 import numpy as np
 from Parallel.Para_EX_PH_lifetime_all_Q import para_Exciton_Life_standard
 from ELPH.EX_PH_scat import interpolation_check_for_Gamma_calculation
-from ELPH.EX_PH_inteqp import dispersion_inteqp_complete
+from ELPH.EX_PH_inteqp import dispersion_inteqp_complete, kgrid_inteqp_complete
 from Common.inteqp import interqp_2D
 import os
 
 def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./',mute=True, interposize_for_LifetimeGamma=12, interposize_for_Lifetime = 12, start_from_zero = True):
+    bvec = read_lattice('b', path)
     if start_from_zero:
         print('calculating lifetime!')
-        bvec = read_lattice('b',path)
+
         res = para_Exciton_Life_standard(n_ext_acv_index=n_ext_acv_index,T=T,degaussian=degaussian,path=path,mute=mute, interposize=interposize_for_LifetimeGamma,write=False)
         print(res)
         size_co = int(np.sqrt(res.shape[0]))
@@ -61,16 +62,41 @@ def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, path='
         np.savetxt('exciton_lifetime.dat',res)
         return res
     else:
+        print("from 2")
         res = np.loadtxt('exciton_lifetime.dat')
+        print(res)
+        size = int(np.sqrt(res.shape[0]))
+
+        [grdi_q_gqQ_res, _, _, _] = interpolation_check_for_Gamma_calculation(interpo_size=interposize_for_Lifetime,
+                                                                              path=path, mute=False)
+        Qxx = grdi_q_gqQ_res[:,0].reshape((interposize_for_Lifetime,interposize_for_Lifetime))
+        Qyy = grdi_q_gqQ_res[:,1].reshape((interposize_for_Lifetime,interposize_for_Lifetime))
+
+        lifetime_res_temp = dispersion_inteqp_complete(res[:, 3].reshape((size,size)))
+        interposize_for_Lifetime += 1
+
+        lifetime_res = interqp_2D(lifetime_res_temp, interpo_size=interposize_for_Lifetime)[:interposize_for_Lifetime-1, :interposize_for_Lifetime-1]
+        print('Plotting')
+        # interposize_for_Lifetime -= 1
+        interposize_for_Lifetime -= 1
+        res = np.zeros((interposize_for_Lifetime**2, 4))
+
+        res[:,0] = Qxx.flatten()
+        res[:,1] = Qyy.flatten()
+        res[:,3] = lifetime_res.flatten()
+        res[:,:3] = frac2carte(bvec,res[:,:3])
+
+        # surf = ax.plot_surface(Qxx,Qyy,lifetime_res, cmap=cm.cool)
         fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
         # surf = ax.plot_surface(Qxx,Qyy,lifetime_res, cmap=cm.cool)
-        surf = ax.plot_surface(res[:, 0].reshape((interposize_for_Lifetime, interposize_for_Lifetime)),
-                               res[:, 1].reshape((interposize_for_Lifetime, interposize_for_Lifetime)),
+        surf = ax.plot_surface(res[:, 0].reshape((interposize_for_Lifetime,interposize_for_Lifetime)), res[:, 1].reshape((interposize_for_Lifetime, interposize_for_Lifetime)),
                                res[:, 3].reshape((interposize_for_Lifetime, interposize_for_Lifetime)), cmap=cm.cool)
 
         plt.show()
+        np.savetxt('exciton_lifetime_new.dat', res)
 
+        return  res
 
 
 if __name__ == "__main__":
-    res = plot_ex_lifetime_inteqp(path='../',start_from_zero=True, mute=False, interposize_for_Lifetime=120,interposize_for_LifetimeGamma=48)
+    res = plot_ex_lifetime_inteqp(path='../',start_from_zero=False, mute=False, interposize_for_Lifetime=132,interposize_for_LifetimeGamma=48)
