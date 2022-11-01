@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="v1.3: lifetime is tested!&#10;&#10;todo: &#10;(1) finish input system&#10;(2) parallel more for lifetime!">
+      <change afterPath="$PROJECT_DIR$/PLot_/plot_xct_lifetime.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_lifetime_all_Q.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_lifetime_all_Q.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/IO/IO_acv.py" beforeDir="false" afterPath="$PROJECT_DIR$/IO/IO_acv.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PLot_/plot_xct_band.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_xct_band.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_lifetime_all_Q.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_lifetime_all_Q.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +50,7 @@
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Para_EX_PH_lifetime_all_Q">
+  <component name="RunManager" selected="Python.plot_xct_lifetime">
     <configuration name="EX_PH_lifetime_all_Q" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -83,19 +87,16 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Para_EX_PH_scat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="plot_xct_band" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_xct_band.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -104,19 +105,16 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="para_lifetime_inteqp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="plot_xct_lifetime" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated\para_lifetime_inteqp.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_xct_lifetime.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -125,19 +123,16 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="temp" />
+    <configuration name="plot_xct_ph_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Desktop/temp" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$USER_HOME$/Desktop/temp/plot.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -148,11 +143,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Para_EX_PH_lifetime_all_Q" />
+        <item itemvalue="Python.plot_xct_lifetime" />
         <item itemvalue="Python.EX_PH_lifetime_all_Q" />
-        <item itemvalue="Python.para_lifetime_inteqp" />
-        <item itemvalue="Python.Para_EX_PH_scat" />
-        <item itemvalue="Python.plot" />
+        <item itemvalue="Python.Para_EX_PH_lifetime_all_Q" />
+        <item itemvalue="Python.plot_xct_ph_mat" />
+        <item itemvalue="Python.plot_xct_band" />
       </list>
     </recent_temporary>
   </component>

@@ -71,4 +71,4 @@ def plot_exciton_band_nointeqp(nS=2, path= './',outfilename = 'exciton_band.dat'
 
 if __name__ == "__main__":
     # plot_exciton_band_nointeqp(1, path='../')
-    plot_exciton_band_inteqp(nS=2,path='../',interposize=48)
+    plot_exciton_band_inteqp(nS=1,path='../',interposize=120)

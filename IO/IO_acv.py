@@ -7,7 +7,7 @@ from Common.common import move_k_back_to_BZ_1
 # notice: Qpt_coor and kpt_for_each_Q are in a crystal coordinate. But kpoints in kpt_for_each_Q are in the first BZ.
 # notice: eigenvalues.shape = (nQ,nS,1); eigenvectors.shape = (nQ,nS,nk,nc,nv,2)
 #=============================================================================================
-# for i in {1..3};do cp Q-$i/5.2-absorp-Q/eigenvectors.h5 save/eigenvectors_$i.h5;done
+# for i in {1..144};do cp Q-$i/5.2-absorp-Q/eigenvectors.h5 save/eigenvectors_$i.h5;done
 #=============================================================================================
 
 
