@@ -31,4 +31,4 @@ def plot_phonon_band_inteqp(nphonon=1, interposize=12, path='./', outfilename = 
 
 
 if __name__ == "__main__":
-    plot_phonon_band_inteqp(nphonon=1, interposize=120,path='../')
+    plot_phonon_band_inteqp(nphonon=2, interposize=120,path='../')
