@@ -63,7 +63,7 @@ def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, path='
         return res
     else:
         print("from 2")
-        res = np.loadtxt('ex_S1_lifetime_48.dat')
+        res = np.loadtxt('exciton_lifetime.dat')
         print(res)
         size = int(np.sqrt(res.shape[0]))
 
@@ -99,4 +99,4 @@ def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, path='
 
 
 if __name__ == "__main__":
-    res = plot_ex_lifetime_inteqp(path='../',start_from_zero=False, mute=False, interposize_for_Lifetime=144,interposize_for_LifetimeGamma=48)
+    res = plot_ex_lifetime_inteqp(path='../',start_from_zero=True, mute=False, interposize_for_Lifetime=12,interposize_for_LifetimeGamma=12)

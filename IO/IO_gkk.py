@@ -37,7 +37,9 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     :param save_path: gkk.save
     :return: create gkk.h5
     """
-    print("creating gkk.h5\n")
+    print("creating gkk.h5")
+    progress = ProgressBar(3, fmt=ProgressBar.FULL)
+    progress()
     # 1.0 load raw data (raw means the data need to be reshape)
     data_temp_raw = np.loadtxt(save_path+'elphmat.dat')
     omega_raw = np.loadtxt(save_path+"omega.dat")
@@ -46,7 +48,10 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     a_temp = np.loadtxt(save_path+'a.dat')
     b_temp = np.loadtxt(save_path+'b.dat')
     a0_temp = np.loadtxt(save_path+'a0.dat')
-
+    ####################
+    progress.current += 1
+    progress()
+    ####################
     # 1.1 check data
     if len(data_temp_raw) != nq*nk*nmode*ni*nj:
         raise Exception("nq*nk*nmode*ni*nj != gkk.shape")
@@ -57,7 +62,10 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
         raise Exception("nk != k_temp.shape")
     if omega_raw.shape[0] != nq*nmode:
         raise Exception("nq*nmode != omega_temp.shape")
-
+    ####################
+    progress.current += 1
+    progress()
+    ####################
     omega_temp = omega_raw.reshape(nq,nmode)
     data_temp = data_temp_raw.reshape(nq,nk,ni,nj,nmode)
     # 2.0 create gkk.h5 file
@@ -70,7 +78,11 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     header.create_dataset('a0_bohr',data=a0_temp)
     header.create_dataset('a_lattice_bohr',data=a_temp*a0_temp) # in bohr
     header.create_dataset('b_lattice_bohr',data=b_temp*(2*np.pi/a0_temp)) # in 2pi/bohr
-    print("\nAcv.h5 has been created")
+    ####################
+    progress.current += 1
+    progress()
+    ####################
+    print("Acv.h5 has been created")
     f.close()
 
 
