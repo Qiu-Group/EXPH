@@ -113,3 +113,7 @@ def frac2carte(a0, fractional_point):
     else:
         lenth = fractional_point.shape[0]
     return (a0.T@fractional_point.T).T
+
+def is_sqr(n):
+    a = int(np.sqrt(n))
+    return a * a == n

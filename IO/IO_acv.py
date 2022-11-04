@@ -3,6 +3,8 @@ import h5py as h5
 from Common.progress import ProgressBar
 from Common.h5_status import print_attrs, check_h5_tree
 from Common.common import move_k_back_to_BZ_1
+from IO.IO_common import read_kgrid_log
+import os
 
 # notice: Qpt_coor and kpt_for_each_Q are in a crystal coordinate. But kpoints in kpt_for_each_Q are in the first BZ.
 # notice: eigenvalues.shape = (nQ,nS,1); eigenvectors.shape = (nQ,nS,nk,nc,nv,2)
@@ -11,10 +13,51 @@ from Common.common import move_k_back_to_BZ_1
 #=============================================================================================
 
 
+# nQ = 144
+# save_path = '../save_hBN_symm/'
+# # if os.path.isfile(save_path+"acvs.save/kgrid.log"):
+# #     print('[symmetry] applied')
+#
+# uniform_grid_array, reduced_grid_array = read_kgrid_log(save_path=save_path)
+#
+# #if kgrid.log exists:
+
 def create_acvsh5(nQ, save_path):
     """
+    :param nQ:
+    :param save_path: save_path --> acvs.save/
+    :return:
+    """
+    symmetry = 'no'
+    # Determine if using symmetry: if use, nQ equals to size of reduced_grid_array.shape
+    if os.path.isfile(save_path+"/kgrid.log"):
+        symmetry = 'yes'
+        print('[symmetry] applied')
+        uniform_grid_array, reduced_grid_array = read_kgrid_log(save_path=save_path)
+        nQ = reduced_grid_array.shape[0]
+    # if not use, nQ equals to what we specify in the main function
+    else:
+        print('[symmetry] not applied')
+        nQ = nQ
+    # print('nQ',nQ)
+    # print(save_path)
+    create_acvsh5_only_from_nQ(nQ, save_path)
+
+    # addtional test needed for symmetry: all Q should > 0, which should be equal to k_acv # todo: test
+    if symmetry == 'yes':
+        f_temp = h5.File('Acv.h5', 'r')
+        Qpt = f_temp['exciton_header/kpoints/Qpt_coor'][()]
+        Qpt_test = np.where(Qpt>=0,Qpt,-20)
+        f_temp.close()
+        if -20 in Qpt_test:
+            raise Exception("when symmetry used, please make sure all Q-points are in the first BZ zone")
+        else:
+            pass
+
+def create_acvsh5_only_from_nQ(nQ, save_path):
+    """
     :param nQ: number of Q points
-    :param save_path: pth of acvs.save
+    :param save_path: path of acvs.save
     :return: create a Acv.h5
     """
     # 0.0 create 'exciton_header' and 'mf_header'
@@ -94,9 +137,10 @@ def read_Acv_exciton_energy(path='./'):
 
 
 if __name__ == "__main__":
-    # todo determin save_path and nQ
-    save_path = './save/acvs.save/'
-    nQ = 144
-    create_acvsh5(nQ,save_path)
-    check_h5_tree('./Acv.h5')
-    f = h5.File('Acv.h5','r')
+    pass
+    # # todo determin save_path and nQ
+    # save_path = './save/acvs.save/'
+    # nQ = 144
+    # create_acvsh5_nosymm(nQ,save_path)
+    # check_h5_tree('./Acv.h5')
+    # f = h5.File('Acv.h5','r')
