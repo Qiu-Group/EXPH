@@ -9,7 +9,7 @@ import os
 # notice: Qpt_coor and kpt_for_each_Q are in a crystal coordinate. But kpoints in kpt_for_each_Q are in the first BZ.
 # notice: eigenvalues.shape = (nQ,nS,1); eigenvectors.shape = (nQ,nS,nk,nc,nv,2)
 #=============================================================================================
-# for i in {1..144};do cp Q-$i/5.2-absorp-Q/eigenvectors.h5 save/eigenvectors_$i.h5;done
+# for i in {1..144};do cp Q-$i/5.2-absorp-Q/eigenvectors.h5 acvs.save/eigenvectors_$i.h5;done
 #=============================================================================================
 
 
@@ -43,14 +43,20 @@ def create_acvsh5(nQ, save_path):
     # print(save_path)
     create_acvsh5_only_from_nQ(nQ, save_path)
 
-    # addtional test needed for symmetry: all Q should > 0, which should be equal to k_acv # todo: test
+    # Test Modulus: Additional test needed for symmetry: all Q should > 0, which should be equal to k_acv #
     if symmetry == 'yes':
+        # Test 1
+        if nQ != len(os.listdir(save_path)) - 1:
+            raise Exception('Double check acvs.save: nQ != number of eigenvectors.h5 files')
+        # print("IOa-acv test start")
         f_temp = h5.File('Acv.h5', 'r')
         Qpt = f_temp['exciton_header/kpoints/Qpt_coor'][()]
         Qpt_test = np.where(Qpt>=0,Qpt,-20)
+        # print(Qpt_test)
         f_temp.close()
         if -20 in Qpt_test:
             raise Exception("when symmetry used, please make sure all Q-points are in the first BZ zone")
+            pass
         else:
             pass
 
