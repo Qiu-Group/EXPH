@@ -52,7 +52,7 @@ for i in range(len(k_list)):
     for j in range(len(temp_2)):
         temp_2[j] = temp_2[j] - shift[j]
 
-    k_list_new.append("%.6f %.6f %.6f"%(temp_2[0], temp_2[1], temp_2[2]))
+    k_list_new.append("%.6f %.6f %.6f"%(-1*temp_2[0], -1*temp_2[1], -1*temp_2[2]))
 k_list = k_list_new    
 
 #os.system("rm temp")

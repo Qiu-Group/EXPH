@@ -4,7 +4,9 @@ EXPH_v1.3
 
 Author: Bowen Hou
 
-Time: 10/10/2022
+Creating Time: 10/03/2022
+
+Last Updated: 11/03/2022
 
 ---
 ## Exciton-Phonon Interaction
@@ -16,6 +18,8 @@ Time: 10/10/2022
 (3) Parallel is available!!
 
 (4) Interpolation is available (parallel is working for interpolation!)
+
+(5) Symmetry is available for finite Q!!
 
 ---
 ## Parallel Efficiency of EX_PH_scat.py (Calculate Scattering Rate of Exciton State over 1st BZ):
