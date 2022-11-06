@@ -111,7 +111,7 @@ if 'xct_lifetime_all_BZ' in input and input['xct_lifetime_all_BZ'] == True: # xc
 else:
     pass
 
-############################################ (2) Plot ##################################################################
+############################################ (3) Plot ##################################################################
 init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
 # (i) Plot Exciton Band
 
