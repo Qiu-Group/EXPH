@@ -1,12 +1,12 @@
 # EXPH
 
-EXPH_v1.3
+EXPH_v1.4
 
 Author: Bowen Hou
 
 Creating Time: 10/03/2022
 
-Last Updated: 11/03/2022
+Last Updated: 11/06/2022
 
 ---
 ## Exciton-Phonon Interaction

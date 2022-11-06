@@ -19,7 +19,7 @@ xct_lifetime_all_BZ_nS = 1
 xct_lifetime_all_BZ_interpolation = 4
 
 # (3) Plot: all index start with 1 --> band = 1 means quantum number =1
-plot_xt_band = False
+plot_xt_band = True
 plot_xt_band_number = 1
 plot_xt_interpolation = 120
 
