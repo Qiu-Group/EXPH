@@ -82,4 +82,4 @@ def para_Exciton_Life_standard(n_ext_acv_index=0, T=100, degaussian = 0.001, pat
         return value
 
 if __name__ == "__main__":
-    res = para_Exciton_Life_standard(path='../',interposize=4)
+    res = para_Exciton_Life_standard(path='../',interposize=12)

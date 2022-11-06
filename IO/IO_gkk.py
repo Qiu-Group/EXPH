@@ -38,6 +38,10 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     :return: create gkk.h5
     """
     print("creating gkk.h5")
+
+    # int all parameter
+    [nq,nk,nmode,ni,nj] = [int(nq),int(nk),int(nmode),int(ni),int(nj)]
+
     # progress = ProgressBar(3, fmt=ProgressBar.FULL)
     # progress()
     # 1.0 load raw data (raw means the data need to be reshape)
