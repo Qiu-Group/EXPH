@@ -11,7 +11,7 @@ from IO.IO_common import read_kmap, read_lattice
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from matplotlib import cm
-
+import sys
 
 import numpy as np
 import h5py as h5
@@ -52,6 +52,7 @@ def plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk
         if not mute:
             progress.current += 1
             progress()
+            sys.stdout.flush()
         for j_final_S in m_ex_acv:
 
             if count == 0:

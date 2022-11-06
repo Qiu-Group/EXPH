@@ -51,5 +51,6 @@ def keyword_list():
             'xct_lifetime_all_BZ_interpolation', 'plot_xt_band', 'plot_xt_band_number',
             'plot_xt_interpolation', 'plot_ph_band', 'plot_ph_band_number', 'plot_ph_band_interpolation',
             'plot_xct_ph_mat', 'plot_xct_ph_mat_Q', 'plot_xct_ph_mat_n', 'plot_xct_ph_mat_m',
-            'plot_xct_ph_mat_ph', 'plot_xct_ph_mat_interpolation', 'plot_xct_lifetime', 'plot_xct_lifetime_path'
+            'plot_xct_ph_mat_ph', 'plot_xct_ph_mat_interpolation', 'plot_xct_lifetime', 'plot_xct_lifetime_interposize_for_Lifetime',
+            'plot_xct_data'
             ]

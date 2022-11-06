@@ -6,6 +6,10 @@ from Common.kgrid_check import k_grid_summary
 from Common.band_check import band_summary
 from Parallel.Para_EX_PH_scat import para_Gamma_scat_inteqp
 from Parallel.Para_EX_PH_lifetime_all_Q import para_Exciton_Life_standard
+from PLot_.plot_xct_band import plot_exciton_band_inteqp
+from PLot_.plot_phonon_band import plot_phonon_band_inteqp
+from PLot_.plot_xct_lifetime import plot_ex_lifetime_inteqp
+from PLot_.plot_xct_ph_mat import plot_ex_ph_mat_inteqp
 from mpi4py import MPI
 import sys
 import time
@@ -103,9 +107,126 @@ if 'xct_lifetime_all_BZ' in input and input['xct_lifetime_all_BZ'] == True: # xc
                                    n_ext_acv_index=int(input["xct_lifetime_all_BZ_nS"]-1))
         sys.stdout.flush()
     else:
-        raise Exception("key parameter missing for xct_scattering rate from input!")
+        raise Exception("key parameter missing for xct_lifetime rate from input!")
 else:
     pass
+
+############################################ (2) Plot ##################################################################
+init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
+# (i) Plot Exciton Band
+
+if rank == 0:
+    if 'plot_xt_band' in input and input['plot_xt_band'] == True:
+        if rank == 0:  # for print!
+            print("\nPlotting Exciton Band:")
+        if "plot_xt_band_number" in input and "plot_xt_interpolation" in input:
+            if rank == 0:
+                print("plot_xt_band_number: ", int(input["plot_xt_band_number"]))
+                print("plot_xt_interpolation", int(input["plot_xt_interpolation"]))
+                sys.stdout.flush()
+
+            plot_exciton_band_inteqp(nS=int(input["plot_xt_band_number"]-1),
+                                     path=input["h5_path"],
+                                     interposize=int(input["plot_xt_interpolation"]))
+            sys.stdout.flush()
+        else:
+            raise Exception("key parameter missing for plotting exciton band!")
+    else:
+        pass
+else:
+    pass
+
+#-----------------------------------------------------------------------------------------------------------------------
+init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
+# (ii) Plot Phonon Band
+if rank == 0:
+    if 'plot_ph_band' in input and input['plot_ph_band'] == True:
+        if rank == 0:  # for print!
+            print("\nPlotting Exciton Band:")
+        if "plot_ph_band_number" in input and "plot_ph_band_interpolation" in input:
+            if rank == 0:
+                print("plot_ph_band_number: ", int(input["plot_ph_band_number"]))
+                print("plot_ph_band_interpolation", int(input["plot_ph_band_interpolation"]))
+                sys.stdout.flush()
+
+            plot_phonon_band_inteqp(nphonon=int(input["plot_ph_band_number"]-1),
+                                    path=input["h5_path"],
+                                    interposize=int(input["plot_ph_band_interpolation"])
+                                    )
+
+            sys.stdout.flush()
+        else:
+            raise Exception("key parameter missing for plotting phonon band!")
+    else:
+        pass
+else:
+    pass
+
+#-----------------------------------------------------------------------------------------------------------------------
+init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
+# (iii) Plot Exciton Life Time
+if rank == 0:
+    if 'plot_xct_lifetime' in input and input['plot_xct_lifetime'] == True:
+        if rank == 0:  # for print!
+            print("\nPlotting Exciton Lifetime:")
+        if 'plot_xct_lifetime_interposize_for_Lifetime' in input and "plot_xct_data" in input:
+            if rank == 0:
+                print("plot_xct_lifetime_interposize_for_Lifetime: ", int(input["plot_xct_lifetime_interposize_for_Lifetime"]))
+                print("plot_xct_data: ", input["plot_xct_data"])
+                sys.stdout.flush()
+
+            plot_ex_lifetime_inteqp(path=input["h5_path"],
+                                    read_file=input['plot_xct_data'],
+                                    T=input["T"],
+                                    degaussian=input["degaussian"],
+                                    interposize_for_Lifetime=int(input["plot_xct_lifetime_interposize_for_Lifetime"]),
+                                    start_from_zero=False)
+
+            sys.stdout.flush()
+        else:
+            raise Exception("key parameter missing for plotting exciton lifetime!")
+    else:
+        pass
+else:
+    pass
+
+#-----------------------------------------------------------------------------------------------------------------------
+init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
+# (iv) Plot Exciton Life Time
+if rank == 0:
+    if 'plot_xct_ph_mat' in input and input['plot_xct_ph_mat'] == True:
+        if rank == 0:  # for print!
+            print("\nPlotting Exciton-Phonon Matrix:")
+        if 'plot_xct_ph_mat_Q' in input \
+                and "plot_xct_ph_mat_n" in input \
+                and 'plot_xct_ph_mat_m' in input \
+                and "plot_xct_ph_mat_ph" in input \
+                and "plot_xct_ph_mat_interpolation" in input:
+            if rank == 0:
+                print("plot_xct_ph_mat_Q: ", int(input["plot_xct_ph_mat_Q"]))
+                print("plot_xct_ph_mat_n: ", int(input["plot_xct_ph_mat_n"]))
+                print('plot_xct_ph_mat_m', input['plot_xct_ph_mat_m'])
+                print("plot_xct_ph_mat_ph", input['plot_xct_ph_mat_ph'])
+                print("plot_xct_ph_mat_interpolation", int(input["plot_xct_ph_mat_interpolation"]))
+
+                sys.stdout.flush()
+
+            plot_ex_ph_mat_inteqp(Q_kmap_star=int(input["plot_xct_ph_mat_Q"] - 1),
+                                  n_ex_acv=int(input["plot_xct_ph_mat_n"] - 1),
+                                  m_ex_acv=[x-1 for x in input['plot_xct_ph_mat_m']],
+                                  v_ph_gkk=[x-1 for x in input['plot_xct_ph_mat_ph']],
+                                  mute=False,
+                                  path=input["h5_path"],
+                                  interposize=int(input["plot_xct_ph_mat_interpolation"]))
+
+            sys.stdout.flush()
+        else:
+            raise Exception("key parameter missing for plotting exciton lifetime!")
+    else:
+        pass
+else:
+    pass
+
 
 
 if rank == 0:

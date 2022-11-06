@@ -35,9 +35,21 @@ class ProgressBar(object):
             'remaining': remaining
         }
         print('\r' + self.fmt % args, file=self.output, end='')
+        # print('\r' + self.fmt % args, end='')
 
     def done(self):
         self.current = self.total
         self()
         print('', file=self.output)
+        print('')
+
+if __name__ == "__main__":
+    import time
+    progress = ProgressBar(100, fmt=ProgressBar.FULL)
+    for i in range(100):
+        time.sleep(0.1)
+        progress.current += 1
+        progress()
+
+
 

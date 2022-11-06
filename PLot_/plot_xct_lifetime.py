@@ -18,7 +18,7 @@ from ELPH.EX_PH_inteqp import dispersion_inteqp_complete, kgrid_inteqp_complete
 from Common.inteqp import interqp_2D
 import os
 
-def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, path='./',mute=True, interposize_for_LifetimeGamma=12, interposize_for_Lifetime = 12, start_from_zero = True):
+def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, read_file ='exciton_lifetime.dat'  ,path='./',mute=True, interposize_for_LifetimeGamma=12, interposize_for_Lifetime = 12, start_from_zero = True):
     bvec = read_lattice('b', path)
     if start_from_zero:
         print('calculating lifetime!')
@@ -63,7 +63,7 @@ def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, path='
         return res
     else:
         print("from 2")
-        res = np.loadtxt('exciton_lifetime.dat')
+        res = np.loadtxt(read_file)
         print(res)
         size = int(np.sqrt(res.shape[0]))
 
@@ -99,4 +99,4 @@ def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, path='
 
 
 if __name__ == "__main__":
-    res = plot_ex_lifetime_inteqp(path='../',start_from_zero=True, mute=False, interposize_for_Lifetime=120,interposize_for_LifetimeGamma=48)
+    res = plot_ex_lifetime_inteqp(path='../',start_from_zero=True, mute=False, interposize_for_Lifetime=120,interposize_for_LifetimeGamma=4)

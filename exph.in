@@ -7,23 +7,23 @@ T=100.0
 degaussian = 0.001
 
 # (2) initialize includes creating Acv.h5, gkk.h5, kkqQmap.dat and bandmap.dat
-initialize = True
+initialize = False
 
 #xct_scattering_rate = False
 xct_scattering_rate_Q_kmap = 16
 xct_scattering_rate_nS = 3
 xct_scattering_rate_interpolation = 4
 
-xct_lifetime_all_BZ = True
+xct_lifetime_all_BZ = False
 xct_lifetime_all_BZ_nS = 1
 xct_lifetime_all_BZ_interpolation = 4
 
 # (3) Plot: all index start with 1 --> band = 1 means quantum number =1
-plot_xt_band = True
+plot_xt_band = False
 plot_xt_band_number = 1
 plot_xt_interpolation = 120
 
-plot_ph_band = True
+plot_ph_band = False
 plot_ph_band_number = 2
 plot_ph_band_interpolation = 120
 
@@ -34,7 +34,9 @@ plot_xct_ph_mat_m = [1,2,3,4]
 plot_xct_ph_mat_ph = [1,2,3,4,5,6]
 plot_xct_ph_mat_interpolation = 132
 
-plot_xct_lifetime = True
-plot_xct_lifetime_path = './'
+plot_xct_lifetime = False
+plot_xct_lifetime_interposize_for_Lifetime = 120
+plot_xct_data = 'ex_S1_lifetime.dat'
+
 
 
