@@ -21,6 +21,8 @@ Last Updated: 11/06/2022
 
 (5) Symmetry is available for finite Q!!
 
+## Workflow
+![avatar](./fig/workflow.jpg)
 ---
 ## Parallel Efficiency of EX_PH_scat.py (Calculate Scattering Rate of Exciton State over 1st BZ):
 
