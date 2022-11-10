@@ -131,13 +131,18 @@ def Gamma_scat_test_nointeqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001
                 # print("gqQ_sq_temp == 0",gqQ_sq_temp == 0)
 
                 # Skip if q = 0 and nmode = [0,1,2] <- longwave limit
+                # print('gqQ_sq_temp:',gqQ_sq_temp)
+                # print('gqQ_sq_temp is 0?',gqQ_sq_temp is 0)
+                # print('type(gqQ_sq_temp is 0?)',type(gqQ_sq_temp))
                 if gqQ_sq_temp == 0:
+                    # print(q_kmap,v_ph_gkk_index_loop)
                     continue
 
 
                 [Q_acv_index, q_gkk_index] = [kmap[Q_kmap, 3], kmap[q_kmap, 5]]
                 Q_plus_q_point = move_k_back_to_BZ_1(kmap[Q_kmap, 0:3] + kmap[q_kmap, 0:3])
                 key_temp = '  %.5f    %.5f    %.5f' % (Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
+                # print(key_temp)
                 Q_plus_q_kmapout = kmap_dic[key_temp.replace('_','')]
                 Qpr_as_Q_plus_q_acv_index = Q_plus_q_kmapout[0]
 
@@ -512,8 +517,8 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
 
 
 if __name__ == "__main__":
-    # res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
-    res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=12,path='../')
+    res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
+    # res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
     # res = interpolation_check_for_Gamma_calculation(path='../',interpo_size=12)
 
 

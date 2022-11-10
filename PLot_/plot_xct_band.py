@@ -15,11 +15,17 @@ from matplotlib import cm
 # path = '../Acv.h5'
 # outfilename = 'exciton.dat'
 
-def plot_exciton_band_inteqp(nS=1, interposize=12, path='./', outfilename = 'exciton_band.dat'):
-    S_index = nS - 1
+def plot_exciton_band_inteqp(S_index=0, interposize=12, path='./', outfilename = 'exciton_band.dat'):
+    # S_index = nS - 1
     bvec = read_lattice('b',path)
     size = int(interposize ** 2)
     [Qxx_new, Qyy_new, OMEGA_res] = OMEGA_inteqp_Q(interpo_size=interposize,new_Q_out=True,path=path)
+
+
+    print(S_index)
+    print(OMEGA_res.shape)
+    # print(Seigenval.shape)
+
 
     res = np.zeros((size, 4))
     res[:,0] = Qxx_new.flatten()
@@ -34,17 +40,18 @@ def plot_exciton_band_inteqp(nS=1, interposize=12, path='./', outfilename = 'exc
 
 
 # todo: this is deprecated 10/31/2022:
-def plot_exciton_band_nointeqp(nS=2, path= './',outfilename = 'exciton_band.dat'):
+def plot_exciton_band_nointeqp(S_index=2, path= './',outfilename = 'exciton_band.dat'):
     """
     :param nS: quantum number of exciton
     :param path: path of Acv.h5
     :param outfilename: path of output file
     """
-    S_index = nS - 1
+    # S_index = nS - 1
     f = h5.File(path+'Acv.h5','r')
     Seigenval = f['exciton_data/eigenvalues'][()]
     Qgrid = f['exciton_header/kpoints/Qpt_coor'][()]
     bvec = read_lattice('b',path)
+
 
     res = np.zeros((Qgrid.shape[0],4))
     for iQ in range(Qgrid.shape[0]):
@@ -71,4 +78,4 @@ def plot_exciton_band_nointeqp(nS=2, path= './',outfilename = 'exciton_band.dat'
 
 if __name__ == "__main__":
     # plot_exciton_band_nointeqp(1, path='../')
-    plot_exciton_band_inteqp(nS=0,path='../',interposize=120)
+    plot_exciton_band_inteqp(S_index=1,path='../',interposize=120)

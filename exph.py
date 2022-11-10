@@ -125,7 +125,7 @@ if rank == 0:
                 print("plot_xt_interpolation", int(input["plot_xt_interpolation"]))
                 sys.stdout.flush()
 
-            plot_exciton_band_inteqp(nS=int(input["plot_xt_band_number"]-1),
+            plot_exciton_band_inteqp(S_index=int(input["plot_xt_band_number"]-1),
                                      path=input["h5_path"],
                                      interposize=int(input["plot_xt_interpolation"]))
             sys.stdout.flush()
@@ -149,7 +149,7 @@ if rank == 0:
                 print("plot_ph_band_interpolation", int(input["plot_ph_band_interpolation"]))
                 sys.stdout.flush()
 
-            plot_phonon_band_inteqp(nphonon=int(input["plot_ph_band_number"]-1),
+            plot_phonon_band_inteqp(V_index=int(input["plot_ph_band_number"]-1),
                                     path=input["h5_path"],
                                     interposize=int(input["plot_ph_band_interpolation"])
                                     )

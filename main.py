@@ -14,10 +14,10 @@ if __name__ == "__main__":
     # todo: 0.0 find a way to get all of this
     # 0.0 setting:
     #==========================================================
-    save_path = './save_MoS2_nosymm/'
+    save_path = './save_MoS2_nosymm_441/'
     h5_path = './'
     # [nQ, nq, nk, nmode, ni, nj] = [144, 144, 144, 6, 5, 5]
-    [nQ, nq, nk, nmode, ni, nj] = [144, 144, 144, 9, 4, 4]
+    [nQ, nq, nk, nmode, ni, nj] = [144, 16, 144, 9, 4, 4]
     # ==========================================================
 
 

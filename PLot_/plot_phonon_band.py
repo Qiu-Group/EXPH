@@ -12,8 +12,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
 
-def plot_phonon_band_inteqp(nphonon=1, interposize=12, path='./', outfilename = 'phonon_band.dat'):
-    V_index = nphonon - 1
+def plot_phonon_band_inteqp(V_index=0, interposize=12, path='./', outfilename = 'phonon_band.dat'):
+    # V_index = nphonon - 1
     bvec = read_lattice('b',path)
     size = int(interposize ** 2)
     [qxx_new, qyy_new, omega_res] =omega_inteqp_q(interpo_size=interposize,new_q_out=True,path=path)
@@ -31,4 +31,4 @@ def plot_phonon_band_inteqp(nphonon=1, interposize=12, path='./', outfilename = 
 
 
 if __name__ == "__main__":
-    plot_phonon_band_inteqp(nphonon=2, interposize=120,path='../')
+    plot_phonon_band_inteqp(V_index=2, interposize=120,path='../')
