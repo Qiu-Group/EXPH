@@ -14,12 +14,12 @@ newest!! res = [0.0159358508119-0.000852284450595j]
 (a) 4 4 1
 193574848.4561666?? should be wrong
 7839570641.3534737
-newest!!!!  [8876085809266.0039] (skip omega=0, delta_function sigma=0.001):
-
+newest!!!!  8876085809266.0039 (bug!, depracated) (skip omega=0, delta_function sigma=0.001):
+[121658087995.95515]
 
 (b) 12 12 1
 8.46375798951e+15<<<
-newest!!!!!!  [2.42461752574e+16]
+newest!!!!!!  2.42461752574e+16 (bug!, depracated)
 
 
 Warning: "normalization" should not be included

@@ -154,7 +154,7 @@ def Gamma_scat_test_nointeqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001
                 # tododone Check this !!!
                 omega_v_q_temp     = omega_mat[int(q_gkk_index),int(v_ph_gkk_index_loop)] * 10 ** (-3) # dimension [eV]
                 OMEGA_m_Q_plus_q_temp = exciton_energy[int(Qpr_as_Q_plus_q_acv_index), int(m_ext_acv_index_loop)] # dimension [eV]
-                OMEGA_n_Q_temp        = exciton_energy[int(Q_acv_index),               int(m_ext_acv_index_loop)] # dimension [eV]
+                OMEGA_n_Q_temp        = exciton_energy[int(Q_acv_index),               int(n_ext_acv_index)] # dimension [eV]
 
                 # (2) left part
                 # print(OMEGA_m_Q_plus_q_temp)
@@ -413,7 +413,7 @@ def Gamma_scat_low_efficiency_inteqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussi
                     continue
 
                 omega_v_q_temp = res_omega[int(v_ph_gkk_index_loop)].flatten()[q_inteqp_index] * 10 ** (-3) # dimension [eV]
-                OMEGA_n_Q_temp = res_OMEGA[int(m_ext_acv_index_loop)].flatten()[Q_inteqp_index] # dimension [eV]
+                OMEGA_n_Q_temp = res_OMEGA[int(n_ext_acv_index)].flatten()[Q_inteqp_index] # dimension [eV]
                 OMEGA_m_Q_plus_q_temp = res_OMEGA[int(m_ext_acv_index_loop)].flatten()[Qpr_as_Q_plus_q_inteqp_index] # dimension [eV]
 
                 # tododone Check this !!!
@@ -517,8 +517,8 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
 
 
 if __name__ == "__main__":
-    res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
-    # res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
+    # res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
+    res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
     # res = interpolation_check_for_Gamma_calculation(path='../',interpo_size=12)
 
 

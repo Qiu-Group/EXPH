@@ -323,7 +323,7 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
                     continue
 
                 omega_v_q_temp = res_omega[int(v_ph_gkk_index_loop)].flatten()[q_inteqp_index] * 10 ** (-3) # dimension [eV]
-                OMEGA_n_Q_temp = res_OMEGA[int(m_ext_acv_index_loop)].flatten()[Q_inteqp_index] # dimension [eV]
+                OMEGA_n_Q_temp = res_OMEGA[int(n_ext_acv_index)].flatten()[Q_inteqp_index] # dimension [eV]
                 OMEGA_m_Q_plus_q_temp = res_OMEGA[int(m_ext_acv_index_loop)].flatten()[Qpr_as_Q_plus_q_inteqp_index] # dimension [eV]
 
                 # tododone Check this !!!
@@ -379,6 +379,6 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 #  the worst part of parallel is from 321-333 lines EX_PH_scat.py,
 #  which leands to a non-Linear parallel, since use interpolation for many times.
 if __name__ == "__main__":
-    # res_para = para_Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=12, path='../')
-    res = para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2, T=100, degaussian=0.001,path='../',interposize=12)
+    # res_para = para_Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001, interposize=4, path='../')
+    res = para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2, T=100, degaussian=0.001,path='../',interposize=4)
     pass
