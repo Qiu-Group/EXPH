@@ -91,6 +91,7 @@ def Gamma_scat_test_nointeqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001
         else:
             raise Exception("the parallel parameter is not int")
 
+    skip_count = 0 # for debug
     for q_kmap in range(q_map_start_para, q_map_end_para):  # q_kmap is the index of kmap from point 0-15 in kmap.dat (e.g)
         if not muteProgress:
             progress.current += 1
@@ -135,6 +136,7 @@ def Gamma_scat_test_nointeqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001
                 # print('gqQ_sq_temp is 0?',gqQ_sq_temp is 0)
                 # print('type(gqQ_sq_temp is 0?)',type(gqQ_sq_temp))
                 if gqQ_sq_temp == 0:
+                    skip_count += 1
                     # print(q_kmap,v_ph_gkk_index_loop)
                     continue
 
@@ -199,6 +201,8 @@ def Gamma_scat_test_nointeqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001
     # print(status_for_para)
 
     # TODOdone: Discuss with Diana!!!
+    progress.done()
+    # print('skip %s times out of %s * %s * %s'%(skip_count,q_map_end_para-q_map_start_para,exciton_energy.shape[1], n_phonon))
 
     if status_for_para == 'nopara':
         # return Gamma_first_res / dirac_normalize_factor_first + Gamma_second_res / dirac_normalize_factor_second

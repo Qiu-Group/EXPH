@@ -54,6 +54,12 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
     if bandmap_occ is None:
         bandmap_occ = read_bandmap(path=path)
 
+    # print('kmap',kmap)
+    # print('\n')
+    # print('kmap_dic',kmap_dic)
+    # print('\n')
+    # print('bandmap-occ',bandmap_occ)
+
     # input (as variable)
     # !!! Just two example, you need to intensively test on this
     # Q_kmap = 6 # this is index of kmap
@@ -297,7 +303,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
                     # (iv) res_temp
                     second_res = second_res + Acv_temp1_conjugated_second * Acv_temp2_second * gkk_temp_second
 
-        res = res + first_res + second_res
+        res = res + (first_res - second_res)  # Bug fixed 11/14/2022: + -> -
     return res * 10**(-3) # meV to eV
 
 def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,

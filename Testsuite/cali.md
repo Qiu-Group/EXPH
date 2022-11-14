@@ -4,10 +4,11 @@ cali:
 12 12 1
 res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../',k_map_start_para=77,k_map_end_para=144)
 
-newest!! res = [0.0159358508119-0.000852284450595j]
+newest!! res = 0.0159358508119-0.000852284450595j deprecated (wrong)
 
 4 4 1
-[(-0.00029862310477371133-0.00022746828154937592j)]
+(-0.00029862310477371133-0.00022746828154937592j) wrong
+[(1.2586895416293405e-05+4.465232765946882e-05j)] !!
 
 2. EX_PH_cat (w/o normalization):
 
@@ -15,7 +16,8 @@ newest!! res = [0.0159358508119-0.000852284450595j]
 193574848.4561666?? should be wrong
 7839570641.3534737
 newest!!!!  8876085809266.0039 (bug!, depracated) (skip omega=0, delta_function sigma=0.001):
-[121658087995.95515]
+121658087995.95515 wrong: since mat is wrong + -> -
+[50631692479.397934] !!
 
 (b) 12 12 1
 8.46375798951e+15<<<

@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="bug fixed:&#10;&#10;(1) OMEGA_n_Q_temp = res_OMEGA[int(n_ext_acv_index)].flatten()[Q_inteqp_index] # dimension [eV]&#10;(2) OMEGA_n_Q_temp = exciton_energy[int(Q_acv_index), int(n_ext_acv_index)] # dimension [eV]">
-      <change afterPath="$PROJECT_DIR$/PLot_/plot_ele_ph_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="(1) using linear interpolation&#10;(2) using plt.cntourf">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Common/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/Common/common.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_inteqp.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_inteqp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLot_/plot_xct_band.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_xct_band.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLot_/plot_xct_lifetime.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_xct_lifetime.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_scat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Testsuite/cali.md" beforeDir="false" afterPath="$PROJECT_DIR$/Testsuite/cali.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/exph.in" beforeDir="false" afterPath="$PROJECT_DIR$/exph.in" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,17 +49,20 @@
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.plot_xct_band">
-    <configuration name="plot_ele_ph_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.Para_EX_PH_scat">
+    <configuration name="EX_PH_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ELPH" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_ele_ph_mat.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ELPH/EX_PH_mat.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -74,16 +71,61 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_phonon_band" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="EX_PH_scat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ELPH" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_phonon_band.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ELPH/EX_PH_scat.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Para_EX_PH_scat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code_exph" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="exph" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code_exph" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/exph.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -96,6 +138,9 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -110,49 +155,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_xct_lifetime" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code_exph" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_xct_lifetime.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="plot_xct_ph_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code_exph" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Para_EX_PH_scat" />
+        <item itemvalue="Python.EX_PH_scat" />
+        <item itemvalue="Python.EX_PH_mat" />
+        <item itemvalue="Python.exph" />
         <item itemvalue="Python.plot_xct_band" />
-        <item itemvalue="Python.plot_xct_ph_mat" />
-        <item itemvalue="Python.plot_xct_lifetime" />
-        <item itemvalue="Python.plot_ele_ph_mat" />
-        <item itemvalue="Python.plot_phonon_band" />
       </list>
     </recent_temporary>
   </component>
@@ -270,7 +279,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668090393431</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="(1) using linear interpolation&#10;(2) using plt.cntourf">
+      <created>1668394961655</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1668394961655</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -299,6 +315,7 @@
     <MESSAGE value="v1.4" />
     <MESSAGE value="save:11/10/2022 9:05am" />
     <MESSAGE value="bug fixed:&#10;&#10;(1) OMEGA_n_Q_temp = res_OMEGA[int(n_ext_acv_index)].flatten()[Q_inteqp_index] # dimension [eV]&#10;(2) OMEGA_n_Q_temp = exciton_energy[int(Q_acv_index), int(n_ext_acv_index)] # dimension [eV]" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fixed:&#10;&#10;(1) OMEGA_n_Q_temp = res_OMEGA[int(n_ext_acv_index)].flatten()[Q_inteqp_index] # dimension [eV]&#10;(2) OMEGA_n_Q_temp = exciton_energy[int(Q_acv_index), int(n_ext_acv_index)] # dimension [eV]" />
+    <MESSAGE value="(1) using linear interpolation&#10;(2) using plt.cntourf" />
+    <option name="LAST_COMMIT_MESSAGE" value="(1) using linear interpolation&#10;(2) using plt.cntourf" />
   </component>
 </project>
