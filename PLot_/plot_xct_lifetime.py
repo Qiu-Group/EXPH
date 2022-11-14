@@ -56,7 +56,8 @@ def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, read_f
         # surf = ax.plot_surface(Qxx,Qyy,lifetime_res, cmap=cm.cool)
         surf = ax.plot_surface(res[:, 0].reshape((interposize_for_Lifetime,interposize_for_Lifetime)), res[:, 1].reshape((interposize_for_Lifetime, interposize_for_Lifetime)),
                                res[:, 3].reshape((interposize_for_Lifetime, interposize_for_Lifetime)), cmap=cm.cool)
-
+        cbar = plt.colorbar()
+        cbar.solids.set_edgecolor("face")
         plt.show()
         # res = np.array([Qxx.flatten(),Qyy.flatten,np.zeros(int(interposize_for_Lifetime-1)**2),lifetime_res.flatten()]).T
         np.savetxt('exciton_lifetime.dat',res)
@@ -87,11 +88,14 @@ def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, read_f
         res[:,:3] = frac2carte(bvec,res[:,:3])
 
         # surf = ax.plot_surface(Qxx,Qyy,lifetime_res, cmap=cm.cool)
-        fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+        # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
         # surf = ax.plot_surface(Qxx,Qyy,lifetime_res, cmap=cm.cool)
-        surf = ax.plot_surface(res[:, 0].reshape((interposize_for_Lifetime,interposize_for_Lifetime)), res[:, 1].reshape((interposize_for_Lifetime, interposize_for_Lifetime)),
-                               res[:, 3].reshape((interposize_for_Lifetime, interposize_for_Lifetime)), cmap=cm.cool)
-
+        # surf = ax.plot_surface(res[:, 0].reshape((interposize_for_Lifetime,interposize_for_Lifetime)), res[:, 1].reshape((interposize_for_Lifetime, interposize_for_Lifetime)),
+                               # res[:, 3].reshape((interposize_for_Lifetime, interposize_for_Lifetime)), cmap=cm.cool)
+        plt.contourf(res[:, 0].reshape((interposize_for_Lifetime,interposize_for_Lifetime)), res[:, 1].reshape((interposize_for_Lifetime, interposize_for_Lifetime)),
+                               res[:, 3].reshape((interposize_for_Lifetime, interposize_for_Lifetime)))
+        cbar = plt.colorbar()
+        cbar.solids.set_edgecolor("face")
         plt.show()
         np.savetxt('exciton_lifetime_new.dat', res)
 
@@ -99,4 +103,4 @@ def plot_ex_lifetime_inteqp(n_ext_acv_index=0, T=100, degaussian = 0.001, read_f
 
 
 if __name__ == "__main__":
-    res = plot_ex_lifetime_inteqp(path='../',start_from_zero=True, mute=False, interposize_for_Lifetime=120,interposize_for_LifetimeGamma=12)
+    res = plot_ex_lifetime_inteqp(n_ext_acv_index=0 ,path='../',start_from_zero=False, mute=False, interposize_for_Lifetime=120,interposize_for_LifetimeGamma=12)

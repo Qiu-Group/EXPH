@@ -117,3 +117,10 @@ def frac2carte(a0, fractional_point):
 def is_sqr(n):
     a = int(np.sqrt(n))
     return a * a == n
+
+if __name__ == "__main__":
+    a_length = 1.057269
+    a0 = np.loadtxt('a0.txt') * a_length
+    # a0 = a0[:2,:2]
+    point = np.loadtxt('crystal.txt')
+    res = frac2carte(a0,point)

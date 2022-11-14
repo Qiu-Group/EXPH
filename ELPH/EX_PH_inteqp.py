@@ -49,7 +49,7 @@ def omega_inteqp_q(interpo_size=12, new_q_out=False,path="./"):
         # ================================================
         # boundary condition
         omega_res_temp = dispersion_inteqp_complete(temp_omega)
-        omega_res[j_phonon] = interqp_2D(omega_res_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+        omega_res[j_phonon] = interqp_2D(omega_res_temp, interpo_size=interpo_size, kind='linear')[:interpo_size-1, :interpo_size-1]
 
     qxx_new = "None"
     qyy_new = "None"
@@ -92,7 +92,7 @@ def OMEGA_inteqp_Q(interpo_size=12, new_Q_out=False, path="./"):
         # ================================================
         # boundary condition
         OMEGA_res_temp = dispersion_inteqp_complete(temp_OMEGA)
-        OMEGA_res[j_xt] = interqp_2D(OMEGA_res_temp, interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+        OMEGA_res[j_xt] = interqp_2D(OMEGA_res_temp, interpo_size=interpo_size,kind='linear')[:interpo_size-1, :interpo_size-1]
 
 
     Qxx_new = "None"

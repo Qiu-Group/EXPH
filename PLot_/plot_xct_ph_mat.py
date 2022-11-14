@@ -93,8 +93,11 @@ def plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk
                 res[:, 3] = res[:, 3] + temp_res.flatten()
 
     pass
-    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-    surf = ax.plot_surface(res[:,0].reshape((interposize,interposize)), res[:,1].reshape((interposize,interposize)), res[:,3].reshape((interposize,interposize)), cmap=cm.cool)
+    # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    # surf = ax.plot_surface(res[:,0].reshape((interposize,interposize)), res[:,1].reshape((interposize,interposize)), res[:,3].reshape((interposize,interposize)), cmap=cm.cool)
+    plt.contourf(res[:,0].reshape((interposize,interposize)), res[:,1].reshape((interposize,interposize)), res[:,3].reshape((interposize,interposize)))
+    cbar = plt.colorbar()
+    cbar.solids.set_edgecolor("face")
     plt.show()
     np.savetxt(outfilename, res)
 
@@ -147,4 +150,4 @@ def plot_ex_ph_mat_nointeqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_g
 if __name__=="__main__":
     # plot_ex_ph_mat(mute=False, path='../')
     # plot_ex_ph_mat_nointeqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[1],v_ph_gkk=[3],mute=False, path='../')
-    plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk=[0,1,2,3,4,5],mute=False, path='../', interposize=132)
+    plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=2, m_ex_acv=[0,1],v_ph_gkk=[0,1,2,3,4,5,6,7,8],mute=False, path='../', interposize=12)

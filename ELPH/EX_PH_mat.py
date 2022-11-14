@@ -41,7 +41,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
     :param k_map_start_para: the start index of k_map (default: 0)
     :param k_map_end_para= the end index of k_map (default: kmap.shape[0])
     :param muteProgress determine if enable progress report
-    :return: the gkk unit is meV, but return here is eV
+    :return: the gkk unit is meV, but here returns is eV
     """
     if acvmat is None:
         acvmat = read_Acv(path=path)
@@ -321,7 +321,7 @@ def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0
     :param k_map_start_para: the start index of k_map (default: 0)
     :param k_map_end_para= the end index of k_map (default: kmap.shape[0])
     :param muteProgress determine if enable progress report
-    :return: |gqQ| interpoated by q: interpo_size * interpo_size
+    :return: |gqQ| interpoated by q: interpo_size * interpo_size [eV]
     """
     # Q_kmap_star = 0 # exciton start momentum Q (index)
     # n_ex_acv = 0 # exciton start quantum state S_i (index): we only allow you to set one single state right now
@@ -366,7 +366,7 @@ def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0
                                    kmap_dic=kmap_dic,
                                    bandmap_occ=bandmap_occ,
                                    muteProgress=True
-                                   ))
+                                   )) # eV
 
     # interpolation for q-grid
     qxx_new = "None"
@@ -390,14 +390,14 @@ def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0
     # boundary condition
     resres_temp = dispersion_inteqp_complete(resres)
 # ------------------------------------------------
-    resres_new = interqp_2D(resres_temp,interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+    resres_new = interqp_2D(resres_temp,interpo_size=interpo_size,kind='linear')[:interpo_size-1, :interpo_size-1]
 
     if new_q_out:
         # if qxx_new == "None" or qyy_new == "None":
         #     raise Exception("qxx_new == None or qyy_new == None")
         return [qxx_new, qyy_new, resres_new]
     else:
-        return resres_new # interpolate_size * interpolate_size
+        return resres_new # interpolate_size * interpolate_size/ eV
 
 
     # np.savetxt('qxx_new.dat',qxx_new[:,0])
@@ -424,7 +424,7 @@ def gqQ_inteqp_get_coarse_grid(n_ex_acv_index=2, m_ex_acv_index=0, v_ph_gkk=3, Q
     :param k_map_start_para: the start index of k_map (default: 0)
     :param k_map_end_para= the end index of k_map (default: kmap.shape[0])
     :param muteProgress determine if enable progress report
-    :return: |gqQ| interpoated by q: interpo_size * interpo_size
+    :return: |gqQ| interpoated by q: interpo_size * interpo_size [eV]
     """
     # Q_kmap_star = 0 # exciton start momentum Q (index)
     # n_ex_acv = 0 # exciton start quantum state S_i (index): we only allow you to set one single state right now
@@ -521,7 +521,7 @@ def gqQ_inteqp_q_series(res, new_q_out=False, interpo_size=12, kmap=None, path='
     # boundary condition
     resres_temp = dispersion_inteqp_complete(resres)
     # ------------------------------------------------
-    resres_new = interqp_2D(resres_temp,interpo_size=interpo_size)[:interpo_size-1, :interpo_size-1]
+    resres_new = interqp_2D(resres_temp,interpo_size=interpo_size,kind='linear')[:interpo_size-1, :interpo_size-1]
 
     if new_q_out:
         # if qxx_new == "None" or qyy_new == "None":

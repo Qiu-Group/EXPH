@@ -2,7 +2,7 @@
 valence_start_gkk = 11
 conduction_end_gkk = 14
 #save_path = './save_MoS2_symm_24241k_12121Q/'
-save_path = './save_MoS2_symm/'
+save_path = './save_MoS2_nosymm/'
 h5_path = './'
 T=100.0
 degaussian = 0.001
@@ -11,29 +11,29 @@ degaussian = 0.001
 initialize =True
 
 xct_scattering_rate = False
-xct_scattering_rate_Q_kmap = 16
-xct_scattering_rate_nS = 3
-xct_scattering_rate_interpolation = 12
+xct_scattering_rate_Q_kmap = 2
+xct_scattering_rate_nS = 1
+xct_scattering_rate_interpolation = 4
 
 xct_lifetime_all_BZ = False
 xct_lifetime_all_BZ_nS = 1
 xct_lifetime_all_BZ_interpolation = 4
 
 # (3) Plot: all index start with 1 --> band = 1 means quantum number =1
-plot_xt_band = True
-plot_xt_band_number = 4
-plot_xt_interpolation = 120
+plot_xt_band = False
+plot_xt_band_number = 1
+plot_xt_interpolation = 12
 
 plot_ph_band = False
 plot_ph_band_number = 2
 plot_ph_band_interpolation = 120
 
-plot_xct_ph_mat = False
+plot_xct_ph_mat = True
 plot_xct_ph_mat_Q = 1
 plot_xct_ph_mat_n = 1
-plot_xct_ph_mat_m = [1,2,3,4]
-plot_xct_ph_mat_ph = [1,2,3,4,5,6]
-plot_xct_ph_mat_interpolation = 132
+plot_xct_ph_mat_m = [1]
+plot_xct_ph_mat_ph = [1,2,3,4,5,6,7,8,9]
+plot_xct_ph_mat_interpolation = 12
 
 plot_xct_lifetime = False
 plot_xct_lifetime_interposize_for_Lifetime = 120

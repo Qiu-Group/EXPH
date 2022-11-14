@@ -33,8 +33,11 @@ def plot_exciton_band_inteqp(S_index=0, interposize=12, path='./', outfilename =
     res[:,3] = OMEGA_res[S_index].flatten()
     res[:,:3] = frac2carte(bvec,res[:,:3])
 
-    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-    surf = ax.plot_surface(res[:,0].reshape((interposize,interposize)), res[:,1].reshape((interposize,interposize)), res[:,3].reshape((interposize,interposize)), cmap=cm.cool)
+    # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    # surf = ax.plot_surface(res[:,0].reshape((interposize,interposize)), res[:,1].reshape((interposize,interposize)), res[:,3].reshape((interposize,interposize)), cmap=cm.cool)
+    plt.contourf(res[:,0].reshape((interposize,interposize)), res[:,1].reshape((interposize,interposize)), res[:,3].reshape((interposize,interposize)))
+    cbar = plt.colorbar()
+    cbar.solids.set_edgecolor("face")
     plt.show()
     np.savetxt(outfilename, res)
 
@@ -78,4 +81,4 @@ def plot_exciton_band_nointeqp(S_index=2, path= './',outfilename = 'exciton_band
 
 if __name__ == "__main__":
     # plot_exciton_band_nointeqp(1, path='../')
-    plot_exciton_band_inteqp(S_index=1,path='../',interposize=120)
+    plot_exciton_band_inteqp(S_index=4,path='../',interposize=12)
