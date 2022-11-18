@@ -20,7 +20,7 @@ import numpy as np
 import h5py as h5
 
 path = '../'
-interposize = 120
+interposize = 12
 k_kmap_index = 3
 initial_state_gkk_indsex = 2
 final_state_gkk_index = [2]

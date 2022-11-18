@@ -77,7 +77,7 @@ def Gamma_scat_test_nointeqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001
     # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
     dirac_normalize_factor_first = 0.0
     dirac_normalize_factor_second = 0.0
-
+    # print('exciton_energy.shape[1]',exciton_energy.shape[1])
     #=============================
     # tododone: double check if this is right (parallel unit):
     if q_map_start_para == 'nopara' and q_map_end_para == 'nopara':
@@ -138,6 +138,7 @@ def Gamma_scat_test_nointeqp(Q_kmap=6, n_ext_acv_index=0,T=100, degaussian=0.001
                 if gqQ_sq_temp == 0:
                     skip_count += 1
                     # print(q_kmap,v_ph_gkk_index_loop)
+                    # This is for efficiency and convergence
                     continue
 
 
@@ -521,8 +522,8 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
 
 
 if __name__ == "__main__":
-    # res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
-    res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
+    res0= Gamma_scat_test_nointeqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,path='../')
+    # res = Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,interposize=4,path='../')
     # res = interpolation_check_for_Gamma_calculation(path='../',interpo_size=12)
 
 

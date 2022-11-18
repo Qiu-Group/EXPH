@@ -149,7 +149,7 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     nv = occ + 1 - bandmap[:, 0][0]  # load number of valence band
     n_phonon = omega_mat.shape[1]
     # Nqpt = kmap.shape[0] # number of q-points
-    Nqpt = interposize**2
+    Nqpt = interposize**2 # Nice!
 
     if interposize**2 != kmap.shape[0]:
         if not muteProgress:

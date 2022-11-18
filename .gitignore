@@ -16,3 +16,7 @@ Parallel/ex_S1_lifetime.dat
 /save_MoS2_symm_24241k_12121Q/
 /Common/a0.txt
 /Common/crystal.txt
+/test/kgrid.inp
+/test/in_head
+/test/inq_head
+/test/test.inp
