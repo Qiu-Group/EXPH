@@ -135,8 +135,9 @@ go_sh_tacc = ['#!/bin/bash\n', '#SBATCH -J fin_Q\n', '#SBATCH -o myjob.o\%j\n' '
               "BGWPATH1='/home1/08237/bwhou/software/BerkeleyGW-3.0.1/bin/'\n", '\n\n',
               "cd inteqp\nibrun $BGWPATH1/inteqp.cplx.x > inteqp.out\n",
               "cd ../\n",
-              "for ((i=2;i<=%s;i++));\ndo\n" % n_kpt,
-              "cd ./Q-$i/5.1-kernel-Q\nibrun   $BGWPATH1/kernel.cplx.x > kernel.out\n",
+              "for ((i=1;i<=%s;i++));\ndo\n" % n_kpt,
+              "cd ./Q-$i/5.0-inteqp-Q\nibrun   $BGWPATH1/inteqp.cplx.x > inteqp.out\n",
+              "cd ../5.1-kernel-Q\nibrun   $BGWPATH1/kernel.cplx.x > kernel.out\n",
               "cd ../5.2-absorp-Q\n", "ibrun  $BGWPATH1/absorption.cplx.x > absorption.out\n", "cd ../../\ndone"]
 
 go = open('go.sh', 'w')
