@@ -1,29 +1,41 @@
 # EXPH
 
-EXPH_v1.4
+EXPH_v1.5
 
 Author: Bowen Hou
 
 Creating Time: 10/03/2022
 
-Last Updated: 11/06/2022
+Last Updated: 11/25/2022
 
 ---
 ## Exciton-Phonon Interaction
 
-(1) Exciton lifetime (scattring rate) over 1st BZ could be calculated
+1. Exciton lifetime (scattring rate) over 1st BZ could be calculated
 
-(2) Exciton-Phonon scattering matrix 
+2. Exciton-Phonon scattering matrix 
 
-(3) Parallel is available!!
+3. Parallel is available!
 
-(4) Interpolation is available (parallel is working for interpolation!)
+4. Interpolation is available (parallel is working for interpolation!)
 
-(5) Symmetry is available for finite Q!!
+5. Symmetry is available for finite Q!
+
+6. Exciton band pp is available for BGW! (see ./Utilities)
 
 ## Workflow
 ![avatar](./fig/workflow.jpg)
 ---
+
+## Convergence Test
+
+(a) Convergence test for delta function (approximated as a Gaussian function) vs. Interpolation 
+
+![avatar](./fig/Gaussian_Interpolation_Convergence.png)
+
+---
+
+
 ## Parallel Efficiency of EX_PH_scat.py (Calculate Scattering Rate of Exciton State over 1st BZ):
 
 (a) Test on PC Windows
@@ -55,7 +67,7 @@ Last Updated: 11/06/2022
 ---
 Todo:
 
- (i) check everything of EX_PH_scat and EX_PH_lifetime
+ <!--(i) check everything of EX_PH_scat and EX_PH_lifetime
  
  (ii) normalization has been added, test more about it 
     
@@ -64,4 +76,4 @@ Todo:
 
  (iii) add some input file and rading system
 
- (iv) double check this: skip q=0 and omega = 0
+ (iv) double check this: skip q=0 and omega = 0-->
