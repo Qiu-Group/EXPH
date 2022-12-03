@@ -125,7 +125,7 @@ def kmap_generate(Q, k_acv, q, k_gkk, readwhat=3, acvs_save_path = './save/acvs.
         # res_map = {}
         for j in range(baseKgrid.shape[0]):
             base_kpoint = baseKgrid[j]
-            res = '  %.6f    %.6f    %.6f'%(base_kpoint[0], base_kpoint[1], base_kpoint[2])
+            res = '  %.7f    %.7f    %.7f'%(base_kpoint[0], base_kpoint[1], base_kpoint[2])
             # res_map['%.5f %.5f %.5f'%(base_kpoint[0], base_kpoint[1], base_kpoint[2])] = []
             for i in range(4):
                 if i == 0:
@@ -137,7 +137,7 @@ def kmap_generate(Q, k_acv, q, k_gkk, readwhat=3, acvs_save_path = './save/acvs.
                         if equivalence_order(baseKgrid[j],todoKgrid[k]):
                             match = 1
                             # print()
-                            key_temp = '  %.6f    %.6f    %.6f' % (todoKgrid[k][0], todoKgrid[k][1], todoKgrid[k][2])
+                            key_temp = '  %.7f    %.7f    %.7f' % (todoKgrid[k][0], todoKgrid[k][1], todoKgrid[k][2])
                             Q_index = symm_dic[key_temp.replace('-', '')]
                             res = res + "    %s"%Q_index
                             continue
@@ -176,7 +176,7 @@ def kmap_generate(Q, k_acv, q, k_gkk, readwhat=3, acvs_save_path = './save/acvs.
         # res_map = {}
         for j in range(baseKgrid.shape[0]):
             base_kpoint = baseKgrid[j]
-            res = '  %.6f    %.6f    %.6f'%(base_kpoint[0], base_kpoint[1], base_kpoint[2])
+            res = '  %.7f    %.7f    %.7f'%(base_kpoint[0], base_kpoint[1], base_kpoint[2])
             # res_map['%.5f %.5f %.5f'%(base_kpoint[0], base_kpoint[1], base_kpoint[2])] = []
             for i in range(4):
                 todoKgrid = [Q, k_acv, q, k_gkk][i]

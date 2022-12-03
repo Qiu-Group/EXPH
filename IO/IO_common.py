@@ -85,7 +85,7 @@ def construct_symmetry_dic(save_path,mute=False):
     :param save_path: the path of acvs.save/
     :param uniform_grid_array: see read_kgrid_log
     :param reduced_grid_array: see read_kgrid_log
-    :return: symm_dic: {'  %.6f    %.6f    %.6f'}
+    :return: symm_dic: {'  %.7f    %.7f    %.7f'}
     """
     uniform_grid_array, reduced_grid_array = read_kgrid_log(save_path, mute=mute)
     n_uniform = uniform_grid_array.shape[0]
@@ -98,9 +98,9 @@ def construct_symmetry_dic(save_path,mute=False):
     symm_dic = {}
     for i in range(n_uniform):
         if int(uniform_grid_array[i,4]) == 0:
-            symm_dic['  %.6f    %.6f    %.6f' % (uniform_grid_array[i][0],uniform_grid_array[i][1], uniform_grid_array[i][2])] = int(full2reduce_dic[uniform_grid_array[i][3]]) - 1
+            symm_dic['  %.7f    %.7f    %.7f' % (uniform_grid_array[i][0],uniform_grid_array[i][1], uniform_grid_array[i][2])] = int(full2reduce_dic[uniform_grid_array[i][3]]) - 1
         else:
-            symm_dic['  %.6f    %.6f    %.6f' % (uniform_grid_array[i][0], uniform_grid_array[i][1], uniform_grid_array[i][2])] = int(full2reduce_dic[uniform_grid_array[i][4]]) - 1
+            symm_dic['  %.7f    %.7f    %.7f' % (uniform_grid_array[i][0], uniform_grid_array[i][1], uniform_grid_array[i][2])] = int(full2reduce_dic[uniform_grid_array[i][4]]) - 1
 
     return symm_dic
 
