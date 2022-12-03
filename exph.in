@@ -1,8 +1,8 @@
 # (1) Parameter
-valence_start_gkk = 11
-conduction_end_gkk = 14
-#save_path = './save_MoS2_symm_24241k_12121Q/'
-save_path = './save_MoS2_nosymm/'
+valence_start_gkk = 21
+conduction_end_gkk = 28
+save_path = './save_MoS2_symm_24241k_12121Q/'
+#save_path = './save_MoS2_nosymm/'
 h5_path = './'
 T=100.0
 degaussian = 0.008
@@ -10,7 +10,7 @@ degaussian = 0.008
 # (2) initialize includes creating Acv.h5, gkk.h5, kkqQmap.dat and bandmap.dat
 initialize =False
 
-xct_scattering_rate = True
+xct_scattering_rate = False
 xct_scattering_rate_Q_kmap = 3
 xct_scattering_rate_nS = 1
 xct_scattering_rate_interpolation = 36
@@ -20,9 +20,9 @@ xct_lifetime_all_BZ_nS = 1
 xct_lifetime_all_BZ_interpolation = 4
 
 # (3) Plot: all index start with 1 --> band = 1 means quantum number =1
-plot_xt_band = False
+plot_xt_band = True
 plot_xt_band_number = 1
-plot_xt_interpolation = 12
+plot_xt_interpolation = 48
 
 plot_ph_band = False
 plot_ph_band_number = 2

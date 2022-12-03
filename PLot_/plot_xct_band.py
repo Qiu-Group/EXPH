@@ -17,6 +17,10 @@ from matplotlib import cm
 
 def plot_exciton_band_inteqp(S_index=0, interposize=12, path='./', outfilename = 'exciton_band.dat'):
     # S_index = nS - 1
+
+    if S_index < 0:
+        raise Exception("S_index < 0")
+
     bvec = read_lattice('b',path)
     size = int(interposize ** 2)
     [Qxx_new, Qyy_new, OMEGA_res] = OMEGA_inteqp_Q(interpo_size=interposize,new_Q_out=True,path=path)
@@ -49,6 +53,9 @@ def plot_exciton_band_nointeqp(S_index=2, path= './',outfilename = 'exciton_band
     :param path: path of Acv.h5
     :param outfilename: path of output file
     """
+    if S_index < 0:
+        raise Exception("S_index < 0")
+
     # S_index = nS - 1
     f = h5.File(path+'Acv.h5','r')
     Seigenval = f['exciton_data/eigenvalues'][()]
@@ -81,4 +88,4 @@ def plot_exciton_band_nointeqp(S_index=2, path= './',outfilename = 'exciton_band
 
 if __name__ == "__main__":
     # plot_exciton_band_nointeqp(1, path='../')
-    plot_exciton_band_inteqp(S_index=4,path='../',interposize=12)
+    plot_exciton_band_inteqp(S_index=0,path='../',interposize=12)
