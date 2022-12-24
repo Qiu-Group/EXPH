@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import numpy as np
 # Setting
@@ -15,7 +17,7 @@ nv, nv, nc, nc)
 inteqp_each = "number_val_bands_fine %s\nnumber_val_bands_coarse %s\n\nnumber_cond_bands_fine %s\nnumber_cond_bands_coarse %s\n\nno_symmetries_fine_grid\nno_symmetries_shifted_grid\nuse_symmetries_coarse_grid\n\nuse_momentum\n" % (
 nv, nv, nc, nc)
 
-kernel = "number_val_bands %s\nnumber_cond_bands %s\n\nuse_symmetries_coarse_grid\nenergy_loss\nscreening_semiconductor\ncell_slab_truncation\n\nexciton_Q_shift 0 " % (
+kernel = "number_val_bands %s\nnumber_cond_bands %s\n\nno_symmetries_coarse_grid\nenergy_loss\nscreening_semiconductor\ncell_slab_truncation\n\nexciton_Q_shift 0 " % (
 nv, nc)
 absorption = "number_val_bands_fine %s\nnumber_val_bands_coarse %s\n\nnumber_cond_bands_fine %s\nnumber_cond_bands_coarse %s\n\nuse_symmetries_fine_grid\nno_symmetries_shifted_grid\nuse_symmetries_coarse_grid\n\neqp_co_q_corrections\neqp_co_corrections\n\ndiagonalization\nscreening_semiconductor\ncell_slab_truncation\n\n\nuse_velocity\nenergy_resolution 0.05\ngaussian_broadening\n\nwrite_eigenvectors 10\n\nexciton_Q_shift 0 " % (
 nv, nv, nc, nc)

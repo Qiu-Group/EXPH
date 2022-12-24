@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This script is used to calculate exciton dispersion over the 1st BZ.
 # Before using this script. please make sure that 1-mf contains 4.1-wfn_co_fullgrid, where
 # WFN is in a uniform k-grid like 24*24*1. By the way, you can also modify this to calculate any Q-point

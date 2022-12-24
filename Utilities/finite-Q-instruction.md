@@ -1,6 +1,6 @@
 #Two Methods for Finite Q Calculations
 
-## 1. Exciton Dispersion Along specific Q-points
+## 1. Exciton State for specific Q-points
 
 Instructions: calculate BSE for any Q-points
 Required input: in_head/pp_in (2.1-wfn), inq_head/pp_inq(2.2-wfnq), kgrid.inp, kpt.dat(4-path/WFN, this is actually Q-grid you want)

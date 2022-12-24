@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This only works for Linux
 # Nothing to set, just make sure neccessary files:
 # in_head/pp_in (2.1-wfn), inq_head/pp_inq(2.2-wfnq), kgrid.inp, kpt.dat(get from 4-path/WFN)
@@ -130,7 +132,9 @@ if __name__ == "__main__":
     os.system('cp ../in_head ./in')
     os.system('kgrid.x kgrid.inp kgrid.out kgrid.log')
     # write_list_line_by_line(get_unfold_grid_from_klog() ,'kgrid_unfold.out')
-    os.system('cat kgrid.out >> in')
+    write_list_line_by_line(get_unfold_grid_from_klog_without_shift(), 'kgrid_unfold.out')
+    os.system('cat kgrid_unfold.out >> in')
+    # os.system('cat kgrid.out >> in')
     os.system('cp -r ../1-scf/pp ./')
     os.system('cp ../pp_in ./')
     os.system('mkdir '+ save_file)

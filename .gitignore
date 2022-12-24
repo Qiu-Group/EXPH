@@ -20,3 +20,8 @@ Parallel/ex_S1_lifetime.dat
 /test/in_head
 /test/inq_head
 /test/test.inp
+/test/*
+/test/save_hBN_symm/
+/test/save_MoS2_nosymm/
+/test/save_MoS2_symm/
+/test/save_MoS2_symm_24241k_12121Q/

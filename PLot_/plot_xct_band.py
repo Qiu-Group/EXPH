@@ -88,4 +88,4 @@ def plot_exciton_band_nointeqp(S_index=2, path= './',outfilename = 'exciton_band
 
 if __name__ == "__main__":
     # plot_exciton_band_nointeqp(1, path='../')
-    plot_exciton_band_inteqp(S_index=0,path='../',interposize=12)
+    plot_exciton_band_inteqp(S_index=1,path='../',interposize=24)
