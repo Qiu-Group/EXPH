@@ -2,10 +2,16 @@
 
 import os
 import numpy as np
+import sys
 # Setting
 
-nv = 2
-nc = 2
+if len(sys.argv) < 3:
+    print("Usage: %s nc nv"%(sys.argv[0]))
+    print("nc(nv) is number of conduction(valence) bands in kernel.cplx.x")
+    sys.exit(1)
+
+nc = sys.argv[1]
+nv = sys.argv[2]
 
 qos = 'development'
 nodes = 40
@@ -22,6 +28,8 @@ nv, nc)
 absorption = "number_val_bands_fine %s\nnumber_val_bands_coarse %s\n\nnumber_cond_bands_fine %s\nnumber_cond_bands_coarse %s\n\nuse_symmetries_fine_grid\nno_symmetries_shifted_grid\nuse_symmetries_coarse_grid\n\neqp_co_q_corrections\neqp_co_corrections\n\ndiagonalization\nscreening_semiconductor\ncell_slab_truncation\n\n\nuse_velocity\nenergy_resolution 0.05\ngaussian_broadening\n\nwrite_eigenvectors 10\n\nexciton_Q_shift 0 " % (
 nv, nv, nc, nc)
 
+absorption_0 = "number_val_bands_fine %s\nnumber_val_bands_coarse %s\n\nnumber_cond_bands_fine %s\nnumber_cond_bands_coarse %s\n\nuse_symmetries_fine_grid\nuse_symmetries_shifted_grid\nuse_symmetries_coarse_grid\n\neqp_co_q_corrections\neqp_co_corrections\n\ndiagonalization\nscreening_semiconductor\ncell_slab_truncation\n\n\nuse_momentum\nenergy_resolution 0.05\ngaussian_broadening\n\nwrite_eigenvectors 10" % (
+nv, nv, nc, nc)
 # a = ('cd 1-epsilon\n', 'srun -n %d --cpu_bind=cores $BGWPATH1/epsilon.cplx.x > epsilon.out\n'%(nodes*cores)")
 
 
@@ -120,7 +128,10 @@ for i in range(len(k_list)):
     os.system("ln -sf ../../../../1-mf/4.2-wfnq_co-%s/WFN ./WFNq_fi" % (i + 1))
     os.system("ln -sf ../../inteqp/eqp.dat ./eqp_co.dat")
     os.system("ln -sf ../5.0-inteqp-Q/eqp.dat ./eqp_co_q.dat")
-    absorption_temp = absorption + k_list[i]
+    if i != 0:
+        absorption_temp = absorption + k_list[i]
+    if i == 0:
+        absorption_temp = absorption_0
     f = open("absorption.inp", 'w')
     f.write(absorption_temp)
     f.close()

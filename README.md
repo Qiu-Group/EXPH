@@ -6,7 +6,7 @@ Author: Bowen Hou
 
 Creating Time: 10/03/2022
 
-Last Updated: 11/25/2022
+Last Updated: 12/25/2022
 
 ---
 ## Exciton-Phonon Interaction
@@ -24,6 +24,9 @@ Last Updated: 11/25/2022
 6. Exciton band pp is available for BGW! (see ./Utilities)
 
 ## Workflow
+
+Please read Tutorial/Tutorial.md to learn how to use this tool! 
+
 ![avatar](./fig/workflow.jpg)
 ---
 
