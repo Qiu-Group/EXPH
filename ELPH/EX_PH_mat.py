@@ -410,7 +410,7 @@ def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0
     # np.savetxt('qyy_new.dat',qyy_new[0,:])
 
 # These two functions are for para_ex_ph_scat.py
-def gqQ_inteqp_get_coarse_grid(n_ex_acv_index=2, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=15, #interpo_size=12
+def gqQ_inteqp_get_coarse_grid(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=0, Q_kmap=0, #interpo_size=12
                                new_q_out=False, acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,muteProgress=True,
                                  path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
     """
@@ -477,7 +477,8 @@ def gqQ_inteqp_get_coarse_grid(n_ex_acv_index=2, m_ex_acv_index=0, v_ph_gkk=3, Q
             res[q_kmap,:3] = kmap[q_kmap,:3]
         res[q_kmap,3] = np.abs(gqQ(n_ex_acv_index=n_ex_acv_index,
                                    m_ex_acv_index=m_ex_acv_index,
-                                   v_ph_gkk=v_ph_gkk,Q_kmap=Q_kmap,
+                                   v_ph_gkk=v_ph_gkk,
+                                   Q_kmap=Q_kmap,
                                    q_kmap=q_kmap,
                                    acvmat=acvmat,
                                    gkkmat=gkkmat,

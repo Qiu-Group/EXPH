@@ -22,11 +22,16 @@ related properties, such as exciton band structure,exciton-phonon scattering mat
  - Required package:
     - Install [Anaconda](https://www.anaconda.com/) firstly
  
-    - Then ``conda install mpi4py``
+      - Then ``conda install mpi4py``
+    
+    - Install [EPW](https://docs.epw-code.org/doc/DownloadAndInstall.html) (I recommend you use EPW-5.3.0 and qe-6.6, which are 
+     stable from experience)
  
  - Tutorial Example
    - Here we will go though a simple case h-BN, and all instruction below will be finished in this case:  
-   `cd ~/your_software_path/EXPH/Tutorial/example/`
+   `cd ~/your_software_path/EXPH/Tutorial/`  
+   `unzip example.zip`  
+   ``cd example``
 
 ---    
 
@@ -120,10 +125,90 @@ Q-grid (such as 18\*18\*1), which will be used in later exciton-phonon matrix ca
   ``sbatch go.sh``  
   it might last 8 minutes if you use -N 10 -n 560
   
-  -
+  - collect all data to acvs.save  
+  ``collect.py acv 9``  
+  where acv denotes this is for acvs.save and 9 denotes the number of Q points (here we calculate 3\*3\*1 = 9 Q points)
 
+  By now, we have finished all calculation for finite-Q exciton! The next step is to do EPW calculation.  
+  ``cd ../../../4-epw/``
+    
 ### 3. Electron-Phonon Matrix from EPW
+(1) What are we doing here ?  
 
- - Electron-Phonon Matrix (EPW)
+In this step, we will use EPW (**please see their [tutorial](https://epw-code.org/) here! Contact Bowen for more tutorial material or 
+if you encounter any issue**) to generate electron-phonon matrix g(k,q,m,n,lambda), which will be used in later 
+exciton-phonon matrix calculation. In this example, I have prepare all input file for you and our calculation follows:
+SCF -> Phonon(DFPT) -> NSCF -pp.py-> EPW (carefully see every input file and go.sh in *./4-epw/* for details).  
+ **NOTE:** pp.py has two input parameter, the first one is prefix of system (here is bn), and the second one "3" denotes 
+ the number of q-point of phonon calculation (you can usually find this from ph.out)
+
+(2) Practical Step
+ - Run Calculation for Electron-Phonon Matrix (modify go.sh based on your need, such as path and nodes number)  
+ ``sbatch go.sh``  
+ this step will take about 2 minutes with -N 1 -n 9   
+ **Note:** when you are doing epw calculation in reality, you could divide it into two parts: Wannier and elph. The number of mpitask 
+ you are using for Wannier should not be more than the number of full-q points of system (here is 9), otherwise, it will
+ raise error. If you finish Wannier calculation, just set wannierize    = .false. , then you could use more mpitask. No worry here,
+ just run go.sh.
+  
+ - collect data to gkk.save  
+ ``collect.py gkk 6``  
+ where gkk denotes this is for gkk.save and 6 is number of phonon mode (here we have 2 atoms, so nmode=6)
+
+By now, we have finished all calculation for finite-Q exciton! The next step is to do EPW calculation.   
+  ``cd ../5-exph/`` 
 
 ### 4. Exciton-Phonon Interaction
+(1) What are we doing here ?  
+
+In this step, we will use EXPH post-process code to calculate exciton-phonon related quantities. Here are important key words
+in exph.in (input file of exph.py):  
+> **valence_start_gkk**: the lowest band index in el-ph calculation. (find this from epw.out)
+>  
+> **conduction_end_gkk:** the hiest band index in el-ph calculation. (find this from epw.out)  
+>
+> **T**: temperature  
+>
+> **degaussian**: the broadening of sigma function (the smaller the better, but you have to do convergence test with interpolated
+> Q-points, you can find some information [here](https://github.com/Qiu-Group/EXPH/blob/master/README.md))  
+>
+> **initialize**: initialize the system, generate necessary files and check everything before real calcualtion  
+>
+> **xct_scattering_rate**: calculate xct_scattering_rate for one exciton state (S,Q), set S and Q in the following lines in 
+> exph.in. This step is usually used for convergence test and a small test before lifetime calculation over the 1st BZ. For
+> convergence test, see [here](https://github.com/Qiu-Group/EXPH/blob/master/README.md)  
+> 
+> **xct_lifetime_all_BZ**: calculate lifetime of specified exciton band (S) over the 1s BZ,, where S is set in the following line  
+> 
+> **plot_***: You can use EXPH to plot or get data then plot by yourself.   
+> 
+> **NOTE**: parallel is only available for xct_scattering_rate and xct_lifetime_all_BZ. See parallel efficiency [here](https://github.com/Qiu-Group/EXPH/blob/master/README.md)   
+
+(2) Practical Step
+  - collect accvs.save and gkk.save save  
+  ``mkdir save``  
+  ``cp -r ../3-exciton-band/2-bgw/5-exciton-Q/acvs.save ./save``  
+  ``cp -r ../4-epw/gkk.save ./save``
+  
+  - Initialize system:  
+  Set **initialize =True**   
+  run ``exph.py``   
+  In this step, EXPH code will generate necessary kpt map, band map, gkk.h5 and acvs.h5 files. And
+  this step will check if information in acvs.save and gkk.save match with each other (since they are calculated from
+  two different softwares, we need to do this double check)
+    - ***gkk.h5***: includes el-ph matrix and some system information
+    - ***acvs.h5***: includes eigenvector and eigenvalue of finite-Q exciton and other mean field calculation information
+
+  - Calculate Exciton Scattering Rate for (S=1, Q=1):  
+  Set **initialize =False**   
+  Set **xct_scattering_rate = True**  
+  Turn on interactive session: ``idev``  
+  run `ibrun -np 9 exph.py`
+  
+  - Calculate Exciton Lifetime over the 1st BZ for (S=1): 
+    Set **xct_scattering_rate = False** 
+    Set **xct_lifetime_all_BZ = True**
+    run `ibrun -np 9 exph.py`
+    
+---
+Please contact Bowen Hou ([bwhou.hou@yale.edu](bwhou.hou@yale.edu)) If you have any question. Thanks.
