@@ -1,10 +1,18 @@
 #!/usr/bin/env python
 
 import os
+import sys
 
+if len(sys.argv) < 3:
+    print("Usage: %s nS n_Qpt"%(sys.argv[0]))
+    print("nS is the index of exciton bands; n_Qpt is number of n-Q")
+    sys.exit(1)
 
-nS = 1
-number_kpt = 576
+nS = int(sys.argv[1])
+number_kpt = int(sys.argv[2])
+
+# nS = 1
+# number_kpt = 576
 
 os.chdir('5-exciton-Q')
 os.system("echo 'eigenvalues' > xc_%s.dat "%nS)

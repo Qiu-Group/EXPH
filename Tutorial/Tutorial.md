@@ -70,7 +70,9 @@ Q-grid (such as 18\*18\*1), which will be used in later exciton-phonon matrix ca
     - ***pp_inq***: input of pw2bgw.x for shifted k-grid (for inq_head)
     - ***kpt.dat***: list of all shift vectors, which is corresponding to **Q-points** you want to calculate later 
     (usually, this is a uniform grid, e.g. here is a 3\*3\*1 Q(negative shift)-grid). Remember: **do not apply symmetry** due to some gauge issue
-    (further study needed here)
+    (further study needed here)  
+    **NOTE:** You can put any Q-point path in this kpt.dat, it is not necessary a uniform Q-grid (uniform Q-grid only works for further 
+    exciton-phonon interaction). For example, you can put high-symmetry Q-points path here to calculate exciton band dispersion.
     - ***kgrid.inp***: input of kgrid.x, used to generate unshifted kgrid. Empirically, 24\*24\*1 is good enough to converge 
     MoS2 BSE calculation.
     
@@ -131,7 +133,9 @@ Q-grid (such as 18\*18\*1), which will be used in later exciton-phonon matrix ca
   
   - collect all data to acvs.save  
   ``collect.py acv 9``  
-  where acv denotes this is for acvs.save and 9 denotes the number of Q points (here we calculate 3\*3\*1 = 9 Q points)
+  where acv denotes this is for acvs.save and 9 denotes the number of Q points (here, we calculate 3\*3\*1 = 9 Q points)  
+  **NOTE:** You can also go back to last directory (`cd ../`) and run ``finite_Q_get_data.py 1 576``. Then you will have 
+  **xc_nS.dat** and **kpt_crystal.dat** in *5-exciton-Q*. This function is pretty useful to do debugging.
 
   By now, we have finished all calculation for finite-Q exciton! The next step is to do EPW calculation.  
   ``cd ../../../4-epw/``
