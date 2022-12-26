@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="bug fixed: - --&gt; + in el_ph_mat">
-      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="minor change">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utilities/finite_Q_get_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utilities/finite_Q_get_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tutorial/Tutorial.md" beforeDir="false" afterPath="$PROJECT_DIR$/Tutorial/Tutorial.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -294,7 +292,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668431580788</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="minor change">
+      <created>1672016109309</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1672016109309</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -325,6 +330,7 @@
     <MESSAGE value="bug fixed:&#10;&#10;(1) OMEGA_n_Q_temp = res_OMEGA[int(n_ext_acv_index)].flatten()[Q_inteqp_index] # dimension [eV]&#10;(2) OMEGA_n_Q_temp = exciton_energy[int(Q_acv_index), int(n_ext_acv_index)] # dimension [eV]" />
     <MESSAGE value="(1) using linear interpolation&#10;(2) using plt.cntourf" />
     <MESSAGE value="bug fixed: - --&gt; + in el_ph_mat" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fixed: - --&gt; + in el_ph_mat" />
+    <MESSAGE value="minor change" />
+    <option name="LAST_COMMIT_MESSAGE" value="minor change" />
   </component>
 </project>

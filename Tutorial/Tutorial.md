@@ -25,7 +25,7 @@ related properties, such as exciton band structure,exciton-phonon scattering mat
       - Then ``conda install mpi4py``
     
     - Install [EPW](https://docs.epw-code.org/doc/DownloadAndInstall.html) (I recommend you use EPW-5.3.0 and qe-6.6, which are 
-     stable from experience)
+     stable from my experience)
  
  - Tutorial Example
    - Here we will go though a simple case h-BN, and all instruction below will be finished in this case:  
@@ -78,8 +78,8 @@ Q-grid (such as 18\*18\*1), which will be used in later exciton-phonon matrix ca
    **In reality, you can link the directory you have done in the standard
   GW+BSE calculation, and you don't have to redo it**
   - execute this in command line:  
-  `finite_Q_get_data.py`  
-  go to several files to double check if everything seems normal.
+  `finite_any_Q_DFT.py`  
+  go to several files to doublecheck if everything seems normal.
   - run DFT calculation (modify number of nodes, number of mpi-task and QE path before you run it):  
   `sbatch go.sh`  
   this may last 2 minutes if you use -N 10 -n 560
