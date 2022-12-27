@@ -29,7 +29,7 @@ Last Updated: 12/26/2022
 
 3. Symmetry is available for finite Q!
 
-4. Exciton Band Input is available for BGW! (see ./Utilities)
+4. Exciton Band Input is available for BGW! (see Tutorial second section finite Q-BGW)
 
 5. Tutorial is available!
 
