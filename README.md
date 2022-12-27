@@ -19,7 +19,7 @@ Last Updated: 12/26/2022
 
 3. Exciton-Phonon Matrix (*new!*)
 
-4. tr-Boltzmann Equation (coming soon!)
+4. rt-Boltzmann Equation (coming soon!)
 
 **Other Properties**:
 
@@ -33,7 +33,7 @@ Last Updated: 12/26/2022
 
 5. Tutorial is available! (*new!*)
 
-6. Time complexity of exciton lifetime will be reduced to O(N^2) (coming soon!)
+6. Time complexity of exciton lifetime will be reduced to O(N^2) from O(N^2) (coming soon!) However, space complexity will increase.
 
 ## Workflow
 
