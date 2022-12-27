@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="minor change" />
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="minor change">
+      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/Para_common.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_common.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exph.in" beforeDir="false" afterPath="$PROJECT_DIR$/exph.in" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,20 +52,17 @@
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.plot">
-    <configuration name="EX_PH_scat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.Para_EX_PH_mat">
+    <configuration name="Para_EX_PH_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ELPH" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ELPH/EX_PH_scat.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -71,9 +75,6 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -153,11 +154,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Para_EX_PH_mat" />
+        <item itemvalue="Python.Para_EX_PH_scat" />
         <item itemvalue="Python.plot" />
         <item itemvalue="Python.plot" />
         <item itemvalue="Python.get_data" />
-        <item itemvalue="Python.plot" />
-        <item itemvalue="Python.hw4" />
       </list>
     </recent_temporary>
   </component>

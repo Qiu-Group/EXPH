@@ -1,21 +1,21 @@
 # (1) Parameter
-valence_start_gkk = 21
-conduction_end_gkk = 28
-#save_path = './save_MoS2_symm_24241k_12121Q/'
-save_path = './save/'
+valence_start_gkk = 11
+conduction_end_gkk = 14
+save_path = './test/save_MoS2_nosymm_441/'
+#save_path = './save/'
 h5_path = './'
 T=300
 degaussian = 0.02
 
 # (2) initialize includes creating Acv.h5, gkk.h5, kkqQmap.dat and bandmap.dat
-initialize =False
+initialize =True
 
 xct_scattering_rate = False
 xct_scattering_rate_Q_kmap = 1
 xct_scattering_rate_nS = 1
 xct_scattering_rate_interpolation = 120
 
-xct_lifetime_all_BZ = True
+xct_lifetime_all_BZ = False
 xct_lifetime_all_BZ_nS = 2
 xct_lifetime_all_BZ_interpolation = 120
 

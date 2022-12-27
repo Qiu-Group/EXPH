@@ -33,7 +33,7 @@ def plan_maker(nproc, nloop):
 
     return plan_list
 
-def before_parallel_job(rk,size, workload_para):
+def before_parallel_job(rk,size, workload_para, mute=False):
     """
     :param rk: rank of job
     :return:
@@ -45,7 +45,8 @@ def before_parallel_job(rk,size, workload_para):
         start_time_proc = process_time()
 
         plan_list = plan_maker(nproc=size, nloop=workload_para)
-        print('process_%d finish plan:' % rk, plan_list)
+        if not mute:
+            print('process_%d finish plan:' % rk, plan_list)
         return plan_list, start_time, start_time_proc
     else:
         return None, None, None
@@ -70,8 +71,9 @@ def after_parallel_sum_job(rk,size,receive_res,start_time,start_time_proc, mute=
             # which means value is a matrix, and head of res is usually stored at [0,-1]
             # print("head of sub_res is", receive_res[k][0, -1])
             if not mute:
-                print("head of res is", value[0, -1])
-                print("tail of res is", value[-1, -1])
+                print("ths shape of res is", value.shape)
+                # print("head of res is", value[0, -1])
+                # print("tail of res is", value[-1, -1])
         end_time = time.time()
         end_time_proc = process_time()
         if not mute:

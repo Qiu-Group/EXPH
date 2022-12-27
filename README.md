@@ -1,29 +1,40 @@
 # EXPH
 
-EXPH_v1.5
+EXPH_v1.6
 
 Author: Bowen Hou
 
 Creating Time: 10/03/2022
 
-Last Updated: 12/25/2022
+Last Updated: 12/26/2022
 
 ---
 ## Exciton-Phonon Interaction
 
-1. Exciton lifetime (scattring rate) over 1st BZ could be calculated
+**Functions**:
 
-2. Exciton-Phonon scattering matrix 
+1. Exciton lifetime over 1st BZ could be calculated
 
-3. Parallel is available!
+2. Exciton Scattering Rate
 
-4. Interpolation is available (parallel is working for interpolation!)
+3. Exciton-Phonon Matrix (*new!*)
 
-5. Symmetry is available for finite Q!
+4. tr-Boltzmann Equation (coming soon!)
 
-6. Exciton band pp is available for BGW! (see ./Utilities)
+**Other Properties**:
 
-7. Tutorial is available!
+1. Parallel is available!
+
+2. Interpolation is available (parallel is working for interpolation!)
+
+3. Symmetry is available for finite Q!
+
+4. Exciton Band Input is available for BGW! (see ./Utilities)
+
+5. Tutorial is available!
+
+6. Time complexity of exciton lifetime will be reduced to O(N^2) (coming soon!)
+
 ## Workflow
 
 Please read Tutorial/Tutorial.md to learn how to use this tool! 
