@@ -31,7 +31,7 @@ Last Updated: 12/26/2022
 
 4. Exciton Band Input is available for BGW! (see Tutorial second section finite Q-BGW)
 
-5. Tutorial is available!
+5. Tutorial is available! (*new!*)
 
 6. Time complexity of exciton lifetime will be reduced to O(N^2) (coming soon!)
 
@@ -39,7 +39,7 @@ Last Updated: 12/26/2022
 
 Please read Tutorial/Tutorial.md to learn how to use this tool! 
 
-![avatar](./fig/workflow.jpg)
+![avatar](./fig/workflow.png)
 ---
 
 ## Convergence Test

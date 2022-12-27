@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="minor change">
-      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="EXCITON-PHONON Matrix is coming!!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_common.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_common.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exph.in" beforeDir="false" afterPath="$PROJECT_DIR$/exph.in" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -311,7 +307,21 @@
       <option name="project" value="LOCAL" />
       <updated>1672026516636</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="EXCITON-PHONON Matrix is coming!!">
+      <created>1672112355115</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1672112355115</updated>
+    </task>
+    <task id="LOCAL-00022" summary="EXCITON-PHONON Matrix is coming!!">
+      <created>1672112450389</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1672112450389</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -343,6 +353,7 @@
     <MESSAGE value="(1) using linear interpolation&#10;(2) using plt.cntourf" />
     <MESSAGE value="bug fixed: - --&gt; + in el_ph_mat" />
     <MESSAGE value="minor change" />
-    <option name="LAST_COMMIT_MESSAGE" value="minor change" />
+    <MESSAGE value="EXCITON-PHONON Matrix is coming!!" />
+    <option name="LAST_COMMIT_MESSAGE" value="EXCITON-PHONON Matrix is coming!!" />
   </component>
 </project>
