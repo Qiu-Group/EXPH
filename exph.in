@@ -8,9 +8,9 @@ T=300
 degaussian = 0.02
 
 # (2) initialize includes creating Acv.h5, gkk.h5, kkqQmap.dat and bandmap.dat
-initialize =False
+initialize =True
 
-exph_mat_write = True
+exph_mat_write = False
 nS_initial = 10
 nS_final =10
 

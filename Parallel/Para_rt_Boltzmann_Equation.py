@@ -19,7 +19,7 @@ from Common.progress import ProgressBar
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-deguassian = 0.02
+deguassian = 0.03
 path = '../'
 gqQ_path = path + 'gqQ.h5'
 T = 500
@@ -114,8 +114,8 @@ def rhs_Fermi_Goldenrule(F_nQ, N_vq, gqQ_mat, Delta_positive, Delta_negative):
     return  dFdt
 
 
-nT = 12000
-T_total = 12000 #fs
+nT = 3000
+T_total = 3000 #fs
 delta_T = T_total/nT
 
 # G(Q_kmap, q_kmap, n, m, v)
@@ -181,7 +181,9 @@ for it in range(nT):
     progress()
     F_nQ_res[:,:,it] = F_nQ
     dfdt = rhs_Fermi_Goldenrule(F_nQ, N_vq, gqQ_mat, Delta_positive, Delta_negative)
-    F_nQ = F_nQ +  dfdt * delta_T - damping_term * delta_T * 0.1
+    error_from_nosymm = dfdt.sum()/(dfdt.shape[0]*dfdt.shape[1])
+
+    F_nQ = F_nQ +  (dfdt - error_from_nosymm) * delta_T - damping_term * delta_T * 0.1
 
     # some debugging
     exciton_number[it] = F_nQ.sum()
@@ -199,7 +201,7 @@ enegy = E_nQ
 plt.scatter(Q_exciton,enegy)
 
 # Time_seriers = np.linspace(1,T_total,nT)
-T_interval = 30
+T_interval = 100
 Time_series = np.arange(0,T_total,T_interval)
 def animate(i):
     plt.clf()
@@ -215,4 +217,4 @@ def animate(i):
 
 ani = animation.FuncAnimation(fig,animate,np.arange(T_total//T_interval),interval=10)
 plt.show()
-# ani.save('test.htm')
+ani.save('test.htm')
