@@ -127,7 +127,6 @@ Q-grid (such as 18\*18\*1), which will be used in later exciton-phonon matrix ca
       - ***5.2-absorp-Q***: this will generate eigenvector.h5 file for
   
   - run finite-Q exciton BSE (before you run, modify path and parallel parameters.):    
-  ``cd ../``  
   ``sbatch go.sh``  
   it might last 8 minutes if you use -N 10 -n 560
   
