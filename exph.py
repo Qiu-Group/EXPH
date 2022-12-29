@@ -6,6 +6,7 @@ from IO.IO_acv import create_acvsh5
 from IO.IO_gkk import create_gkkh5
 from Common.kgrid_check import k_grid_summary
 from Common.band_check import band_summary
+from Parallel.Para_EX_PH_mat import gqQ_h5_generator_Para
 from Parallel.Para_EX_PH_scat import para_Gamma_scat_inteqp
 from Parallel.Para_EX_PH_lifetime_all_Q import para_Exciton_Life_standard
 from PLot_.plot_xct_band import plot_exciton_band_inteqp
@@ -61,10 +62,43 @@ if rank == 0:
 else:
     init_status = 'todo' # synchronize all processor after init
     pass
+
 #-----------------------------------------------------------------------------------------------------------------------
 init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
 
-# (ii) scattering rate
+# (ii) Exciton-Phonon Matrix
+if 'exph_mat_write' in input and input['exph_mat_write'] == True: # ex-ph_mat default is False, calculate it only when xct_scattering_rate is in input and set as True
+    if rank == 0: # for print!
+        print("\nStarting EX-PH matrix calculation:")
+    if "nS_initial" in input and "nS_final" in input:
+        if rank == 0: # for print!
+            print("nS_initial: ", int(input["nS_initial"]))
+            print("nS_final: ", int(input["nS_final"]))
+            sys.stdout.flush()
+        # place your job function here!
+        # para_Gamma_scat_inteqp(Q_kmap=int(input["xct_scattering_rate_Q_kmap"] - 1),
+        #                        n_ext_acv_index=int(input["xct_scattering_rate_nS"] - 1),
+        #                        T=input["T"],
+        #                        degaussian=input["degaussian"],
+        #                        path=input["h5_path"],
+        #                        interposize=int(input["xct_scattering_rate_interpolation"]),
+        #                        muteProgress=True)
+        gqQ_h5_generator_Para(nS_initial = int(input["nS_initial"]),
+                              nS_final   = int(input["nS_final"]),
+                              path=input["h5_path"],
+                              mute=True
+                              )
+        sys.stdout.flush()
+    else:
+        raise Exception("key parameter missing for xct_scattering rate from input!")
+else:
+    pass
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
+
+# (iii) scattering rate
 if 'xct_scattering_rate' in input and input['xct_scattering_rate'] == True: # xct_scattering_rate default is False, calculate it only when xct_scattering_rate is in input and set as True
     if rank == 0: # for print!
         print("\nStarting Calculating Scattering Rate:")
@@ -91,7 +125,7 @@ else:
 #-----------------------------------------------------------------------------------------------------------------------
 init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
 
-# (iii) lifetime
+# (iv) lifetime
 if 'xct_lifetime_all_BZ' in input and input['xct_lifetime_all_BZ'] == True: # xct_lifetime_all_BZ default is False, calculate it only when xct_lifetime_all_BZ is in input and set as True
     if rank == 0: # for print!
         print("\nStarting Calculating Exciton Life Time over 1st BZ:")

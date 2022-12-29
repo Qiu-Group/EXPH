@@ -141,7 +141,7 @@ def para_gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11
 # tododone: intensive test needed to be done after lunch
 # tododone: para_fun(job_fun, *kwarg): use *kwarg to pass parameters to job_func
 
-def gqQ_h5_generator_Para(path='./',mute=True):
+def gqQ_h5_generator_Para(nS_initial = 0, nS_final = 0, path='./',mute=True):
     """
     Parallel efficiency is very high!! It is over nQ*nq
     :param Q_kmap_star:
@@ -150,7 +150,7 @@ def gqQ_h5_generator_Para(path='./',mute=True):
     :param v_ph_gkk:
     :param path:
     :param mute:
-    :return: G(Q_kmap,q_kmap,n,m,v): exciton-phonon matrix
+    :return: |G(Q_kmap,q_kmap,n,m,v)|**2: exciton-phonon matrix
     All inputs are consistent with gqQ
     Note: Q_kmap/q_kmap is index of kmap (0-->nk). If you want to find Q=10, please find corresponding Q_kmap (0-nQ), then find this in gqQ
     """
@@ -169,29 +169,35 @@ def gqQ_h5_generator_Para(path='./',mute=True):
     omega_mat = read_omega(path=path) # dimension [meV]
     n_phonon = omega_mat.shape[1]
 
+    if nS_final == 0:
+        nS_final = exciton_energy.shape[1]
+    if nS_initial == 0:
+        nS_initial = exciton_energy.shape[1]
+    if nS_final > exciton_energy.shape[1] or nS_initial > exciton_energy.shape[1]:
+        raise Exception("nS_final > exciton_energy.shape[1] or nS_initial > exciton_energy.shape[1]")
 
     # (b) make task plan
     workload_over_kmap = int(kmap.shape[0] * kmap.shape[0])
-    plan_list, start_time, start_time_proc = before_parallel_job(rk=rank,size=size,workload_para=workload_over_kmap,mute=mute)
+    plan_list, start_time, start_time_proc = before_parallel_job(rk=rank,size=size,workload_para=workload_over_kmap)
     plan_list = comm.scatter(plan_list,root=0)
     if not mute:
         print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1]-plan_list[0])
 
     # (c) This is exph_mat for each process: G(Q_kmap,q_kmap,n,m,v)
     progress = ProgressBar(kmap.shape[0]*kmap.shape[0], fmt=ProgressBar.FULL)
-    exph_mat_each_process = np.zeros((kmap.shape[0],kmap.shape[0],exciton_energy.shape[1],exciton_energy.shape[1],n_phonon))
+    exph_mat_each_process = np.zeros((kmap.shape[0],kmap.shape[0],nS_initial,nS_final,n_phonon))
 
     Qq_list_dic = Q_q_mesh(kmap.shape[0])
 
     for Qq_iterate in range(plan_list[0],plan_list[-1]):
-        if rank == 0:
+        if rank == 0 and not mute:
             progress.current += 1
             progress()
         Qq_index_set = Qq_list_dic[Qq_iterate]
         Q_kmap = Qq_index_set[0]
         q_kmap = Qq_index_set[1]
-        for j_initial_S in range(exciton_energy.shape[1]):  # loop over initial exciton state m
-            for j_final_S in range(exciton_energy.shape[1]):  # loop over initial exciton state m
+        for j_initial_S in range(nS_initial):  # loop over initial exciton state m
+            for j_final_S in range(nS_final):  # loop over initial exciton state m
                 for j_phonon in range(n_phonon):  # loop over phonon mode v
 
             # gkQ
@@ -205,7 +211,7 @@ def gqQ_h5_generator_Para(path='./',mute=True):
                                                                                                   kmap=kmap,
                                                                                                   kmap_dic=kmap_dic,
                                                                                                   bandmap_occ=bandmap_occ,
-                                                                                                  muteProgress=True))
+                                                                                                  muteProgress=True))**2
 
     # after_parallel ...
     exph_rcev_to_0 = comm.gather(exph_mat_each_process, root=0)
@@ -233,5 +239,5 @@ def Q_q_mesh(number_point):
 if __name__ == "__main__":
     # res_para = para_gqQ(path='../',mute=True)
     # print('res_para:',res_para)
-    gqQ_h5_generator_Para(path="../",mute=True)
+    gqQ_h5_generator_Para(nS_initial=10, nS_final=10 ,path="../",mute=False)
     pass

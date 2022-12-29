@@ -52,5 +52,5 @@ def keyword_list():
             'plot_xt_interpolation', 'plot_ph_band', 'plot_ph_band_number', 'plot_ph_band_interpolation',
             'plot_xct_ph_mat', 'plot_xct_ph_mat_Q', 'plot_xct_ph_mat_n', 'plot_xct_ph_mat_m',
             'plot_xct_ph_mat_ph', 'plot_xct_ph_mat_interpolation', 'plot_xct_lifetime', 'plot_xct_lifetime_interposize_for_Lifetime',
-            'plot_xct_data'
+            'plot_xct_data','exph_mat_write','nS_initial','nS_final'
             ]
