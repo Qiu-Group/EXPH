@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="workflow updated">
-      <change afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Equation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Equation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Equation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tutorial/example.zip" beforeDir="false" afterPath="$PROJECT_DIR$/Tutorial/example.zip" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
