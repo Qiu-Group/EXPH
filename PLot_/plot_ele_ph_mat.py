@@ -20,11 +20,11 @@ import numpy as np
 import h5py as h5
 
 path = '../'
-interposize = 24
-k_kmap_index = 5
+interposize = 12
+k_kmap_index = 0
 initial_state_gkk_indsex = 0
-final_state_gkk_index = [2]
-mode_index = [3,4,5,6,7,8]
+final_state_gkk_index = [0]
+mode_index = [3]
 
 kmap = read_kmap(path=path)  # load kmap matrix
 q_inteqp_no = int(np.sqrt(kmap.shape[0]))

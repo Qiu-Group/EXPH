@@ -63,7 +63,6 @@ def Qplusq_2_QPrimeIndexAcv(Q_kmap, q_kmap):
     Q_plus_q_kmapout = kmap_dic[key_temp.replace('-', '')]
     Qpr_as_Q_plus_q_acv_index = Q_plus_q_kmapout[0]
     return int(Qpr_as_Q_plus_q_acv_index)
-    pass
 
 def Construct_Delta(deguassian):
     # E.shape = (n,m,v,Q,q)
@@ -114,8 +113,8 @@ def rhs_Fermi_Goldenrule(F_nQ, N_vq, gqQ_mat, Delta_positive, Delta_negative):
     return  dFdt
 
 
-nT = 30000
-T_total = 30000 #fs
+nT = 3000
+T_total = 3000 #fs
 delta_T = T_total/nT
 
 # G(Q_kmap, q_kmap, n, m, v)
@@ -155,7 +154,7 @@ Delta_positive, Delta_negative = Construct_Delta(deguassian)
 
 E_nQ = get_E_nQ()
 F_nQ = BE(omega=E_nQ,T=T)
-F_nQ[2,0] = 0.5 # initialize
+F_nQ[2,0] = 0.1 # initialize
 
 F_nQq = update_F_nQq(F_nQ)
 
@@ -201,7 +200,7 @@ enegy = E_nQ
 plt.scatter(Q_exciton,enegy)
 
 # Time_seriers = np.linspace(1,T_total,nT)
-T_interval = 200
+T_interval = 50
 Time_series = np.arange(0,T_total,T_interval)
 def animate(i):
     plt.clf()
@@ -217,4 +216,4 @@ def animate(i):
 
 ani = animation.FuncAnimation(fig,animate,np.arange(T_total//T_interval),interval=10)
 plt.show()
-ani.save('test.gif')
+# ani.save('test.gif')
