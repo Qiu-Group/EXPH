@@ -36,7 +36,7 @@ elif sys.argv[1] == 'gkk':
 
     os.system("kmesh.pl %s |grep '^ '|awk '{print $1,$2,$3}' > k.dat"%mesh)
     os.system("grep 'ik =       1' epw.out -A %s| grep -E '^ +[0-9]+ +[0-9]+ +[0-9]+'|awk '{print $6}' > omega.dat"%(int(second_parameter) + 2))
-
+    print('data collected!')
 
 else:
     raise Exception("the first input can only be acv or gkk; acv for acvs.save and gkk for gkk.save")

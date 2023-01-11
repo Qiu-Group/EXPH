@@ -12,7 +12,8 @@ from ELPH.EX_PH_scat import interpolation_check_for_Gamma_calculation
 from mpi4py import MPI
 from ELPH.EX_PH_mat import gqQ_inteqp_get_coarse_grid, gqQ_inteqp_q_series
 from Parallel.Para_common import before_parallel_job, after_parallel_sum_job
-
+from Common.common import frac2carte
+from IO.IO_common import read_bandmap, read_kmap, read_lattice,construct_kmap
 # (1) para_Gamma_scat_low_efficiency_inteqp: it could calculate Gamma scat, but efficiency is pretty low! It is not good for parallel
 
 # --> (2) para_Gamma_scat_inteqp: it is used for parallel!
@@ -190,7 +191,7 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     plan_list_2 = comm.scatter(plan_list_2, root=0)
     # print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1]-plan_list[0])
 
-
+    gamma_each_q_res_each_process = np.zeros((workload_over_q_fi,4)) # This matrix store gamma for every phonon-q points, and gamma_each_q_res.sum() == Gamma_res: True
 
 
     for m_ext_acv_index_loop in range(exciton_energy.shape[1]):  # loop over initial exciton state m
@@ -344,7 +345,7 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 
                 Gamma_res = Gamma_res + (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
                 # Gamma_second_res = Gamma_second_res +
-
+                gamma_each_q_res_each_process[q_qQmap,3] = gamma_each_q_res_each_process[q_qQmap,3] + (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
                 # print("distribution_first_temp", distribution_first_temp)
                 # print("BE part:", (BE(omega=omega_v_q_temp, T=T) + 1 + BE(omega=OMEGA_m_Q_plus_q_temp, T=T)))
                 # print("DIrac:", Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian))
@@ -362,11 +363,21 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     Gamma_res_val =    after_parallel_sum_job(rk=rank, size=size, receive_res=Gamma_res_to_0 , start_time=start_time,
                                start_time_proc=start_time_proc,mute=False)
 
+    gamma_each_q_to_0 = comm.gather(gamma_each_q_res_each_process, root=0)
+    gamma_each_q_res_matrix = after_parallel_sum_job(rk=rank, size=size, receive_res=gamma_each_q_to_0 , start_time=start_time,
+                               start_time_proc=start_time_proc,mute=True)
+
     # TODO: Discuss with Diana!!!
     # print("final value is",Gamma_fisrt_val)
     # print("final value is",Gamma_second_val)
     if rank == 0:
+        bvec = read_lattice('b', path=path)
+        gamma_each_q_res_matrix[:,0:3] = frac2carte(bvec,grid_q_gqQ_res[:,0:3])
+        np.savetxt('gamma_each_q.dat',gamma_each_q_res_matrix)
+        print('gamma_each_q sum:',gamma_each_q_res_matrix[:,3].sum()) # This is for sanity check
         return Gamma_res_val
+
+
 
 #==============================================================================================================>>>>>>>
 

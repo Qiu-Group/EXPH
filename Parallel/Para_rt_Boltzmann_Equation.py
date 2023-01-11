@@ -113,14 +113,14 @@ def rhs_Fermi_Goldenrule(F_nQ, N_vq, gqQ_mat, Delta_positive, Delta_negative):
     return  dFdt
 
 
-nT = 3000
-T_total = 3000 #fs
+nT = 300
+T_total = 300 #fs
 delta_T = T_total/nT
 
 # G(Q_kmap, q_kmap, n, m, v)
 # f = h5.File('gqQ.h5','r')
 # gqQ_mat = f['data'][()]
-f = h5.File('gqQ.h5','r')
+f = h5.File('../gqQ.h5','r')
 gqQ_mat = f['data'][()]
 f.close()
 
@@ -182,7 +182,7 @@ for it in range(nT):
     dfdt = rhs_Fermi_Goldenrule(F_nQ, N_vq, gqQ_mat, Delta_positive, Delta_negative)
     error_from_nosymm = dfdt.sum()/(dfdt.shape[0]*dfdt.shape[1])
 
-    F_nQ = F_nQ +  (dfdt - error_from_nosymm) * delta_T - damping_term * delta_T * 0.1
+    F_nQ = F_nQ +  (dfdt - error_from_nosymm) * delta_T - damping_term * delta_T * 0.01
 
     # some debugging
     exciton_number[it] = F_nQ.sum()
@@ -200,7 +200,7 @@ enegy = E_nQ
 plt.scatter(Q_exciton,enegy)
 
 # Time_seriers = np.linspace(1,T_total,nT)
-T_interval = 50
+T_interval = 5
 Time_series = np.arange(0,T_total,T_interval)
 def animate(i):
     plt.clf()
@@ -216,4 +216,4 @@ def animate(i):
 
 ani = animation.FuncAnimation(fig,animate,np.arange(T_total//T_interval),interval=10)
 plt.show()
-# ani.save('test.gif')
+ani.save('test.gif')

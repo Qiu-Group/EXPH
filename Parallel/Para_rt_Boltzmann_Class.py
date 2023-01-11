@@ -89,7 +89,6 @@ class InitialInformation():
         return Delta_pos_nmvQq, Delta_neg_nmvQq
 
 
-
 class Solver_of_only_Q_space(InitialInformation):
     def __init__(self,path='../',degaussian=0.03,T=500,initial_occupation=0.5, nT=3000, T_total=3000, play_interval = 50):
         super(Solver_of_only_Q_space,self).__init__(path,degaussian,T)
@@ -133,10 +132,10 @@ class Solver_of_only_Q_space(InitialInformation):
 
     def __rhs_Fermi_Goldenrule(self,F_nQ_last):
         F_nQq = self.__update_F_nQq(F_nQ_last)
-        F_abs = np.einsum('np,vq,npq->npqv',F_nQ_last, self.N_vq, 1 + F_nQq) - np.einsum('np,vq,npq->npqv', 1 + F_nQ_last, 1 + self.N_vq,
-                                                                                F_nQq)
-        F_em = np.einsum('np,vq,npq->npqv', F_nQ_last, 1 + self.N_vq, 1 + F_nQq) - np.einsum('np,vq,npq->npqv', 1 + F_nQ_last, self.N_vq,
-                                                                                   F_nQq)
+        F_abs = np.einsum('np,vq,npq->npqv',F_nQ_last, self.N_vq, 1 + F_nQq) \
+                - np.einsum('np,vq,npq->npqv', 1 + F_nQ_last, 1 + self.N_vq, F_nQq)
+        F_em = np.einsum('np,vq,npq->npqv', F_nQ_last, 1 + self.N_vq, 1 + F_nQq) \
+               - np.einsum('np,vq,npq->npqv', 1 + F_nQ_last, self.N_vq, F_nQq)
         dFdt = -1 * (np.einsum('pqnmv,nmvpq,npqv->np', self.gqQ_mat, self.Delta_positive, F_abs) + np.einsum(
             'pqnmv,nmvpq,npqv->np', self.gqQ_mat, self.Delta_negative, F_em))
         return dFdt
@@ -157,7 +156,6 @@ class Solver_of_only_Q_space(InitialInformation):
             self.exciton_number[it] = self.F_nQ.sum()
             self.dfdt_sum_res[it] = dfdt.sum()
             # print(dfdt[2,0])
-
 
     def plot(self):
         print('plot')

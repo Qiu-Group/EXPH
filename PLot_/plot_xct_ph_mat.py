@@ -94,6 +94,7 @@ def plot_ex_ph_mat_inteqp(Q_kmap_star=0, n_ex_acv=0, m_ex_acv=[0,1,2,3],v_ph_gkk
 
     pass
     # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    np.savetxt(outfilename, res)
     # surf = ax.plot_surface(res[:,0].reshape((interposize,interposize)), res[:,1].reshape((interposize,interposize)), res[:,3].reshape((interposize,interposize)), cmap=cm.cool)
     plt.contourf(res[:,0].reshape((interposize,interposize)), res[:,1].reshape((interposize,interposize)), res[:,3].reshape((interposize,interposize)))
     cbar = plt.colorbar()

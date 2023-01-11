@@ -170,7 +170,8 @@ By now, we have finished all calculation for finite-Q exciton! The next step is 
 
 In this step, we will use EXPH post-process code to calculate exciton-phonon related quantities. Here are important key words
 in exph.in (input file of exph.py):  
-> **valence_start_gkk**: the lowest band index in el-ph calculation. (find this from epw.out)
+> **valence_start_gkk**: the lowest band index in el-ph calculation. (find this from epw.out).   
+>**IMPORTANT NOTE:**  EPW excludes the first several bands, you have to calculate shifted band index here (valence_start_gkk = epw_index + shift)
 >  
 > **conduction_end_gkk:** the hiest band index in el-ph calculation. (find this from epw.out)  
 >

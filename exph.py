@@ -228,7 +228,7 @@ else:
 
 #-----------------------------------------------------------------------------------------------------------------------
 init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
-# (iv) Plot Exciton Life Time
+# (iv) Plot Exciton matrix
 if rank == 0:
     if 'plot_xct_ph_mat' in input and input['plot_xct_ph_mat'] == True:
         if rank == 0:  # for print!

@@ -167,6 +167,9 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
 
         # I. first part of equation (5) in Bernardi's paper
         # first_res
+        # TODO:
+        # TODO:
+        # TODO: k of A(c,v,S,k) is electrons's k, hole's k is k-Q. However, in Bernardi's formula, k is electron's k
         for v_bandmap in range(int(nv)): # start with the lowest valence band
             # print("v_bandmap:",v_bandmap)
             for c_bandmap in range(int(nv),int(nv +nc)): # start with the lowest conduction band

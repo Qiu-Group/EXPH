@@ -2,12 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="workflow updated">
-      <change afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Class.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLot_/plot_ele_ph_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_ele_ph_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_xct_ph_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Class.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Class.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Equation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Equation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/exph.in" beforeDir="false" afterPath="$PROJECT_DIR$/exph.in" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exph.py" beforeDir="false" afterPath="$PROJECT_DIR$/exph.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +56,7 @@
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Para_rt_Boltzmann_Diffusion">
+  <component name="RunManager" selected="Python.test">
     <configuration name="Para_rt_Boltzmann_Class" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -78,6 +82,9 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -134,19 +141,16 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_ele_ph_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code_exph" />
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PLot_" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../01-Bi2Se3/code/temp" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PLot_/plot_ele_ph_mat.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../01-Bi2Se3/code/temp/test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -157,11 +161,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test" />
         <item itemvalue="Python.Para_rt_Boltzmann_Diffusion" />
+        <item itemvalue="Python.exph" />
         <item itemvalue="Python.Para_rt_Boltzmann_Class" />
         <item itemvalue="Python.Para_rt_Boltzmann_Equation" />
-        <item itemvalue="Python.plot_ele_ph_mat" />
-        <item itemvalue="Python.exph" />
       </list>
     </recent_temporary>
   </component>
