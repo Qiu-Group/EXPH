@@ -17,9 +17,9 @@ Last Updated: 01/12/2023
 
 2. Exciton Scattering Rate
 
-3. Exciton-Phonon Matrix (*new!*)
+3. Exciton-Phonon Matrix 
 
-4. rt-Boltzmann Equation (coming soon!)
+4. rt-Boltzmann Equation (***new!***, and parallel is coming soon!)
 
 **Other Properties**:
 
