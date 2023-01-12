@@ -147,22 +147,34 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
         Q_plus_q_point = move_k_back_to_BZ_1(kmap[Q_kmap, 0:3] + kmap[q_kmap, 0:3])
         key_temp = '  %.5f    %.5f    %.5f' % (Q_plus_q_point[0], Q_plus_q_point[1], Q_plus_q_point[2])
         Q_plus_q_kmapout = kmap_dic[key_temp.replace('-', '')]
+
         # (b) Q+q+k
         Q_plus_q_plus_k_point = move_k_back_to_BZ_1(Q_plus_q_point + kmap[k_kmap, 0:3])
         key_temp = '  %.5f    %.5f    %.5f' % (
         Q_plus_q_plus_k_point[0], Q_plus_q_plus_k_point[1], Q_plus_q_plus_k_point[2])
-        Q_plus_q_plus_k_kmapout = kmap_dic[
-            key_temp.replace('-', '')]  # we don't need to use this because momentum conservation
+        Q_plus_q_plus_k_kmapout = kmap_dic[key_temp.replace('-', '')]  # we don't need to use this because momentum conservation
+        # kmapout[x] = [Q, k_acv, q, k_gkk] Bowen Hou 01/11/2023
+        kpr_as_k_plus_Q_plus_q_acv_index_electron = Q_plus_q_plus_k_kmapout[1]
+        # Bowen Hou 01/11/2023
+
+
         # (c) k+Q
         k_plus_Q_point = move_k_back_to_BZ_1(kmap[k_kmap, 0:3] + kmap[Q_kmap, 0:3])
         key_temp = '  %.5f    %.5f    %.5f' % (k_plus_Q_point[0], k_plus_Q_point[1], k_plus_Q_point[2])
         k_plus_Q_kmapout = kmap_dic[key_temp.replace('-', '')]
+
+        # kmapout[x] = [Q, k_acv, q, k_gkk] Bowen Hou 01/11/2023
+        kpr_as_k_plus_Q_acv_index_electron = k_plus_Q_kmapout[1]
+        # Bowen Hou 01/11/2023
+
 
         # (d) k-q
         k_minus_q_point = move_k_back_to_BZ_1(kmap[k_kmap, 0:3] - kmap[q_kmap, 0:3])
         key_temp = '  %.5f    %.5f    %.5f' % (k_minus_q_point[0], k_minus_q_point[1], k_minus_q_point[2])
         k_minus_q_kmapout = kmap_dic[key_temp.replace('-', '')]
         #========================
+
+
 
 
         # I. first part of equation (5) in Bernardi's paper
@@ -215,27 +227,34 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
                     # it seems there is no need to find k_pr (think more...)
                     # kpr_as_Q_plus_q_plus_k_acv = Q_plus_q_plus_k_kmapout[1] # 1 means the fifth column of kmap, which is k_acv
                     # kmapout[x] = [Q, k_acv, q, k_gkk]
-                    Qpr_as_Q_plus_q_acv_index = Q_plus_q_kmapout[0] # 0 means the fourth column of kmap, which is Q
+
+                    # k_acv_index (this is for hole in Bernardi's paper) --> k_acv_index_electron
+
+
+                    Qpr_as_Q_plus_q_acv_index = Q_plus_q_kmapout[0] # 0 means the fourth column of kmap, which is Q # Bowen Hou 01/11/2023 modified, k_h --> k_electron
                     Acv_temp1 = np.complex(
-                        acvmat[int(Qpr_as_Q_plus_q_acv_index), int(m_ex_acv_index), int(k_acv_index), int(c_acv_index), int(v_acv_index)][0],
-                        acvmat[int(Qpr_as_Q_plus_q_acv_index), int(m_ex_acv_index), int(k_acv_index), int(c_acv_index), int(v_acv_index)][1]
+                        acvmat[int(Qpr_as_Q_plus_q_acv_index), int(m_ex_acv_index), int(kpr_as_k_plus_Q_plus_q_acv_index_electron), int(c_acv_index), int(v_acv_index)][0],
+                        acvmat[int(Qpr_as_Q_plus_q_acv_index), int(m_ex_acv_index), int(kpr_as_k_plus_Q_plus_q_acv_index_electron), int(c_acv_index), int(v_acv_index)][1]
                     )
                     Acv_temp1_conjugated = np.conjugate(Acv_temp1)
 
                     # (ii) Acv_temp2
                     # this is Q for Acv_temp2 (Q_acv_index has been found in previous step), so we can start to do Acv_temp2
                     Acv_temp2 = np.complex(
-                        acvmat[int(Q_acv_index), int(n_ex_acv_index), int(k_acv_index), int(cpr_acv_index), int(v_acv_index)][0],
-                        acvmat[int(Q_acv_index), int(n_ex_acv_index), int(k_acv_index), int(cpr_acv_index), int(v_acv_index)][1]
+                        acvmat[int(Q_acv_index), int(n_ex_acv_index), int(kpr_as_k_plus_Q_acv_index_electron), int(cpr_acv_index), int(v_acv_index)][0],
+                        acvmat[int(Q_acv_index), int(n_ex_acv_index), int(kpr_as_k_plus_Q_acv_index_electron), int(cpr_acv_index), int(v_acv_index)][1]
                     )
                     # (iii) gkk_temp
                     # this is kpr = k + Q
                     # kmapout[x] = [Q, k_acv, q, k_gkk]
                     kpr_as_k_plus_Q_gkk_index = k_plus_Q_kmapout[3] # 0 means the seventh column of kmap, which is k_gkk
-                    gkk_temp = gkkmat[int(q_gkk_index), int(kpr_as_k_plus_Q_gkk_index),int(c_gkk_index),int(cpr_gkk_index),int(v_ph_gkk)] # initial is c ->i; final is c' -> j
+
+                    # Bowen Hou 01/11/2023: I change the position of cpr and c since Bernardi's equation is wrong
+                    gkk_temp = gkkmat[int(q_gkk_index), int(kpr_as_k_plus_Q_gkk_index),int(cpr_gkk_index),int(c_gkk_index),int(v_ph_gkk)] # initial is c' ->i; final is c -> j
 
                     # (iv) res_temp
-                    first_res = first_res + Acv_temp1_conjugated * Acv_temp2 * gkk_temp
+                    # first_res = first_res + Acv_temp1_conjugated * Acv_temp2 * gkk_temp
+                    first_res = first_res + np.abs(Acv_temp1_conjugated) * np.abs(Acv_temp2) * gkk_temp
 
 
         # II. second part of equation (5) in Bernardi's paper
@@ -283,30 +302,33 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
                     Qpr_as_Q_plus_q_acv_index = Q_plus_q_kmapout[0]  # 0 means the fourth column of kmap, which is Q
                     kpr_as_k_minus_q_acv_index = k_minus_q_kmapout[1] # 1 means the fifth column of kmap, which is k_acv
 
+                    # Bowen Hou 01/11/2023
                     Acv_temp1_second = np.complex(
-                        acvmat[int(Qpr_as_Q_plus_q_acv_index), int(m_ex_acv_index), int(kpr_as_k_minus_q_acv_index), int(c_acv_index), int(v_acv_index)][0],
-                        acvmat[int(Qpr_as_Q_plus_q_acv_index), int(m_ex_acv_index), int(kpr_as_k_minus_q_acv_index), int(c_acv_index), int(v_acv_index)][1]
+                        acvmat[int(Qpr_as_Q_plus_q_acv_index), int(m_ex_acv_index), int(kpr_as_k_plus_Q_acv_index_electron), int(c_acv_index), int(v_acv_index)][0],
+                        acvmat[int(Qpr_as_Q_plus_q_acv_index), int(m_ex_acv_index), int(kpr_as_k_plus_Q_acv_index_electron), int(c_acv_index), int(v_acv_index)][1]
                     )
                     Acv_temp1_conjugated_second = np.conjugate(Acv_temp1_second)
 
                     # (ii) Acv_temp2
                     # this is Q for Acv_temp2 (Q_acv_index has been found in previous step), so we can start to do Acv_temp2
                     Acv_temp2_second = np.complex(
-                        acvmat[int(Q_acv_index), int(n_ex_acv_index), int(k_acv_index), int(c_acv_index), int(vpr_acv_index)][0],
-                        acvmat[int(Q_acv_index), int(n_ex_acv_index), int(k_acv_index), int(c_acv_index), int(vpr_acv_index)][1]
+                        acvmat[int(Q_acv_index), int(n_ex_acv_index), int(kpr_as_k_plus_Q_acv_index_electron), int(c_acv_index), int(vpr_acv_index)][0],
+                        acvmat[int(Q_acv_index), int(n_ex_acv_index), int(kpr_as_k_plus_Q_acv_index_electron), int(c_acv_index), int(vpr_acv_index)][1]
                     )
+                    # Bowen Hou 01/11/2023
 
                     # (iii) gkk_temp
                     # this is kpr = k + Q
                     # kmapout[x] = [Q, k_acv, q, k_gkk]
                     # kpr_as_k_minus_Q_gkk_index = k_plus_Q_kmapout[3] # 0 means the seventh column of kmap, which is k_gkk
                     kpr_as_k_minus_q_gkk_index = k_minus_q_kmapout[3]
-                    gkk_temp_second = gkkmat[int(q_gkk_index), int(kpr_as_k_minus_q_gkk_index),int(vpr_gkk_index),int(v_gkk_index),int(v_ph_gkk)] # initial is c ->i; final is c' -> j
+                    gkk_temp_second = gkkmat[int(q_gkk_index), int(kpr_as_k_minus_q_gkk_index),int(v_gkk_index),int(vpr_gkk_index),int(v_ph_gkk)] # initial is v ->i; final is v' -> j
 
                     # (iv) res_temp
-                    second_res = second_res + Acv_temp1_conjugated_second * Acv_temp2_second * gkk_temp_second
-
-        res = res + (first_res - second_res)  # Bug fixed 11/14/2022: + -> -
+                    # second_res = second_res + Acv_temp1_conjugated_second * Acv_temp2_second * gkk_temp_second
+                    second_res = second_res + np.abs(Acv_temp1_conjugated_second) * np.abs(Acv_temp2_second) * gkk_temp_second
+        # res = res + (first_res - second_res)  # Bug fixed 11/14/2022: + -> -
+        res = res + (first_res + second_res)  # Bug fixed 01/11/2023: - -> +: because here we use abs() to calculate wave-function of exciton
     return res * 10**(-3) # meV to eV
 
 def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,

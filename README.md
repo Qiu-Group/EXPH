@@ -6,7 +6,7 @@ Author: Bowen Hou
 
 Creating Time: 10/03/2022
 
-Last Updated: 01/03/2023
+Last Updated: 01/12/2023
 
 ---
 ## Exciton-Phonon Interaction
