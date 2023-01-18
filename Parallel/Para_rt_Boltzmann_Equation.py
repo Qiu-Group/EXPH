@@ -18,6 +18,7 @@ from Common.distribution import Dirac_1, BE
 from Common.progress import ProgressBar
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import numba as nb
 
 deguassian = 0.03
 path = '../'
@@ -105,6 +106,7 @@ def get_E_mQq():
             E_mQq[0,:,0,i_Q_kmap,i_q_kmap] = Omega_nQ[:m,Qplusq_2_QPrimeIndexAcv(i_Q_kmap,i_q_kmap)]
     return E_mQq[0,:,0,:,:]
 
+# @nb.jit()
 def rhs_Fermi_Goldenrule(F_nQ, N_vq, gqQ_mat, Delta_positive, Delta_negative):
     F_nQq = update_F_nQq(F_nQ)
     F_abs = np.einsum('np,vq,npq->npqv', F_nQ, N_vq, 1 + F_nQq) - np.einsum('np,vq,npq->npqv', 1 + F_nQ, 1 + N_vq, F_nQq)
@@ -174,6 +176,8 @@ F_nQ_res = np.zeros((n,Q,nT))
 exciton_number  = np.zeros(nT)
 dfdt_sum_res = np.zeros(nT)
 damping_term = np.zeros((n,Q))
+
+time1 = time.time()
 for it in range(nT):
     damping_term[:,0] = F_nQ[:,0]
     progress.current += 1
@@ -188,8 +192,8 @@ for it in range(nT):
     exciton_number[it] = F_nQ.sum()
     dfdt_sum_res[it] = dfdt.sum()
     # print(dfdt[2,0])
-
-
+time2 = time.time()
+print(time2-time1)
 # plt.plot(np.linspace(1,T_total,nT),F_nQ_res[1,0,:])
 # plt.plot(np.linspace(1,T_total,nT),exciton_number)
 
@@ -216,4 +220,4 @@ def animate(i):
 
 ani = animation.FuncAnimation(fig,animate,np.arange(T_total//T_interval),interval=10)
 plt.show()
-ani.save('test.gif')
+# ani.save('test.gif')

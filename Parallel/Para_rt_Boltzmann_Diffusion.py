@@ -12,7 +12,7 @@ def Gaussian(x,y,sigma=2,x0=20,y0=20):
 
 
 class Solver_of_phase_space(InitialInformation):
-    def __init__(self,path='../',degaussian=1,T=300,nX=10,nY=10, X=10,Y=10, nT=300,T_total=300):
+    def __init__(self,path='../',degaussian=0.01,T=300,nX=10,nY=10, X=10,Y=10, nT=300,T_total=300):
         super(Solver_of_phase_space,self).__init__(path,degaussian,T)
         self.nX = nX
         self.nY = nY
@@ -29,10 +29,10 @@ class Solver_of_phase_space(InitialInformation):
         self.N_vq = BE(omega=self.get_E_vq(), T=T)
         self.N_vq[0:3, 0] = np.array([0, 0, 0])
         self.Delta_positive, self.Delta_negative = self.Construct_Delta()
-        self.V_x = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * 0.09   #TODO: use Omega(S,Q)
-        self.V_y = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * 0.09
-        # self.V_x[2,0,:,:] = self.V_x[2,0,:,:] * 0.0   #TODO: use Omega(S,Q)
-        # self.V_y[2,0,:,:] = self.V_x[2,0,:,:] * 0.0
+        self.V_x = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * 0.  #TODO: use Omega(S,Q)
+        self.V_y = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * 0.
+        self.V_x[0,1,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.1   #TODO: use Omega(S,Q)
+        self.V_y[0,1,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.1
 
         # TODO: find a way to initialize this
         self.ini_x = np.arange(0, X, self.delta_X)
@@ -40,13 +40,13 @@ class Solver_of_phase_space(InitialInformation):
 
         self.ini_xx, self.ini_yy = np.meshgrid(self.ini_x, self.ini_y)
 
-        self.F_nQxy = np.zeros((self.n,self.Q,self.nX,self.nY)) * 5
-        self.F_nQxy[2,0,:,:] = self.F_nQxy[2,0,:,:] + Gaussian(self.ini_xx,self.ini_yy) * 10
+        self.F_nQxy = np.zeros((self.n,self.Q,self.nX,self.nY))
+        self.F_nQxy[0,0,:,:] = self.F_nQxy[0,0,:,:] + Gaussian(self.ini_xx,self.ini_yy) * 1
 
         self.F_nQxy_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
         self.damping_term = np.zeros((self.n, self.Q, self.nX ,self.nY))
 
-
+        self.dfdt_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
 
         ### Debug:
         # self.V_x = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (0.4)   #TODO: use Omega(S,Q)
@@ -82,7 +82,7 @@ class Solver_of_phase_space(InitialInformation):
                                                                                 F_nQqxy,optimize='optimal')
         F_em = np.einsum('npxy,vq,npqxy->npqvxy', F_nQxy_last, 1 + self.N_vq, 1 + F_nQqxy,optimize='optimal') - np.einsum('npxy,vq,npqxy->npqvxy', 1 + F_nQxy_last, self.N_vq,
                                                                                    F_nQqxy,optimize='optimal')
-        dFdt = -1 * (np.einsum('pqnmv,nmvpq,npqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs,optimize='optimal') + np.einsum(
+        dFdt = -1E70 * (np.einsum('pqnmv,nmvpq,npqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs,optimize='optimal') + np.einsum(
             'pqnmv,nmvpq,npqvxy->npxy', self.gqQ_mat, self.Delta_negative, F_em,optimize='optimal'))
         t2 = time.time()
         return dFdt, t2-t1, t2_update - t1
@@ -94,19 +94,22 @@ class Solver_of_phase_space(InitialInformation):
         time_total_start = time.time()
         for it in range(self.nT):
 
-            self.damping_term[2, 0, :, :] = self.F_nQxy[2, 0, :, :]
+            self.damping_term[0, 0, :, :] = self.F_nQxy[0, 0, :, :]
             progress.current += 1
             progress()
             self.F_nQxy_res[:, :, :,:,it] = self.F_nQxy
             dfdt,time_rhs_Fermi_temp,time_rhs_Fermi_update_F_nQ_temp = self.__rhs_Fermi_Goldenrule(self.F_nQxy)
+
+            self.dfdt_res[:,:,:,:,it] = dfdt
+
             time_rhs += time_rhs_Fermi_temp
             time_rhs_update_F_nQ += time_rhs_Fermi_update_F_nQ_temp
-            error_from_nosymm = dfdt.sum() / (dfdt.shape[0] * dfdt.shape[1])
+            error_from_nosymm = dfdt.sum() / (dfdt.shape[0] * dfdt.shape[1] * dfdt.shape[2] * dfdt.shape[3])
 
-            self.F_nQxy = self.F_nQxy  - self.damping_term * self.delta_T * 0.1 \
+            self.F_nQxy = self.F_nQxy  - self.damping_term * self.delta_T * 0. + (dfdt - error_from_nosymm) * self.delta_T\
                           - ( np.matmul(self.F_nQxy, self.differential_mat) * self.V_x / self.delta_X
-                              + np.matmul(self.differential_mat, self.F_nQxy) *  self.V_y  /self.delta_Y ) * self.delta_T \
-                          + (dfdt - error_from_nosymm) * self.delta_T
+                              + np.matmul(self.differential_mat, self.F_nQxy) *  self.V_y  /self.delta_Y ) * self.delta_T
+
 
         time_total_end= time.time()
 
@@ -117,15 +120,15 @@ class Solver_of_phase_space(InitialInformation):
             #                   + np.matmul(self.differential_mat, self.F_nQxy) *  self.V_y  /self.delta_Y ) * self.delta_T
 
 if __name__ == "__main__":
-    Q=0
-    n=2
-    nX = 80
-    nY = 80
-    T_total = 75
-    nT = 75
+    Q=1
+    n=0
+    nX = 120
+    nY = 120
+    T_total = 100
+    nT = 400
     play_interval = 2
 
-    a = Solver_of_phase_space(degaussian=0.03,T=100,nX=nX,nY=nY, X=40,Y=40, nT=nT,T_total=T_total)
+    a = Solver_of_phase_space(degaussian=0.005,T=100,nX=nX,nY=nY, X=40,Y=40, nT=nT,T_total=T_total)
     a.solve_it()
 
     X = np.arange(nX)
@@ -141,7 +144,7 @@ if __name__ == "__main__":
             plt.contourf(XX,YY,a.F_nQxy_res[n,Q,:,:,i],levels=np.linspace(a.F_nQxy_res[n,Q,:,:,0].min()-0.01,a.F_nQxy_res[n,Q,:,:,0].max(),80))
         else:
             plt.contourf(XX, YY, a.F_nQxy_res[n, Q, :, :, i],
-                         levels=np.linspace(-0.0001, 0.01, 80))
+                         levels=np.linspace(0,a.F_nQxy_res[n,Q,:,:,:].max(),80))
         # plt.title(label='t=%s fs'%Time_series[i])
         plt.title('t=%s fs'%Time_series[i])
 

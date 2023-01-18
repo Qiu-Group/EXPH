@@ -174,12 +174,12 @@ class Solver_of_only_Q_space(InitialInformation):
         # animate(3)
         ani = animation.FuncAnimation(fig, animate, np.arange(self.T_total // self.play_interval), interval=10)
         # print('plot done')
-        ani.save('test.gif')
+        # ani.save('test.htm')
 
 if __name__ == "__main__":
-    a = Solver_of_only_Q_space(nT=3000,T_total=3000,play_interval=10)
+    a = Solver_of_only_Q_space(nT=300,T_total=300,play_interval=10)
     a.solve_it()
-    a.plot()
+    # a.plot()
 
     # plt.plot(np.linspace(1,T_total,nT),F_nQ_res[1,0,:])
     # plt.plot(np.linspace(1,T_total,nT),exciton_number)

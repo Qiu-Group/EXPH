@@ -10,6 +10,7 @@ from Common.progress import ProgressBar
 from ELPH.EX_PH_inteqp import kgrid_inteqp_complete,dispersion_inteqp_complete
 from Common.inteqp import interqp_2D
 # from ELPH.EX_PH_mat import gqQ
+# import numba as nb
 
 # (1) gqQ --> gqQ for given q,Q,m,n,v
 # --> (2) gqQ_inteqp_q_nopara  --> gqQ for given Q,m,n,v (interpolate to a fine q-grid given n,m,v,Q); low parallel efficiency as a job function
@@ -20,6 +21,7 @@ from Common.inteqp import interqp_2D
 
 
 #def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk(), kmap=read_kmap(), kmap_dic=construct_kmap(), bandmap_occ=read_bandmap(),muteProgress=False):
+# @nb.jit()
 def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
         acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,
         muteProgress=False, path='./',k_map_start_para='nopara', k_map_end_para='nopara'):
@@ -570,12 +572,16 @@ def gqQ_inteqp_q_series(res, new_q_out=False, interpo_size=12, kmap=None, path='
 
 
 if __name__ == "__main__":
+    import time
+    time1 = time.time()
     # gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk())
     # res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../')
     # res = gqQ_inteqp_q(path='../', new_q_out=True)
     # gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12, acvmat=read_Acv(), gkkmat=read_gkk())
     res = gqQ(n_ex_acv_index=8, m_ex_acv_index=3, v_ph_gkk=2, Q_kmap=3, q_kmap=11,path='../')
+    time2 = time.time()
 
+    print(time2 - time1)
     # res0, new_q_out = gqQ_inteqp_get_coarse_grid(path='../',new_q_out=False) # res is result from each process!
     # # gather all result |
     # #                   |
