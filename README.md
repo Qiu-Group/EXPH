@@ -6,7 +6,7 @@ Author: Bowen Hou
 
 Creating Time: 10/03/2022
 
-Last Updated: 01/12/2023
+Last Updated: 01/18/2023
 
 ---
 ## Exciton-Phonon Interaction
@@ -78,6 +78,22 @@ Please read Tutorial/Tutorial.md to learn how to use this tool!
 |56| 6.382 | 6.148|
 
 ![avatar](./fig/para_eff.jpg)
+
+---
+Some Results:
+
+(i) Exciton-Phonon Matrix:
+![avatar](./fig/Exciton_Phonon.png)
+
+(ii) Exciton Life Time over the first BZ
+![avatar](./fig/lifetime.png)
+
+(iii) Real Time Exciton Scattering in Reciprocal Space 
+![avatar](./fig/occupation_evoluation.gif)
+
+(iv) Real Space and Time Evolution of Two Exciton State Model:  
+![avatar](./fig/simple_model.gif)
+
 
 ---
 Todo:
