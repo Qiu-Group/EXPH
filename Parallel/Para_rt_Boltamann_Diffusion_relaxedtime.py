@@ -46,7 +46,7 @@ class Solver_of_phase_space(InitialInformation):
 
         ### Debug:
         self.V_x = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (0.)   #TODO: use Omega(S,Q)
-        self.V_y = np.ones((1, 1))[:,:,np.newaxis,np.newaxis] * (0.4)
+        self.V_y = np.ones((1, 1))[:,:,np.newaxis,np.newaxis] * (-0.4)
         self.F_nQxy = np.ones((1,1,self.nX,self.nY))
         self.F_nQxy[0,0,:,:] = Gaussian(self.ini_xx,self.ini_yy) * 20
         self.F_nQxy_res = np.zeros((1,1,self.nX,self.nY, self.nT))
