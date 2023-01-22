@@ -63,7 +63,7 @@ class LinearAdvection1D:
 ###################
 
 # constants
-N, x0, xN, deltaT, c, T = 100, 0., 10., 0.02, -0.3, 50
+N, x0, xN, deltaT, c, T = 100, 0., 10., 0.02, 0.3, 200
 # initialization of constants
 LA1D = LinearAdvection1D(c, x0, xN, N, deltaT, T)
 u_res_lax = np.zeros((N,int(LA1D.T / LA1D.deltaT)))

@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="workflow updated">
-      <change afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltamann_Diffusion_relaxedtime.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Parallel/two_state_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Class.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Class.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Equation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Equation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exph.in" beforeDir="false" afterPath="$PROJECT_DIR$/exph.in" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/two_state_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/two_state_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,6 +139,9 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
