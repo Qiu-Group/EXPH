@@ -63,7 +63,7 @@ class LinearAdvection1D:
 ###################
 
 # constants
-N, x0, xN, deltaT, c, T = 100, 0., 10., 0.02, 0.3, 200
+N, x0, xN, deltaT, c, T = 100, 0., 10., 0.02, 0.3, 50
 # initialization of constants
 LA1D = LinearAdvection1D(c, x0, xN, N, deltaT, T)
 u_res_lax = np.zeros((N,int(LA1D.T / LA1D.deltaT)))
@@ -107,14 +107,15 @@ fig = plt.figure(figsize=(10,5))
 def animate(i):
     plt.clf()
     plt.axhline(y=u_res_lax[:,0].max(),color='r')
-    plt.plot(x,u_res_lax[:,i])
-    plt.plot(x, u_res_euler[:, i])
-    plt.ylim(-0.2,2)
-
+    plt.plot(x,u_res_lax[:,i],label='euler')
+    plt.plot(x, u_res_euler[:, i],label='lax-wendroff')
+    plt.ylim(-0.2,1.25)
+    plt.legend()
     plt.title('t=%s fs; ' % int(i * deltaT))
     # plt.colorbar()
 
 
-ani = animation.FuncAnimation(fig, animate, np.arange(0,int(LA1D.T / LA1D.deltaT), int(play_interval/LA1D.deltaT)), interval=200)
+ani = animation.FuncAnimation(fig, animate, np.arange(0,int(LA1D.T / LA1D.deltaT), int(play_interval/LA1D.deltaT)), interval=100)
 plt.show()
+ani.save('test2.gif')
 

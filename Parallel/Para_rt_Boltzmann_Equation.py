@@ -33,7 +33,7 @@ kmap_dic = construct_kmap(path=path)
 bandmap_occ = read_bandmap(path=path)
 exciton_energy = read_Acv_exciton_energy(path=path)
 omega_mat = read_omega(path=path)  # dimension [meV]
-h_bar = 6.582119569E-16  # dimension = [eV.s]
+h_bar = 6.582119569E-16 - 1E15  # dimension = [eV.s]
 Constant = -1*(2*np.pi/h_bar) * (1/int(kmap.shape[0]))
 
 
@@ -156,7 +156,7 @@ Delta_positive, Delta_negative = Construct_Delta(deguassian)
 
 E_nQ = get_E_nQ()
 F_nQ = BE(omega=E_nQ,T=T)
-F_nQ[2,0] = 0.1 # initialize
+F_nQ[0,0] = 0.1 # initialize
 
 F_nQq = update_F_nQq(F_nQ)
 

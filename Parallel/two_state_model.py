@@ -29,7 +29,7 @@ def solve_it(F_qxy_res,F_qxy, dfdt_res,diff_mat, delta_T, diff_mat_y):
         F_qxy = F_qxy \
                 + np.matmul(F_qxy, diff_mat)  \
                 + np.matmul(diff_mat_y,F_qxy )  \
-                + delta_T * dfdt * delta_T  \
+                + delta_T * dfdt   \
 
 
 X, Y = 20,20
@@ -45,7 +45,7 @@ ini_x = np.arange(0, X, delta_X)
 ini_y = np.arange(0, Y, delta_Y)
 ini_xx, ini_yy = np.meshgrid(ini_x, ini_y)
 
-g_qp = np.array([[0,10,10,30,30],[10,0,0,10,10],[10,0,0,10,10],[30,10,10,0,0],[30,10,10,0,0]])*0.5 # .shape = (2,2)
+g_qp = np.array([[0,10,10,30,30],[10,0,0,10,10],[10,0,0,10,10],[30,10,10,0,0],[30,10,10,0,0]])*0.01 # .shape = (2,2)
 F_qxy = np.zeros((5,nX,nY)) # .shape = (2,nX,nY)
 F_qxy[0] = Gaussian(ini_xx,ini_yy)  # Initial Ccondition
 F_qxy_res = np.zeros((5,nX,nY,nT)) # .shape = (2,nX,nY,nT)
@@ -63,8 +63,8 @@ a_neg1 = C*(1+C)/2
 a0 = -C**2
 
 differential_mat = np.eye(nX,k=-1) * a_neg1  + np.eye(nX) *a0 + np.eye(nX, k=1) * a1
-differential_mat[:,-1,0] = differential_mat[:,-1,0] +  a1[:,0,0]
-differential_mat[:,0,-1] = differential_mat[:,-1,0] + a_neg1[:,0,0]
+differential_mat[:,-1,0] =   a1[:,0,0]
+differential_mat[:,0,-1] =  a_neg1[:,0,0]
 
 
 C_y = V_y*delta_T/delta_Y
@@ -73,8 +73,8 @@ a_neg1 = C_y*(1+C_y)/2
 a0 = -C_y**2
 
 differential_mat_y = np.eye(nY,k=-1) * a_neg1  + np.eye(nY) *a0 + np.eye(nY, k=1) * a1
-differential_mat_y[:,-1,0] = differential_mat[:,-1,0] +  a1[:,0,0]
-differential_mat_y[:,0,-1] = differential_mat[:,-1,0] + a_neg1[:,0,0]
+differential_mat_y[:,-1,0] =  a1[:,0,0]
+differential_mat_y[:,0,-1] =  a_neg1[:,0,0]
 
 
 # Boundary Condition:
@@ -125,5 +125,5 @@ def animate(i):
 
 ani = animation.FuncAnimation(fig, animate, np.arange(0, nT, int(play_interval/delta_T)), interval=100)
 plt.show()
-ani.save('simple_model_200.htm')
+# ani.save('simple_model_200.htm')
 

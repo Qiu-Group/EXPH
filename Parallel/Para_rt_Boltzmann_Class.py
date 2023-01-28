@@ -23,7 +23,7 @@ class InitialInformation():
         self.bandmap_occ = read_bandmap(path=path)
         self.exciton_energy = read_Acv_exciton_energy(path=path)
         self.omega_mat = read_omega(path=path)  # dimension [meV]
-        self.h_bar = 6.582119569E-16  # dimension = [eV.s]
+        self.h_bar = 6.582119569E-16 * 1E15  # dimension = [eV.fs]
         self.Constant = -1 * (2 * np.pi / self.h_bar) * (1 / int(self.kmap.shape[0]))
         f = h5.File(path+'gqQ.h5', 'r')
         self.gqQ_mat = f['data'][()]
@@ -33,6 +33,8 @@ class InitialInformation():
         self.n = self.gqQ_mat.shape[2]
         self.q = self.gqQ_mat.shape[1]
         self.Q = self.gqQ_mat.shape[0]
+
+
 
         print("Initialized information has been created")
     def get_E_vq(self):
