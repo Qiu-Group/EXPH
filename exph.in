@@ -12,8 +12,8 @@ degaussian = 0.02
 initialize =True
 
 exph_mat_write = True
-nS_initial = 1
-nS_final =1
+nS_initial = 3
+nS_final = 3
 
 xct_scattering_rate = False
 xct_scattering_rate_Q_kmap = 1

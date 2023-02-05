@@ -29,21 +29,21 @@ class Solver_of_phase_space(InitialInformation):
         self.N_vq = BE(omega=self.get_E_vq(), T=T)
         self.N_vq[0:3, 0] = np.array([0, 0, 0])
         self.Delta_positive, self.Delta_negative = self.Construct_Delta()
-        self.Delta_positive, self.Delta_negative = np.ones_like(self.Delta_positive), np.ones_like(self.Delta_negative) # TODO: open delta function later (we ignore energy conservation here)
+        # self.Delta_positive, self.Delta_negative = np.ones_like(self.Delta_positive), np.ones_like(self.Delta_negative) # TODO: open delta function later (we ignore energy conservation here)
 
         # Finding Group Velocity for each exciton state
 
         self.V_x, self.V_y = self.get_group_velocity()
         self.V_x, self.V_y = self.V_x[:,:,np.newaxis,np.newaxis]*0.002, self.V_y[:,:,np.newaxis,np.newaxis]*0.002
 
-        # leave for test
-        # self.V_x = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * (-0.02)  #TODO: use Omega(S,Q) --> Done
+        # leave this for test
+        # self.V_x = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * (-0.02)  #
         # self.V_y = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * 0.03
-        # self.V_x[0,0,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.  #TODO: use Omega(S,Q) --> Done
+        # self.V_x[0,0,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.  #
         # self.V_y[0,0,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.
-        # self.V_x[0,2,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * -0.035 #TODO: use Omega(S,Q) --> Done
+        # self.V_x[0,2,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * -0.035 #
         # self.V_y[0,2,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (-0.0)
-        # self.V_x[0,3,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.025  #TODO: use Omega(S,Q) --> Done
+        # self.V_x[0,3,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.025  #
         # self.V_y[0,3,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (0.)
 
 
@@ -75,7 +75,7 @@ class Solver_of_phase_space(InitialInformation):
         self.ini_xx, self.ini_yy = np.meshgrid(self.ini_x, self.ini_y)
 
         self.F_nQxy = np.zeros((self.n,self.Q,self.nX,self.nY))
-        self.F_nQxy[0,0,:,:] = Gaussian(self.ini_xx,self.ini_yy)
+        self.F_nQxy[2,0,:,:] = Gaussian(self.ini_xx,self.ini_yy)
 
         self.F_nQxy_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
 
@@ -183,14 +183,14 @@ class Solver_of_phase_space(InitialInformation):
             #                   + np.matmul(self.differential_mat, self.F_nQxy) *  self.V_y  /self.delta_Y ) * self.delta_T
 
 if __name__ == "__main__":
-    Q=0
-    n=0
+    n = 2
     nX = 80
     nY = 80
     T_total = 200
     delta_T = 0.02
     nT = int(T_total/delta_T)
     play_interval = 2
+
 
     a = Solver_of_phase_space(degaussian=0.005,T=100,nX=nX,nY=nY, X=20,Y=20, nT=nT,T_total=T_total,path='../')
     a.solve_it()
@@ -205,8 +205,8 @@ if __name__ == "__main__":
         plt.clf()
         plt.subplot(2, 2, 1)
 
-        plt.contourf(XX,YY,a.F_nQxy_res[n,0,:,:,i],levels=np.linspace(a.F_nQxy_res[n,Q,:,:,0].min()-0.01,a.F_nQxy_res[n,Q,:,:,0].max(),80))
-        plt.title('(n=%s,Q=%s)'%(n,Q)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,Q, :, :, i].sum())
+        plt.contourf(XX,YY,a.F_nQxy_res[n,0,:,:,i],levels=np.linspace(a.F_nQxy_res[0,0,:,:,0].min()-0.01,a.F_nQxy_res[n,0,:,:,0].max(),80))
+        plt.title('(n=%s,Q=%s)'%(n,0)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,0, :, :, i].sum())
 
         plt.colorbar()
 
@@ -215,7 +215,7 @@ if __name__ == "__main__":
 
         plt.contourf(XX, YY, a.F_nQxy_res[n, 1, :, :, i], levels=np.linspace(a.F_nQxy_res[n,1,:,:,:].min(),a.F_nQxy_res[n,1,:,:,:].max(),80))
         # plt.title(label='t=%s fs'%Time_series[i])
-        plt.title('(n=%s,Q=%s)'%(0,1)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,1, :, :, i].sum())
+        plt.title('(n=%s,Q=%s)'%(n,1)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,1, :, :, i].sum())
 
         plt.colorbar()
 
@@ -224,7 +224,7 @@ if __name__ == "__main__":
 
         plt.contourf(XX, YY, a.F_nQxy_res[n, 2, :, :, i], levels=np.linspace(a.F_nQxy_res[n,2,:,:,:].min(),a.F_nQxy_res[n,2,:,:,:].max(),80))
         # plt.title(label='t=%s fs'%Time_series[i])
-        plt.title('(n=%s,Q=%s)'%(0,2)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,2, :, :, i].sum())
+        plt.title('(n=%s,Q=%s)'%(n,2)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,2, :, :, i].sum())
 
         plt.colorbar()
 
@@ -233,12 +233,12 @@ if __name__ == "__main__":
 
         plt.contourf(XX, YY, a.F_nQxy_res[n, 3, :, :, i], levels=np.linspace(a.F_nQxy_res[n,3,:,:,:].min(),a.F_nQxy_res[n,3,:,:,:].max(),80))
         # plt.title(label='t=%s fs'%Time_series[i])
-        plt.title('(n=%s,Q=%s)'%(0,3)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,3, :, :, i].sum())
+        plt.title('(n=%s,Q=%s)'%(n,3)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,3, :, :, i].sum())
 
         plt.colorbar()
 
 
     ani = animation.FuncAnimation(fig, animate,  np.arange(0, nT, int(play_interval/delta_T)), interval=7)
     plt.show()
-    # ani.save('test2.gif')
-    ani.save('diffusion.htm')
+    ani.save('diffusion.gif')
+    # ani.save('diffusion.htm')

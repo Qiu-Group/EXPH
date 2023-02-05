@@ -35,6 +35,7 @@ class ProgressBar(object):
             'remaining': remaining
         }
         print('\r' + self.fmt % args, file=self.output, end='')
+        # sys.stdout.flush()
         # print('\r' + self.fmt % args, end='')
 
     def done(self):
@@ -42,6 +43,7 @@ class ProgressBar(object):
         self()
         print('', file=self.output)
         print('')
+        # sys.stdout.flush()
 
 if __name__ == "__main__":
     import time

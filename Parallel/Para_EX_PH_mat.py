@@ -13,6 +13,7 @@ import numpy as np
 import h5py as h5
 from IO.IO_gkk import read_omega, read_gkk
 from IO.IO_acv import read_Acv, read_Acv_exciton_energy
+import sys
 
 #def func:------input to be passed to function
 
@@ -180,19 +181,26 @@ def gqQ_h5_generator_Para(nS_initial = 0, nS_final = 0, path='./',mute=True):
     workload_over_kmap = int(kmap.shape[0] * kmap.shape[0])
     plan_list, start_time, start_time_proc = before_parallel_job(rk=rank,size=size,workload_para=workload_over_kmap)
     plan_list = comm.scatter(plan_list,root=0)
-    if not mute:
-        print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1]-plan_list[0])
 
-    # (c) This is exph_mat for each process: G(Q_kmap,q_kmap,n,m,v)
-    progress = ProgressBar(kmap.shape[0]*kmap.shape[0], fmt=ProgressBar.FULL)
+    # print('process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1]-plan_list[0])
+    # sys.stdout.flush()
+
+    # (c) This is exph_mat for each process: G(Q_kmap,q_kmap,n,m,v), initialize time
+    # progress = ProgressBar(kmap.shape[0]*kmap.shape[0], fmt=ProgressBar.FULL)
     exph_mat_each_process = np.zeros((kmap.shape[0],kmap.shape[0],nS_initial,nS_final,n_phonon))
+    time_prc0_start = time.time()
+
+    if rank == 0:
+        print("process_%d. takes memory of %.2f MB"%(rank,sys.getsizeof(exph_mat_each_process)/8/1024/1024))
+        print('estimated whole memory is %.2f MB'%(size * sys.getsizeof(exph_mat_each_process)/8/1024/1024))
+        sys.stdout.flush()
 
     Qq_list_dic = Q_q_mesh(kmap.shape[0])
 
     for Qq_iterate in range(plan_list[0],plan_list[-1]):
-        if rank == 0 and not mute:
-            progress.current += 1
-            progress()
+        # progress bar for parallel
+        progress_bar_parallel(rank=rank,iterate_para=Qq_iterate,total=plan_list[-1]-plan_list[0],start_time=time_prc0_start)
+
         Qq_index_set = Qq_list_dic[Qq_iterate]
         Q_kmap = Qq_index_set[0]
         q_kmap = Qq_index_set[1]
@@ -214,17 +222,27 @@ def gqQ_h5_generator_Para(nS_initial = 0, nS_final = 0, path='./',mute=True):
                                                                                                   muteProgress=True))**2
 
     # after_parallel ...
-    exph_rcev_to_0 = comm.gather(exph_mat_each_process, root=0)
-
-    value = after_parallel_sum_job(rk=rank, size=size, receive_res=exph_rcev_to_0, start_time=start_time,
-                                   start_time_proc=start_time_proc)
-
+    # exph_rcev_to_0 = comm.gather(exph_mat_each_process, root=0)
+    # value = after_parallel_sum_job(rk=rank, size=size, receive_res=exph_rcev_to_0, start_time=start_time,
+    #                                start_time_proc=start_time_proc)
+    value = np.zeros_like(exph_mat_each_process)
+    comm.Reduce(exph_mat_each_process,value,op=MPI.SUM,root=0)
 
     if rank == 0:
         f = h5.File('gqQ.h5','w')
         f['data'] = value
         f.close()
 
+def progress_bar_parallel(rank,iterate_para,total,start_time):
+    if rank == 0:
+        if total < 10:
+            divisor = 1
+        else:
+            divisor = round(total/10)
+
+        if iterate_para % divisor == 0:  # progress bar for real calculation
+            print("[EXPH-Mat calculation] progress of process_%d: %.2f" % (rank, 100 * iterate_para / total) + "%"+", time lasted: %.1f sec"%(time.time()-start_time))
+            sys.stdout.flush()
 
 def Q_q_mesh(number_point):
     count = 0
@@ -239,5 +257,5 @@ def Q_q_mesh(number_point):
 if __name__ == "__main__":
     # res_para = para_gqQ(path='../',mute=True)
     # print('res_para:',res_para)
-    gqQ_h5_generator_Para(nS_initial=10, nS_final=10 ,path="../",mute=False)
+    gqQ_h5_generator_Para(nS_initial=10, nS_final=10 ,path="../",mute=True)
     pass
