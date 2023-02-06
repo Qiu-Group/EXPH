@@ -215,7 +215,8 @@ def animate(i):
     # plt.ylim(0,100)
     plt.xlabel("Q")
     plt.ylabel("Energy")
-    plt.ylim([2,3])
+    plt.ylim([enegy.min()-1,enegy.max()+1])
+    plt.xlim([-1,4])
     # plt.legend()
 
 ani = animation.FuncAnimation(fig,animate,np.arange(T_total//T_interval),interval=10)

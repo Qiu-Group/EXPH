@@ -1,24 +1,27 @@
 import numpy as np
-from Parallel.Para_rt_Boltzmann_Class import InitialInformation
+from ELPH.EX_PH_Boltzman_Class import InitialInformation
 from Common.distribution import Dirac_1, BE
 from Common.progress import ProgressBar
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 import time
+import h5py as h5
+from PLot_.plot_evolution import plot_diff_evolution
 
 def Gaussian(x,y,sigma=1,x0=10,y0=10):
     return 1/(2*np.pi*sigma**2) * np.exp(-((x-x0)**2+(y-y0)**2)/(2*sigma**2))
 
 
 class Solver_of_phase_space(InitialInformation):
-    def __init__(self,degaussian,T,nX,nY, X,Y, nT,T_total,path='../'):
+    def __init__(self,degaussian,T,nX,nY, X,Y, delta_T,T_total,path='../'):
         super(Solver_of_phase_space,self).__init__(path,degaussian,T)
         self.nX = nX
         self.nY = nY
-        self.nT = nT
+        self.delta_T = delta_T
         self.T_total = T_total
-        self.delta_T = T_total/nT
+        # self.delta_T = T_total/nT
+        self.nT = int(T_total/delta_T)
         self.delta_X = X/nX
         self.delta_Y = Y/nY
         # # differential_mat = -2*np.eye(nX) + np.eye(nX,k=-1) + np.eye(nX,k=1)
@@ -75,7 +78,7 @@ class Solver_of_phase_space(InitialInformation):
         self.ini_xx, self.ini_yy = np.meshgrid(self.ini_x, self.ini_y)
 
         self.F_nQxy = np.zeros((self.n,self.Q,self.nX,self.nY))
-        self.F_nQxy[2,0,:,:] = Gaussian(self.ini_xx,self.ini_yy)
+        self.F_nQxy[2,0,:,:] = Gaussian(self.ini_xx,self.ini_yy) # todo: add parameter to specify exciton state you want to initialize
 
         self.F_nQxy_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
 
@@ -83,7 +86,7 @@ class Solver_of_phase_space(InitialInformation):
         self.dfdt_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
 
         ### Debug:
-        # self.V_x = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (0.4)   #TODO: use Omega(S,Q)
+        # self.V_x = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (0.4)   #TODOdone: use Omega(S,Q)
         # self.V_y = np.ones((1, 1))[:,:,np.newaxis,np.newaxis] * 0.4
         # self.F_nQxy = np.ones((1,1,self.nX,self.nY))
         # self.F_nQxy[0,0,:,:] = Gaussian(ini_xx,ini_yy) * 20
@@ -94,7 +97,7 @@ class Solver_of_phase_space(InitialInformation):
 
 
     def kmap_check_for_derivative(self):
-        return True
+        return True # TODO
 
     def get_group_velocity(self):
         if not self.kmap_check_for_derivative(): raise Exception("group velocity can not be calculated with this kmap, please make sure that you are using same size Q, k_acv, q and k_gkk in previous calculation")
@@ -181,64 +184,36 @@ class Solver_of_phase_space(InitialInformation):
         print('total time to solve rhs_Fnq_Fermi:', time_rhs_update_F_nQ)
             # self.F_nQxy = self.F_nQxy - self.damping_term * self.delta_T * 0.0+ ( np.matmul(self.F_nQxy, self.differential_mat) * self.V_x / self.delta_X
             #                   + np.matmul(self.differential_mat, self.F_nQxy) *  self.V_y  /self.delta_Y ) * self.delta_T
+    def write_diffusion_evolution(self):
+        f = h5.File(self.path+'EX_diffusion_evolution.h5','w')
+        f.create_dataset('data',data=self.F_nQxy_res)
+        f.close()
+        print('EX_diffusion_evolution.h5 has been written')
+
+    def plot(self,n_plot,play_interval=2,saveformat=None):
+        """
+        :param n_plot: state you want to see: start from 1,2,3...
+        :param play_inverval:  plot evolution in every "plat_interval" [fs]
+        :return:
+        """
+        n_plot = n_plot
+        ani = plot_diff_evolution(nX=self.nX,
+                                  nY=self.nY,
+                                  n=n_plot,
+                                  T_total=self.T_total,
+                                  delta_T=self.delta_T,
+                                  play_interval=play_interval,
+                                  path=self.path,
+                                  saveformat=saveformat
+                                  )
+        return ani
 
 if __name__ == "__main__":
-    n = 2
-    nX = 80
-    nY = 80
-    T_total = 200
-    delta_T = 0.02
-    nT = int(T_total/delta_T)
-    play_interval = 2
+############## Solve PDF and plot
 
-
-    a = Solver_of_phase_space(degaussian=0.005,T=100,nX=nX,nY=nY, X=20,Y=20, nT=nT,T_total=T_total,path='../')
+    a = Solver_of_phase_space(degaussian=0.005,T=100,nX=80,nY=80, X=20,Y=20, delta_T=0.02,T_total=200,path='../')
     a.solve_it()
-
-    X = np.arange(nX)
-    Y = np.arange(nY)
-
-    XX, YY = np.meshgrid(X,Y)
-
-    fig =plt.figure(figsize=(15,12.5))
-    def animate(i):
-        plt.clf()
-        plt.subplot(2, 2, 1)
-
-        plt.contourf(XX,YY,a.F_nQxy_res[n,0,:,:,i],levels=np.linspace(a.F_nQxy_res[0,0,:,:,0].min()-0.01,a.F_nQxy_res[n,0,:,:,0].max(),80))
-        plt.title('(n=%s,Q=%s)'%(n,0)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,0, :, :, i].sum())
-
-        plt.colorbar()
-
-        ######################3
-        plt.subplot(2, 2, 2)
-
-        plt.contourf(XX, YY, a.F_nQxy_res[n, 1, :, :, i], levels=np.linspace(a.F_nQxy_res[n,1,:,:,:].min(),a.F_nQxy_res[n,1,:,:,:].max(),80))
-        # plt.title(label='t=%s fs'%Time_series[i])
-        plt.title('(n=%s,Q=%s)'%(n,1)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,1, :, :, i].sum())
-
-        plt.colorbar()
-
-        ######################3
-        plt.subplot(2, 2, 3)
-
-        plt.contourf(XX, YY, a.F_nQxy_res[n, 2, :, :, i], levels=np.linspace(a.F_nQxy_res[n,2,:,:,:].min(),a.F_nQxy_res[n,2,:,:,:].max(),80))
-        # plt.title(label='t=%s fs'%Time_series[i])
-        plt.title('(n=%s,Q=%s)'%(n,2)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,2, :, :, i].sum())
-
-        plt.colorbar()
-
-        ######################3
-        plt.subplot(2, 2, 4)
-
-        plt.contourf(XX, YY, a.F_nQxy_res[n, 3, :, :, i], levels=np.linspace(a.F_nQxy_res[n,3,:,:,:].min(),a.F_nQxy_res[n,3,:,:,:].max(),80))
-        # plt.title(label='t=%s fs'%Time_series[i])
-        plt.title('(n=%s,Q=%s)'%(n,3)+'t=%s fs'%int(i * delta_T)+ 'exciton number: %.2f'%a.F_nQxy_res[ n,3, :, :, i].sum())
-
-        plt.colorbar()
+    a.write_diffusion_evolution()
+    ani = a.plot(n_plot=2,play_interval=2,saveformat=None)
 
 
-    ani = animation.FuncAnimation(fig, animate,  np.arange(0, nT, int(play_interval/delta_T)), interval=7)
-    plt.show()
-    ani.save('diffusion.gif')
-    # ani.save('diffusion.htm')

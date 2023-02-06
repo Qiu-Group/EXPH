@@ -191,8 +191,8 @@ def gqQ_h5_generator_Para(nS_initial = 0, nS_final = 0, path='./',mute=True):
     time_prc0_start = time.time()
 
     if rank == 0:
-        print("process_%d. takes memory of %.2f MB"%(rank,sys.getsizeof(exph_mat_each_process)/8/1024/1024))
-        print('estimated whole memory is %.2f MB'%(size * sys.getsizeof(exph_mat_each_process)/8/1024/1024))
+        print("process_%d. takes memory of %.2f MB"%(rank,sys.getsizeof(exph_mat_each_process)/1024/1024))
+        print('estimated whole memory is %.2f MB'%(size * sys.getsizeof(exph_mat_each_process)/1024/1024))
         sys.stdout.flush()
 
     Qq_list_dic = Q_q_mesh(kmap.shape[0])

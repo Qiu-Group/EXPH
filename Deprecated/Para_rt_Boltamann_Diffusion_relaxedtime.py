@@ -1,5 +1,5 @@
 import numpy as np
-from Parallel.Para_rt_Boltzmann_Class import InitialInformation
+from ELPH.EX_PH_Boltzman_Class import InitialInformation
 from Common.distribution import Dirac_1, BE
 from Common.progress import ProgressBar
 import matplotlib.pyplot as plt
