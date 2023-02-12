@@ -1,9 +1,10 @@
 # (1) Parameter
-valence_start_gkk = 3
-conduction_end_gkk = 6
-#save_path = './test/save_MoS2_nosymm_441/'
-#save_path = './test/save_MoS2_nosymm/'
-save_path = './test/save_hBN_nosymm_221/'
+valence_start_gkk = 11
+conduction_end_gkk = 14
+#valence_start_gkk = 3
+#conduction_end_gkk = 6
+save_path = './test/save_MoS2_nosymm_441/'
+#save_path = './test/save_hBN_nosymm_221/'
 h5_path = './'
 T=300
 degaussian = 0.02

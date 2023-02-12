@@ -34,7 +34,7 @@ def solve_it(F_qxy_res,F_qxy, dfdt_res,diff_mat, delta_T, diff_mat_y):
 
 X, Y = 20,20
 nX, nY = 80, 80
-T_total = 40
+T_total = 80
 delta_T = 0.02
 nT = int(T_total/delta_T)
 
@@ -110,6 +110,19 @@ def animate(i):
 
     plt.title('t=%s fs; ' % int(i * delta_T) + 'exciton number: %.2f'%F_qxy_res[ 2, :, :, i].sum())
     plt.colorbar()
+
+
+    plt.subplot(2,3,4)
+    plt.plot(F_qxy_res.sum(axis=(0,1,2))[:i],label="Total")
+    plt.plot(F_qxy_res[0].sum(axis=(0, 1))[:i], label="S=0")
+    plt.plot(F_qxy_res[1].sum(axis=(0, 1))[:i], label="S=1")
+    plt.plot(F_qxy_res[2].sum(axis=(0, 1))[:i], label="S=2")
+    plt.plot(F_qxy_res[3].sum(axis=(0, 1))[:i], label="S=3")
+    plt.plot(F_qxy_res[4].sum(axis=(0, 1))[:i], label="S=4")
+    plt.xlim(0, nT)
+    plt.ylim(0,F_qxy_res.sum(axis=(0,1,2))[0]+2)
+    plt.legend()
+    plt.title("Exciton Number:")
 
     plt.subplot(2,3,5)
     plt.contourf(ini_xx, ini_yy, F_qxy_res[3, :, :, i], levels=np.linspace( -0.01, 0.06,80))

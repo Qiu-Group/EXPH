@@ -75,9 +75,10 @@ def plot_diff_evolution(nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_interval=2,
 
 
     ani = animation.FuncAnimation(fig, animate, np.arange(0, nT, int(play_interval / delta_T)), interval=7)
-    print("saving diffusion")
+
     if saveformat:
+        print("saving diffusion")
         ani.save(path+'diffusion.'+saveformat)
-    print("saving diffusion done!")
+        print("saving diffusion done!")
 
     return ani # see why I return ani here: https://stackoverflow.com/questions/21099121/python-matplotlib-unable-to-call-funcanimation-from-inside-a-function

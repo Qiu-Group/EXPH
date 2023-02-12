@@ -14,8 +14,8 @@ def Gaussian(x,y,sigma=1,x0=10,y0=10):
 
 
 class Solver_of_phase_space(InitialInformation):
-    def __init__(self,degaussian,T,nX,nY, X,Y, delta_T,T_total,path='../'):
-        super(Solver_of_phase_space,self).__init__(path,degaussian,T)
+    def __init__(self,degaussian,T,nX,nY, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1):
+        super(Solver_of_phase_space,self).__init__(path,degaussian,T,initial_S,initial_Q,initial_Gaussian_Braod)
         self.nX = nX
         self.nY = nY
         self.delta_T = delta_T
@@ -72,13 +72,13 @@ class Solver_of_phase_space(InitialInformation):
         # Lax-wendroff<
 
 
-        # TODO: find a way to initialize this
+        # TODOdone: find a way to initialize this
         self.ini_x = np.arange(0, X, self.delta_X)
         self.ini_y = np.arange(0, Y, self.delta_Y)
         self.ini_xx, self.ini_yy = np.meshgrid(self.ini_x, self.ini_y)
 
         self.F_nQxy = np.zeros((self.n,self.Q,self.nX,self.nY))
-        self.F_nQxy[2,0,:,:] = Gaussian(self.ini_xx,self.ini_yy) # todo: add parameter to specify exciton state you want to initialize
+        self.F_nQxy[self.initial_S,self.initial_Q,:,:] = Gaussian(self.ini_xx,self.ini_yy,x0=X//2,y0=Y//2,sigma=self.initial_Gaussian) # tododone: add parameter to specify exciton state you want to initialize
 
         self.F_nQxy_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
 
@@ -139,6 +139,7 @@ class Solver_of_phase_space(InitialInformation):
     def __rhs_Fermi_Goldenrule(self,F_nQxy_last):
         # dFdt = (n,Q,x,y)
         # TODO: Optimization
+
         t1 = time.time()
         F_nQqxy = self.__update_F_nQqxy(F_nQxy_last)
         t2_update =time.time()
@@ -146,8 +147,9 @@ class Solver_of_phase_space(InitialInformation):
                                                                                 F_nQqxy,optimize='optimal')
         F_em = np.einsum('npxy,vq,npqxy->npqvxy', F_nQxy_last, 1 + self.N_vq, 1 + F_nQqxy,optimize='optimal') - np.einsum('npxy,vq,npqxy->npqvxy', 1 + F_nQxy_last, self.N_vq,
                                                                                    F_nQqxy,optimize='optimal')
-        dFdt =  (np.einsum('pqnmv,nmvpq,npqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs,optimize='optimal') + np.einsum(
-            'pqnmv,nmvpq,npqvxy->npxy', self.gqQ_mat, self.Delta_negative, F_em,optimize='optimal'))
+        # Debugging: 02/11/2023 n --> m  !!!! Bowen Hou
+        dFdt =  (np.einsum('pqnmv,nmvpq,mpqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs,optimize='optimal') + np.einsum(
+            'pqnmv,nmvpq,mpqvxy->npxy', self.gqQ_mat, self.Delta_negative, F_em,optimize='optimal'))
         t2 = time.time()
         return -1*(np.pi * 2)/(self.h_bar * self.Q) * dFdt, t2-t1, t2_update - t1
 
@@ -211,9 +213,9 @@ class Solver_of_phase_space(InitialInformation):
 if __name__ == "__main__":
 ############## Solve PDF and plot
 
-    a = Solver_of_phase_space(degaussian=0.005,T=100,nX=80,nY=80, X=20,Y=20, delta_T=0.02,T_total=200,path='../')
-    a.solve_it()
-    a.write_diffusion_evolution()
-    ani = a.plot(n_plot=2,play_interval=2,saveformat=None)
+    a = Solver_of_phase_space(degaussian=0.005,T=100,nX=80,nY=80, X=20,Y=20, delta_T=0.02,T_total=30,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1)
+    # a.solve_it()
+    # a.write_diffusion_evolution()
+    ani = a.plot(n_plot=2,play_interval=1,saveformat=None)
 
 

@@ -117,5 +117,5 @@ def animate(i):
 
 ani = animation.FuncAnimation(fig, animate, np.arange(0,int(LA1D.T / LA1D.deltaT), int(play_interval/LA1D.deltaT)), interval=100)
 plt.show()
-ani.save('test2.gif')
+# ani.save('test2.htm')
 
