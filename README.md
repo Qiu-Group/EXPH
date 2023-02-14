@@ -35,6 +35,8 @@ Last Updated: 02/11/2023
 
 6. Time complexity of exciton lifetime will be reduced to O(N^2) from O(N^2) (coming soon!) However, space complexity will increase.
 
+7. GPU acceleration (coming soon!)
+
 ## Workflow
 
 Please read Tutorial/Tutorial.md to learn how to use this tool! 

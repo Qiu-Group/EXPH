@@ -7,7 +7,7 @@ import time
 import h5py as h5
 import sys
 
-def plot_diff_evolution(nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_interval=2, path='../',saveformat='htm'):
+def plot_diff_evolution(F_nQxy_res,nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_interval=2, path='../',saveformat='htm'):
     """
     :param nX: number of discrete X
     :param nY: number of discrete Y
@@ -24,9 +24,9 @@ def plot_diff_evolution(nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_interval=2,
     XX, YY = np.meshgrid(X, Y)
     fig = plt.figure(figsize=(15, 12.5))
 
-    f = h5.File(path+'EX_diffusion_evolution.h5','r')
-    F_nQxy_res = f['data'][()]
-    f.close()
+    # f = h5.File(path+'EX_diffusion_evolution.h5','r')
+    # F_nQxy_res = f['data'][()]
+    # f.close()
     print('F_nQxy_res has been read and size of it is: %.2f MB'%(sys.getsizeof(F_nQxy_res)/1024/1024))
 
     def animate(i):
@@ -34,7 +34,7 @@ def plot_diff_evolution(nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_interval=2,
         plt.subplot(2, 2, 1)
 
         plt.contourf(XX, YY, F_nQxy_res[n, 0, :, :, i],
-                     levels=np.linspace(F_nQxy_res[0, 0, :, :, 0].min() - 0.01, F_nQxy_res[n, 0, :, :, 0].max(), 80))
+                     levels=np.linspace(F_nQxy_res[n, 0, :, :, 0].min(), F_nQxy_res[n, 0, :, :, 0].max()+0.00000000001, 80))
         plt.title('(n=%s,Q=%s)' % (n, 0) + 't=%s fs' % int(i * delta_T) + 'exciton number: %.2f' % F_nQxy_res[n, 0, :, :,
                                                                                                    i].sum())
 

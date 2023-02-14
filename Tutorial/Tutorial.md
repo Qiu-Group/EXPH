@@ -20,8 +20,9 @@ related properties, such as exciton band structure,exciton-phonon scattering mat
    - Then install EXPH:   
    `cd ~/your_software_path/EXPH/;`  
    `bash install.sh`
-   - Add *./bin* to your environment:  
+   - Add *./bin* to your environment and set root of EXPH:  
    `export PATH=~/your_software_path/EXPH/bin:$PATH`
+   `export PYTHONPATH="${PYTHONPATH}:~/your_software_path/EXPH"`
  
  - Required package:
     - Install [Anaconda](https://www.anaconda.com/) firstly

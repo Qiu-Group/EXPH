@@ -25,7 +25,7 @@ class Solver_of_only_Q_space(InitialInformation):
         self.N_vq = BE(omega=self.get_E_vq(),T=T)
         self.N_vq[0:3,0] = np.array([0,0,0])
         self.Delta_positive, self.Delta_negative = self.Construct_Delta()
-        self.Delta_positive, self.Delta_negative = np.ones_like(self.Delta_positive), np.ones_like(self.Delta_negative)
+        # self.Delta_positive, self.Delta_negative = np.ones_like(self.Delta_positive), np.ones_like(self.Delta_negative) # TODO: debug!!!!!
 
         # Plot Setting:
         self.play_interval = play_interval
@@ -83,14 +83,15 @@ class Solver_of_only_Q_space(InitialInformation):
         #
         # self.gqQ_mat[0,8,2,2,:]=0.0008
         # self.gqQ_mat[7,6, 2, 2, :] = 0.0008
-        F_mQq = self.update_F_nQq(F_nQ_last)
-        F_abs = np.einsum('np,vq,mpq->nmpqv',F_nQ_last, self.N_vq, 1 + F_mQq) \
-                - np.einsum('np,vq,mpq->nmpqv', 1 + F_nQ_last, 1 + self.N_vq, F_mQq)
+        #numba
+        F_mQq = self.update_F_nQq(F_nQ_last)  # TODO: change index order below to test if it will become faster, like: 'np,vq,mpq->nmpqv' ==> 'np,vq,mpq->nmvpq
+        F_abs = np.einsum('np,vq,mpq->nmpqv',F_nQ_last, self.N_vq, 1 + F_mQq,optimize='greedy') \
+                - np.einsum('np,vq,mpq->nmpqv', 1 + F_nQ_last, 1 + self.N_vq, F_mQq,optimize='greedy')
         # F_em = np.einsum('np,vq,npq->npqv', F_nQ_last, 1 + self.N_vq, 1 + F_nQq) \
-        F_em =  - np.einsum('np,vq,mpq->nmpqv', 1 + F_nQ_last, self.N_vq, F_mQq)\
-                +np.einsum('np,vq,mpq->nmpqv', F_nQ_last, 1 + self.N_vq, 1 + F_mQq)
-        dFdt = (np.einsum('pqnmv,nmvpq,nmpqv->np', self.gqQ_mat, self.Delta_positive, F_abs) + np.einsum(
-            'pqnmv,nmvpq,nmpqv->np', self.gqQ_mat, self.Delta_negative, F_em))
+        F_em =  - np.einsum('np,vq,mpq->nmpqv', 1 + F_nQ_last, self.N_vq, F_mQq,optimize='greedy')\
+                + np.einsum('np,vq,mpq->nmpqv', F_nQ_last, 1 + self.N_vq, 1 + F_mQq,optimize='greedy')
+        dFdt = np.einsum('pqnmv,nmvpq,nmpqv->np', self.gqQ_mat, self.Delta_positive, F_abs,optimize='greedy')  \
+                + np.einsum('pqnmv,nmvpq,nmpqv->np', self.gqQ_mat, self.Delta_negative, F_em,optimize='greedy')
         # <<<--------for debug
         return -1*(np.pi * 2)/(self.h_bar * self.Q) * dFdt
 
@@ -103,17 +104,14 @@ class Solver_of_only_Q_space(InitialInformation):
             self.F_nQ_res[:, :, it] = self.F_nQ
             dfdt = self.__rhs_Fermi_Goldenrule(self.F_nQ)
             self.dfdt_res[:,:,it] = dfdt # TODO: debugging
-            # error_from_nosymm = dfdt.sum() / (dfdt.shape[0] * dfdt.shape[1])
+            # error_from_nosymm = dfdt.sum() / (dfdt.shape[0] * dfdt.shape[1]) #for debug!!
             # error_from_nosymm = 0
 
 
-            self.F_nQ = self.F_nQ\
-                        + (dfdt ) * self.delta_T\
+            self.F_nQ = self.F_nQ + dfdt * self.delta_T \
                         # - self.damping_term * self.delta_T * 0.00
-            # TODO: debugging
-            # self.F_nQ = np.where(self.F_nQ < 0 , 0, self.F_nQ)
 
-            # some debugging
+            # TODO: just remove it, this is for debugging
             self.exciton_number[it] = self.F_nQ.sum()
             self.dfdt_sum_res[it] = dfdt.sum()
             # print(dfdt[2,0])
@@ -135,7 +133,7 @@ class Solver_of_only_Q_space(InitialInformation):
             f.close()
         def animate(i):
             plt.clf()
-            plt.scatter(self.Q_exciton, self.energy[:,self.high_symms_path_index_list_in_kmap], s=np.sqrt(self.F_nQ_res[:, self.high_symms_path_index_list_in_kmap, i])**1.5 * 2000, color='r')
+            plt.scatter(self.Q_exciton, self.energy[:,self.high_symms_path_index_list_in_kmap], s=np.sqrt(self.F_nQ_res[:, self.high_symms_path_index_list_in_kmap, i])**1.5 * 1000, color='r')
             plt.title(label='t=%s fs' % int(i * self.delta_T) + ' total_exciton: %.1f'%self.F_nQ_res[:,:,i].sum())
             plt.xlabel("Q")
             plt.ylabel("Energy")
@@ -153,9 +151,9 @@ class Solver_of_only_Q_space(InitialInformation):
         return ani
 
 if __name__ == "__main__":
-    a = Solver_of_only_Q_space(degaussian=0.001,delta_T=1,T_total=50,play_interval=1,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,
-                               high_symm="0.0 0.0 0.0 ,0.75 0.75 0.0, 0.75 0.0 0, 0.0 0.0 0.0",
-                               initial_occupation=5)
+    a = Solver_of_only_Q_space(degaussian=0.03,delta_T=1,T_total=300,play_interval=1,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,
+                               high_symm="0.0 0.0 0.0 ,0.33333 0.33333 0.0, 0.5 0.0 0, 0.0 0.0 0.0",
+                               initial_occupation=5,T=100)
     a.solve_it()
     a.write_occupation_evolution()
     ani = a.plot(saveformat=None,readfromh5=True)

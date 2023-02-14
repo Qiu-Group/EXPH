@@ -37,7 +37,7 @@ class Solver_of_phase_space(InitialInformation):
         # Finding Group Velocity for each exciton state
 
         self.V_x, self.V_y = self.get_group_velocity()
-        self.V_x, self.V_y = self.V_x[:,:,np.newaxis,np.newaxis]*0.002, self.V_y[:,:,np.newaxis,np.newaxis]*0.002
+        self.V_x, self.V_y = self.V_x[:,:,np.newaxis,np.newaxis]*0.02, self.V_y[:,:,np.newaxis,np.newaxis]*0.02
 
         # leave this for test
         # self.V_x = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * (-0.02)  #
@@ -129,27 +129,27 @@ class Solver_of_phase_space(InitialInformation):
         """
         Q_acv_back2_kmap = list(map(int, list(self.kmap[:, 3])))
         # self.F_nQxy.shape = (n,Q,q,nX,nY)
-        F_nQqxy = np.zeros((F_nQxy_last.shape[0], F_nQxy_last.shape[1], F_nQxy_last.shape[1],F_nQxy_last.shape[2],F_nQxy_last.shape[3]))
+        F_mQqxy = np.zeros((F_nQxy_last.shape[0], F_nQxy_last.shape[1], F_nQxy_last.shape[1],F_nQxy_last.shape[2],F_nQxy_last.shape[3]))
         for i_Q_kmap in range(self.Q):
             for i_q_kmap in range(self.q):
-                F_nQqxy[:, i_Q_kmap, i_q_kmap,:,:] = F_nQxy_last[:,
+                F_mQqxy[:, i_Q_kmap, i_q_kmap,:,:] = F_nQxy_last[:,
                                                Q_acv_back2_kmap.index(self.Qplusq_2_QPrimeIndexAcv(i_Q_kmap, i_q_kmap)),:,:]
-        return F_nQqxy
+        return F_mQqxy
 
     def __rhs_Fermi_Goldenrule(self,F_nQxy_last):
         # dFdt = (n,Q,x,y)
         # TODO: Optimization
 
         t1 = time.time()
-        F_nQqxy = self.__update_F_nQqxy(F_nQxy_last)
+        F_mQqxy = self.__update_F_nQqxy(F_nQxy_last)
         t2_update =time.time()
-        F_abs = np.einsum('npxy,vq,npqxy->npqvxy',F_nQxy_last, self.N_vq, 1 + F_nQqxy,optimize='optimal') - np.einsum('npxy,vq,npqxy->npqvxy', 1 + F_nQxy_last, 1 + self.N_vq,
-                                                                                F_nQqxy,optimize='optimal')
-        F_em = np.einsum('npxy,vq,npqxy->npqvxy', F_nQxy_last, 1 + self.N_vq, 1 + F_nQqxy,optimize='optimal') - np.einsum('npxy,vq,npqxy->npqvxy', 1 + F_nQxy_last, self.N_vq,
-                                                                                   F_nQqxy,optimize='optimal')
+        F_abs = np.einsum('npxy,vq,mpqxy->nmpqvxy',F_nQxy_last, self.N_vq, 1 + F_mQqxy,optimize='optimal') \
+                - np.einsum('npxy,vq,mpqxy->nmpqvxy', 1 + F_nQxy_last, 1 + self.N_vq, F_mQqxy,optimize='optimal')
+        F_em = np.einsum('npxy,vq,mpqxy->nmpqvxy', F_nQxy_last, 1 + self.N_vq, 1 + F_mQqxy,optimize='optimal') - np.einsum('npxy,vq,npqxy->npqvxy', 1 + F_nQxy_last, self.N_vq,
+                                                                                   F_mQqxy,optimize='optimal')
         # Debugging: 02/11/2023 n --> m  !!!! Bowen Hou
-        dFdt =  (np.einsum('pqnmv,nmvpq,mpqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs,optimize='optimal') + np.einsum(
-            'pqnmv,nmvpq,mpqvxy->npxy', self.gqQ_mat, self.Delta_negative, F_em,optimize='optimal'))
+        dFdt =  (np.einsum('pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs,optimize='optimal') + np.einsum(
+            'pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_negative, F_em,optimize='optimal'))
         t2 = time.time()
         return -1*(np.pi * 2)/(self.h_bar * self.Q) * dFdt, t2-t1, t2_update - t1
 
@@ -170,10 +170,10 @@ class Solver_of_phase_space(InitialInformation):
 
             time_rhs += time_rhs_Fermi_temp
             time_rhs_update_F_nQ += time_rhs_Fermi_update_F_nQ_temp
-            error_from_nosymm = dfdt.sum() / (dfdt.shape[0] * dfdt.shape[1] * dfdt.shape[2] * dfdt.shape[3])
+            # error_from_nosymm = dfdt.sum() / (dfdt.shape[0] * dfdt.shape[1] * dfdt.shape[2] * dfdt.shape[3])
 
             self.F_nQxy = self.F_nQxy  \
-                          + (dfdt - error_from_nosymm) * self.delta_T\
+                          + (dfdt) * self.delta_T\
                           - ( np.matmul(self.F_nQxy, self.differential_mat)
                               + np.matmul(self.differential_mat_y, self.F_nQxy)) \
                           # - self.damping_term * self.delta_T * 0
@@ -192,14 +192,20 @@ class Solver_of_phase_space(InitialInformation):
         f.close()
         print('EX_diffusion_evolution.h5 has been written')
 
-    def plot(self,n_plot,play_interval=2,saveformat=None):
+    def plot(self,n_plot,play_interval=2,saveformat=None,readfromh5=False):
         """
         :param n_plot: state you want to see: start from 1,2,3...
         :param play_inverval:  plot evolution in every "plat_interval" [fs]
         :return:
         """
+        if readfromh5:
+            f = h5.File(self.path+'EX_diffusion_evolution.h5','r')
+            self.F_nQxy_res = f['data'][()]
+            f.close()
+
         n_plot = n_plot
-        ani = plot_diff_evolution(nX=self.nX,
+        ani = plot_diff_evolution(F_nQxy_res=self.F_nQxy_res,
+                                  nX=self.nX,
                                   nY=self.nY,
                                   n=n_plot,
                                   T_total=self.T_total,
@@ -213,9 +219,9 @@ class Solver_of_phase_space(InitialInformation):
 if __name__ == "__main__":
 ############## Solve PDF and plot
 
-    a = Solver_of_phase_space(degaussian=0.005,T=100,nX=80,nY=80, X=20,Y=20, delta_T=0.02,T_total=30,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1)
+    a = Solver_of_phase_space(degaussian=0.05,delta_T=1, T_total=300,T=100,nX=80,nY=80, X=20,Y=20,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1)
     # a.solve_it()
     # a.write_diffusion_evolution()
-    ani = a.plot(n_plot=2,play_interval=1,saveformat=None)
+    ani = a.plot(n_plot=2,play_interval=1,saveformat=None,readfromh5=True)
 
 

@@ -49,7 +49,7 @@ class InitialInformation():
         omega_vq = self.omega_mat.T
         q_gkk_index_list = self.kmap[:, 5]
         E_vq = omega_vq[:self.v, list(map(int, list(q_gkk_index_list)))]
-        return E_vq * 10 ** (-3)
+        return E_vq * 10 ** (-3) # meV --> eV
 
     def get_E_nQ(self):
         """
