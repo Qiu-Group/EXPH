@@ -1,12 +1,12 @@
 # EXPH
 
-EXPH_v 2.2
+EXPH_v 2.3
 
 Author: Bowen Hou
 
 Creating Time: 10/03/2022
 
-Last Updated: 02/11/2023
+Last Updated: 02/20/2023
 
 ---
 ## Exciton-Phonon Interaction
@@ -31,11 +31,11 @@ Last Updated: 02/11/2023
 
 4. Exciton Band Input is available for BGW! (see Tutorial second section finite Q-BGW)
 
-5. Tutorial is available! (*new!*)
+5. Tutorial is available! 
 
 6. Time complexity of exciton lifetime will be reduced to O(N^2) from O(N^2) (coming soon!) However, space complexity will increase.
 
-7. GPU acceleration (coming soon!)
+7. GPU acceleration is available for ODE!! (*new!*)
 
 ## Workflow
 

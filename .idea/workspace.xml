@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Major Change: (1) Conservation of Exciton Number has been fixed!! (Reason: joint density in Bernardi's paper is wrong, F(n,Q+q) --&gt; F(m,Q+q))!!&#10;(2) High symmetry selecting system is added&#10;&#10;TODO: Delta function needed to be checked for 12 12 1!!! (Since I change it to np.ones, and PDE solving works)">
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="GPU acceleration will come soon!!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_Boltzman_Class.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_Boltzman_Class.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLot_/plot_evolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_evolution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Occupation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Occupation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tutorial/Tutorial.md" beforeDir="false" afterPath="$PROJECT_DIR$/Tutorial/Tutorial.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,14 +49,29 @@
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test">
+  <component name="RunManager" selected="Python.Para_rt_Boltzmann_Occupation">
+    <configuration name="Para_rt_Boltzmann_Diffusion" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code_exph" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="Para_rt_Boltzmann_Occupation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -75,7 +86,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="exchange_extract" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="plot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -83,32 +94,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../01-Bi2Se3/code/exchange_extract" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../01-Bi2Se3/code/temp/1V_2V" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../01-Bi2Se3/code/exchange_extract/exchange_extract.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="exph" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code_exph" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/exph.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../01-Bi2Se3/code/temp/1V_2V/plot.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -135,19 +125,16 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="v2read_bse" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code" />
+    <configuration name="test2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../01-Bi2Se3/code/bsemat/download" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../01-Bi2Se3/code/bsemat/download/v2read_bse.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -158,11 +145,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test" />
         <item itemvalue="Python.Para_rt_Boltzmann_Occupation" />
-        <item itemvalue="Python.exph" />
-        <item itemvalue="Python.v2read_bse" />
-        <item itemvalue="Python.exchange_extract" />
+        <item itemvalue="Python.test2" />
+        <item itemvalue="Python.Para_rt_Boltzmann_Diffusion" />
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.plot" />
       </list>
     </recent_temporary>
   </component>
@@ -371,7 +358,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676172705371</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="GPU acceleration will come soon!!">
+      <created>1676336881815</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1676336881815</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -406,6 +400,7 @@
     <MESSAGE value="EXCITON-PHONON Matrix is coming!!" />
     <MESSAGE value="workflow updated" />
     <MESSAGE value="Major Change: (1) Conservation of Exciton Number has been fixed!! (Reason: joint density in Bernardi's paper is wrong, F(n,Q+q) --&gt; F(m,Q+q))!!&#10;(2) High symmetry selecting system is added&#10;&#10;TODO: Delta function needed to be checked for 12 12 1!!! (Since I change it to np.ones, and PDE solving works)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Major Change: (1) Conservation of Exciton Number has been fixed!! (Reason: joint density in Bernardi's paper is wrong, F(n,Q+q) --&gt; F(m,Q+q))!!&#10;(2) High symmetry selecting system is added&#10;&#10;TODO: Delta function needed to be checked for 12 12 1!!! (Since I change it to np.ones, and PDE solving works)" />
+    <MESSAGE value="GPU acceleration will come soon!!" />
+    <option name="LAST_COMMIT_MESSAGE" value="GPU acceleration will come soon!!" />
   </component>
 </project>
