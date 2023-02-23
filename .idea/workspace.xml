@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="GPU acceleration will come soon!!">
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Major: GPU for occupation is done!!">
+      <change afterPath="$PROJECT_DIR$/PLot_/plot_frame_evolution.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_CPU.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_GPU.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_Boltzman_Class.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_Boltzman_Class.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Occupation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Occupation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,17 +54,41 @@
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Para_rt_Boltzmann_Occupation">
-    <configuration name="Para_rt_Boltzmann_Diffusion" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.Para_rt_Boltzmann_Diffusion_GPU">
+    <configuration name="Para_rt_Boltzmann_Diffusion_CPU" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_CPU.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Para_rt_Boltzmann_Diffusion_GPU" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code_exph" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_GPU.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -72,6 +101,9 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -86,19 +118,19 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code" />
+    <configuration name="exph" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../01-Bi2Se3/code/temp/1V_2V" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../01-Bi2Se3/code/temp/1V_2V/plot.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/exph.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -108,33 +140,18 @@
       <method v="2" />
     </configuration>
     <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code_exph" />
+      <module name="code" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../01-Bi2Se3/code" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code_exph" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test2.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../01-Bi2Se3/code/test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -145,11 +162,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Para_rt_Boltzmann_Diffusion_GPU" />
+        <item itemvalue="Python.Para_rt_Boltzmann_Diffusion_CPU" />
+        <item itemvalue="Python.Para_rt_Boltzmann_Diffusion_CPU" />
         <item itemvalue="Python.Para_rt_Boltzmann_Occupation" />
-        <item itemvalue="Python.test2" />
-        <item itemvalue="Python.Para_rt_Boltzmann_Diffusion" />
         <item itemvalue="Python.test" />
-        <item itemvalue="Python.plot" />
       </list>
     </recent_temporary>
   </component>
@@ -365,8 +382,26 @@
       <option name="project" value="LOCAL" />
       <updated>1676336881815</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Major: GPU for occupation is done!!">
+      <created>1676926521689</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1676926521689</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -401,6 +436,7 @@
     <MESSAGE value="workflow updated" />
     <MESSAGE value="Major Change: (1) Conservation of Exciton Number has been fixed!! (Reason: joint density in Bernardi's paper is wrong, F(n,Q+q) --&gt; F(m,Q+q))!!&#10;(2) High symmetry selecting system is added&#10;&#10;TODO: Delta function needed to be checked for 12 12 1!!! (Since I change it to np.ones, and PDE solving works)" />
     <MESSAGE value="GPU acceleration will come soon!!" />
-    <option name="LAST_COMMIT_MESSAGE" value="GPU acceleration will come soon!!" />
+    <MESSAGE value="Major: GPU for occupation is done!!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Major: GPU for occupation is done!!" />
   </component>
 </project>

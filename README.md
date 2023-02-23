@@ -1,12 +1,12 @@
 # EXPH
 
-EXPH_v 2.3
+EXPH_v 2.4
 
 Author: Bowen Hou
 
 Creating Time: 10/03/2022
 
-Last Updated: 02/20/2023
+Last Updated: 02/23/2023
 
 ---
 ## Exciton-Phonon Interaction
@@ -35,7 +35,9 @@ Last Updated: 02/20/2023
 
 6. Time complexity of exciton lifetime will be reduced to O(N^2) from O(N^2) (coming soon!) However, space complexity will increase.
 
-7. GPU acceleration is available for ODE!! (*new!*)
+7. GPU acceleration is available for ODE and PDE (only for small system, used for benchmark and test)!! (*new!*)
+
+8. CPU parallel is available for PDE!! (*new!*)
 
 ## Workflow
 

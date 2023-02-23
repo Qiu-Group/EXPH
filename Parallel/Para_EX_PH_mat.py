@@ -219,7 +219,7 @@ def gqQ_h5_generator_Para(nS_initial = 0, nS_final = 0, path='./',mute=True):
                                                                                                   kmap=kmap,
                                                                                                   kmap_dic=kmap_dic,
                                                                                                   bandmap_occ=bandmap_occ,
-                                                                                                  muteProgress=True))**2
+                                                                                                  muteProgress=True))**2 #TODO TODO why this is square??
 
     # after_parallel ...
     # exph_rcev_to_0 = comm.gather(exph_mat_each_process, root=0)

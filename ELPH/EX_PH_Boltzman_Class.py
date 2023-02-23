@@ -11,7 +11,7 @@ from IO.IO_common import read_kmap, read_lattice
 from IO.IO_common import construct_kmap, read_kmap, read_bandmap, readkkqQ
 
 class InitialInformation():
-    def __init__(self,path='../',deguassian=0.03,T=300,initial_S=2,initial_Q=0,initial_Gaussian_Braod=1, high_symm="0.0 0.0 0.0, 0.75 0.75 0, 0.75 0.0 0.0, 0.0 0.0 0.0"):
+    def __init__(self,path='../',deguassian=0.03,T=300,initial_S=2,initial_Q=0,initial_Gaussian_Braod=1, high_symm="0.0 0.0 0.0, 0.75 0.75 0, 0.75 0.0 0.0, 0.0 0.0 0.0", onGPU=True):
         self.path = path
         self.deguassian = deguassian
         self.T = T
@@ -37,7 +37,7 @@ class InitialInformation():
         self.initial_Q = initial_Q
         self.initial_S = initial_S
         self.initial_Gaussian = initial_Gaussian_Braod
-
+        self.onGPU = onGPU
         self.high_symm = high_symm
 
         print("Initialized information has been created")

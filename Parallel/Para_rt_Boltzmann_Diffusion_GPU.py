@@ -8,14 +8,16 @@ from mpl_toolkits.mplot3d import Axes3D
 import time
 import h5py as h5
 from PLot_.plot_evolution import plot_diff_evolution
+import cupy as cp
+from PLot_.plot_frame_evolution import plot_frame_diffusion
 
 def Gaussian(x,y,sigma=1,x0=10,y0=10):
     return 1/(2*np.pi*sigma**2) * np.exp(-((x-x0)**2+(y-y0)**2)/(2*sigma**2))
 
 
-class Solver_of_phase_space(InitialInformation):
-    def __init__(self,degaussian,T,nX,nY, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1):
-        super(Solver_of_phase_space,self).__init__(path,degaussian,T,initial_S,initial_Q,initial_Gaussian_Braod)
+class Solver_of_phase_space_GPU(InitialInformation):
+    def __init__(self,degaussian,T,nX,nY, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=True):
+        super(Solver_of_phase_space_GPU,self).__init__(path=path,deguassian=degaussian,T=T,initial_S=initial_S,initial_Q=initial_Q,initial_Gaussian_Braod=initial_Gaussian_Braod,onGPU=onGPU)
         self.nX = nX
         self.nY = nY
         self.delta_T = delta_T
@@ -85,6 +87,8 @@ class Solver_of_phase_space(InitialInformation):
         self.damping_term = np.zeros((self.n, self.Q, self.nX ,self.nY))
         self.dfdt_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
 
+
+        self.Qq_2_Qpr_res = self.Qq_2_Qpr_kmap()
         ### Debug:
         # self.V_x = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (0.4)   #TODOdone: use Omega(S,Q)
         # self.V_y = np.ones((1, 1))[:,:,np.newaxis,np.newaxis] * 0.4
@@ -122,50 +126,111 @@ class Solver_of_phase_space(InitialInformation):
         V_nQQ_y = V_b1 * sin_theta_b1 + V_b2 * sin_theta_b2
         return V_nQQ_x.reshape((self.n,int(nQ_sqrt**2))), V_nQQ_y.reshape((self.n,int(nQ_sqrt**2)))
 
+    def Qq_2_Qpr_kmap(self): #TODO: it should be in parent class
+        """
+        start from 0
+        """
+        Q_acv_back2_kmap = list(map(int, list(self.kmap[:, 3])))
+        Qq_2_Qpr_res = np.zeros((self.Q,self.q),dtype=int)
+        for i_Q_kmap in range(self.Q):
+            for i_q_kmap in range(self.q):
+                Qq_2_Qpr_res[i_Q_kmap, i_q_kmap] = Q_acv_back2_kmap.index(self.Qplusq_2_QPrimeIndexAcv(i_Q_kmap, i_q_kmap))
+        return Qq_2_Qpr_res
+
     def __update_F_nQqxy(self,F_nQxy_last):
         """
         :param F_nQ:
         :return: F_nQq.shape = (n,Q,q)
         """
-        Q_acv_back2_kmap = list(map(int, list(self.kmap[:, 3])))
-        # self.F_nQxy.shape = (n,Q,q,nX,nY)
-        F_mQqxy = np.zeros((F_nQxy_last.shape[0], F_nQxy_last.shape[1], F_nQxy_last.shape[1],F_nQxy_last.shape[2],F_nQxy_last.shape[3]))
-        for i_Q_kmap in range(self.Q):
-            for i_q_kmap in range(self.q):
-                F_mQqxy[:, i_Q_kmap, i_q_kmap,:,:] = F_nQxy_last[:,
-                                               Q_acv_back2_kmap.index(self.Qplusq_2_QPrimeIndexAcv(i_Q_kmap, i_q_kmap)),:,:]
-        return F_mQqxy
+        # Q_acv_back2_kmap = list(map(int, list(self.kmap[:, 3])))
+        # # self.F_nQxy.shape = (n,Q,q,nX,nY)
+        # F_mQqxy = np.zeros((F_nQxy_last.shape[0], F_nQxy_last.shape[1], F_nQxy_last.shape[1],F_nQxy_last.shape[2],F_nQxy_last.shape[3]))
+        # for i_Q_kmap in range(self.Q):
+        #     for i_q_kmap in range(self.q):
+        #         F_mQqxy[:, i_Q_kmap, i_q_kmap,:,:] = F_nQxy_last[:,
+        #                                        Q_acv_back2_kmap.index(self.Qplusq_2_QPrimeIndexAcv(i_Q_kmap, i_q_kmap)),:,:]
+        # return F_mQqxy
+        return F_nQxy_last[:,self.Qq_2_Qpr_res,:,:]
 
-    def __rhs_Fermi_Goldenrule(self,F_nQxy_last):
+
+    def __rhs_Fermi_Goldenrule_GPU(self,F_nQxy_last):
         # dFdt = (n,Q,x,y)
         # TODO: Optimization
-
+        t0 = time.time()
         t1 = time.time()
         F_mQqxy = self.__update_F_nQqxy(F_nQxy_last)
         t2_update =time.time()
+        # print('  (1) time for updating F_mQq', time.time() - t0, 's')
+
+        # load data from CPU to GPU memory: >>>>>>>>>>
+        t0 = time.time()
+        F_mQqxy = cp.array(F_mQqxy)
+        self.N_vq = cp.array(self.N_vq)
+        self.gqQ_mat = cp.array(self.gqQ_mat)
+        self.Delta_positive = cp.array(self.Delta_positive)
+        self.Delta_negative = cp.array(self.Delta_negative)
+        F_nQxy_last = cp.array(F_nQxy_last)
+        # print('  (2) time for loading data from cpu to gpu', time.time() - t0, 's')
+        # -----------------------------------<<<<<<<<<<
+
+        t0 = time.time()
+        F_abs = cp.einsum('npxy,vq,mpqxy->nmpqvxy',F_nQxy_last, self.N_vq, 1 + F_mQqxy,optimize='optimal') \
+                - cp.einsum('npxy,vq,mpqxy->nmpqvxy', 1 + F_nQxy_last, 1 + self.N_vq, F_mQqxy,optimize='optimal')
+        F_em = cp.einsum('npxy,vq,mpqxy->nmpqvxy', F_nQxy_last, 1 + self.N_vq, 1 + F_mQqxy,optimize='optimal') \
+                - cp.einsum('npxy,vq,npqxy->npqvxy', 1 + F_nQxy_last, self.N_vq, F_mQqxy,optimize='optimal')
+        # Debugging: 02/11/2023 n --> m  !!!! Bowen Hou
+        dFdt =  cp.einsum('pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs,optimize='optimal') \
+                + cp.einsum('pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_negative, F_em,optimize='optimal')
+
+        # print('  (3) time for GPU calculation', time.time() - t0, 's')
+        t2 = time.time()
+
+        t0 = time.time()
+        dFdt = cp.asnumpy(dFdt)
+        # print('  (4) time for transfer data to CPU', time.time() - t0, 's')
+
+        return -1*(np.pi * 2)/(self.h_bar * self.Q) * dFdt, t2-t2_update, t2_update - t1
+
+    def __rhs_Fermi_Goldenrule_CPU(self,F_nQxy_last):
+        t1 = time.time()
+        F_mQqxy = self.__update_F_nQqxy(F_nQxy_last)
+        t2_update = time.time()
+
         F_abs = np.einsum('npxy,vq,mpqxy->nmpqvxy',F_nQxy_last, self.N_vq, 1 + F_mQqxy,optimize='optimal') \
                 - np.einsum('npxy,vq,mpqxy->nmpqvxy', 1 + F_nQxy_last, 1 + self.N_vq, F_mQqxy,optimize='optimal')
-        F_em = np.einsum('npxy,vq,mpqxy->nmpqvxy', F_nQxy_last, 1 + self.N_vq, 1 + F_mQqxy,optimize='optimal') - np.einsum('npxy,vq,npqxy->npqvxy', 1 + F_nQxy_last, self.N_vq,
-                                                                                   F_mQqxy,optimize='optimal')
+        F_em = np.einsum('npxy,vq,mpqxy->nmpqvxy', F_nQxy_last, 1 + self.N_vq, 1 + F_mQqxy,optimize='optimal') \
+                - np.einsum('npxy,vq,npqxy->npqvxy', 1 + F_nQxy_last, self.N_vq, F_mQqxy,optimize='optimal')
         # Debugging: 02/11/2023 n --> m  !!!! Bowen Hou
-        dFdt =  (np.einsum('pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs,optimize='optimal') + np.einsum(
-            'pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_negative, F_em,optimize='optimal'))
+        dFdt =  np.einsum('pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs,optimize='optimal') \
+                + np.einsum('pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_negative, F_em,optimize='optimal')
+
         t2 = time.time()
-        return -1*(np.pi * 2)/(self.h_bar * self.Q) * dFdt, t2-t1, t2_update - t1
+        return -1*(np.pi * 2)/(self.h_bar * self.Q) * dFdt, t2-t2_update, t2_update - t1
+
 
     def solve_it(self):
+        if self.onGPU:
+            print('[GPU acceleration] ON')
+        else:
+            print('[GPU acceleration] OFF')
+
         progress = ProgressBar(self.nT, fmt=ProgressBar.FULL)
         time_rhs = 0
         time_rhs_update_F_nQ = 0
         time_total_start = time.time()
         for it in range(self.nT):
-
+            t0 = time.time()
             self.damping_term[0, 0, :, :] = self.F_nQxy[0, 0, :, :]
             progress.current += 1
             progress()
             self.F_nQxy_res[:, :, :,:,it] = self.F_nQxy
-            dfdt,time_rhs_Fermi_temp,time_rhs_Fermi_update_F_nQ_temp = self.__rhs_Fermi_Goldenrule(self.F_nQxy)
 
+            if self.onGPU:
+                dfdt, time_rhs_Fermi_temp, time_rhs_Fermi_update_F_nQ_temp = self.__rhs_Fermi_Goldenrule_GPU(self.F_nQxy)
+            else:
+                dfdt, time_rhs_Fermi_temp, time_rhs_Fermi_update_F_nQ_temp = self.__rhs_Fermi_Goldenrule_CPU(self.F_nQxy)
+
+            # print('\ntime for F_nQ (%s / %s):' % (it, self.nT), time.time() - t0, 's')
             self.dfdt_res[:,:,:,:,it] = dfdt
 
             time_rhs += time_rhs_Fermi_temp
@@ -182,8 +247,8 @@ class Solver_of_phase_space(InitialInformation):
         time_total_end= time.time()
 
         print('\ntotal time to solve this equation:',time_total_end - time_total_start)
-        print('total time to solve rhs_Fermi:',time_rhs)
-        print('total time to solve rhs_Fnq_Fermi:', time_rhs_update_F_nQ)
+        print('total time for GPU matrix:',time_rhs)
+        print('total time for updating F_mQq:', time_rhs_update_F_nQ)
             # self.F_nQxy = self.F_nQxy - self.damping_term * self.delta_T * 0.0+ ( np.matmul(self.F_nQxy, self.differential_mat) * self.V_x / self.delta_X
             #                   + np.matmul(self.differential_mat, self.F_nQxy) *  self.V_y  /self.delta_Y ) * self.delta_T
     def write_diffusion_evolution(self):
@@ -216,12 +281,17 @@ class Solver_of_phase_space(InitialInformation):
                                   )
         return ani
 
+
+
+
 if __name__ == "__main__":
 ############## Solve PDF and plot
 
-    a = Solver_of_phase_space(degaussian=0.05,delta_T=1, T_total=300,T=100,nX=80,nY=80, X=20,Y=20,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1)
-    # a.solve_it()
-    # a.write_diffusion_evolution()
+    a = Solver_of_phase_space_GPU(degaussian=0.05,delta_T=1, T_total=200,T=100,nX=80,nY=80, X=20,Y=20,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=True)
+    a.solve_it()
+    a.write_diffusion_evolution()
     ani = a.plot(n_plot=2,play_interval=1,saveformat=None,readfromh5=True)
 
+
+    # plot_frame_diffusion
 

@@ -1,5 +1,4 @@
 import sys
-
 import numpy as np
 import h5py as h5
 from IO.IO_gkk import read_omega, read_gkk
@@ -14,12 +13,12 @@ from IO.IO_common import construct_kmap, read_kmap, read_bandmap, readkkqQ
 from ELPH.EX_PH_Boltzman_Class import InitialInformation
 import cupy as cp
 import time
-
+from PLot_.plot_frame_evolution import plot_frame_occupation
 
 class Solver_of_only_Q_space(InitialInformation):
     def __init__(self,path='../',degaussian=0.03,T=500,initial_occupation=0.5, delta_T =1, T_total=3000, play_interval = 50,initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,
-                 high_symm="0.0 0.0 0.0, 0.75 0.75 0, 0.75 0.0 0.0, 0.0 0.0 0.0"):
-        super(Solver_of_only_Q_space,self).__init__(path,degaussian,T,initial_S,initial_Q,initial_Gaussian_Braod,high_symm)
+                 high_symm="0.0 0.0 0.0, 0.75 0.75 0, 0.75 0.0 0.0, 0.0 0.0 0.0",onGPU=True):
+        super(Solver_of_only_Q_space,self).__init__(path=path,deguassian=degaussian,T=T,initial_S=initial_S,initial_Q=initial_Q,initial_Gaussian_Braod=initial_Gaussian_Braod,high_symm=high_symm,onGPU=onGPU)
         # Initialize F_nQ and N_vq
         # E_nQ.shape = (n,Q)
         self.F_nQ = BE(omega=self.get_E_nQ(), T=self.T)
@@ -28,7 +27,7 @@ class Solver_of_only_Q_space(InitialInformation):
         self.N_vq[0:3,0] = np.array([0,0,0])
         self.Delta_positive, self.Delta_negative = self.Construct_Delta()
         # self.Delta_positive, self.Delta_negative = np.ones_like(self.Delta_positive), np.ones_like(self.Delta_negative) # TODO: debug!!!!!
-
+        self.onGPU =onGPU
         # Plot Setting:
         self.play_interval = play_interval
         self.T_total = T_total
@@ -82,7 +81,7 @@ class Solver_of_only_Q_space(InitialInformation):
         # return F_mQq
         return F_nQ_last[:,self.Qq_2_Qpr_res]
 
-    def __rhs_Fermi_Goldenrule(self,F_nQ_last):
+    def __rhs_Fermi_Goldenrule_GPU(self,F_nQ_last):
         # t0 = time.time()
         F_mQq = self.update_F_nQq(F_nQ_last)
         # print('  (1) time for updating F_mQq',time.time() - t0,'s')
@@ -113,32 +112,48 @@ class Solver_of_only_Q_space(InitialInformation):
         # print('  (4) time for transfer data to CPU', time.time() - t0, 's')
         return -1*(np.pi * 2)/(self.h_bar * self.Q) * dFdt
 
+    def __rhs_Fermi_Goldenrule_CPU(self,F_nQ_last):
+        # t0 = time.time()
+        F_mQq = self.update_F_nQq(F_nQ_last)
+        F_abs = np.einsum('np,vq,mpq->nmpqv',F_nQ_last, self.N_vq, 1 + F_mQq,optimize='greedy') \
+                - np.einsum('np,vq,mpq->nmpqv', 1 + F_nQ_last, 1 + self.N_vq, F_mQq,optimize='greedy')
+        F_em =  - np.einsum('np,vq,mpq->nmpqv', 1 + F_nQ_last, self.N_vq, F_mQq,optimize='greedy')\
+                + np.einsum('np,vq,mpq->nmpqv', F_nQ_last, 1 + self.N_vq, 1 + F_mQq,optimize='greedy')
+        dFdt = np.einsum('pqnmv,nmvpq,nmpqv->np', self.gqQ_mat, self.Delta_positive, F_abs,optimize='greedy')  \
+                + np.einsum('pqnmv,nmvpq,nmpqv->np', self.gqQ_mat, self.Delta_negative, F_em,optimize='greedy')
+        # print('  (4) time for transfer data to CPU', time.time() - t0, 's')
+        return -1*(np.pi * 2)/(self.h_bar * self.Q) * dFdt
+
     def solve_it(self):
         t0 = time.time()
         progress = ProgressBar(self.nT, fmt=ProgressBar.FULL)
+
+        if self.onGPU:
+            print('[GPU acceleration] ON')
+        else:
+            print('[GPU acceleration] OFF')
+
         for it in range(self.nT):
             progress.current += 1
             progress()
 
-            # t0 = time.time()
+            # --->>>>> solving <<<<-----
             self.damping_term[:, 0] = self.F_nQ[:, 0]
             self.F_nQ_res[:, :, it] = self.F_nQ
-            dfdt = self.__rhs_Fermi_Goldenrule(self.F_nQ)
-            # print('\ntime for F_nQ (%s / %s):' % (it,self.nT), time.time() - t0 ,'s')
-
+            if self.onGPU:
+                dfdt = self.__rhs_Fermi_Goldenrule_GPU(self.F_nQ)
+            else:
+                dfdt = self.__rhs_Fermi_Goldenrule_CPU(self.F_nQ)
             self.dfdt_res[:,:,it] = dfdt # TODO: debugging
-            # error_from_nosymm = dfdt.sum() / (dfdt.shape[0] * dfdt.shape[1]) #for debug!!
-            # error_from_nosymm = 0
-
 
             self.F_nQ = self.F_nQ + dfdt * self.delta_T \
-                        - self.damping_term * self.delta_T * 0.01
+                        - self.damping_term * self.delta_T * 0.0
 
-            # TODO: just remove it, this is for debugging
             self.exciton_number[it] = self.F_nQ.sum()
             self.dfdt_sum_res[it] = dfdt.sum()
-            # print(dfdt[2,0])
-        print('\ntime for solving occupation ODE:' , time.time() - t0, 's')
+            # --->>>>> solving done<<<<-----
+
+        print('\n\ntime for solving occupation ODE:' , time.time() - t0, 's')
     def write_occupation_evolution(self):
         f = h5.File(self.path+'EX_band_evolution_.h5','w')
         f.create_dataset('data',data=self.F_nQ_res)
@@ -155,14 +170,15 @@ class Solver_of_only_Q_space(InitialInformation):
             print('size of occupation.h5: %.2f MB'%(sys.getsizeof(self.F_nQ_res)/1024/1024))
             f.close()
         def animate(i):
+
             plt.clf()
             plt.scatter(self.Q_exciton, self.energy[:,self.high_symms_path_index_list_in_kmap], s=np.sqrt(self.F_nQ_res[:, self.high_symms_path_index_list_in_kmap, i])**1.5 * 1000, color='r')
             plt.title(label='t=%s fs' % int(i * self.delta_T) + ' total_exciton: %.1f'%self.F_nQ_res[:,:,i].sum())
             plt.xlabel("Q")
             plt.ylabel("Energy")
             plt.xlim([self.Q_exciton.min()-1 , self.Q_exciton.max()+1])
-            # plt.ylim([self.energy.min()-0.3, self.energy.max()+0.3])
-            plt.ylim(1.0,1.5)
+            plt.ylim([self.energy.min()-0.1, self.energy.max()+0.1])
+            # plt.ylim(1.0,1.5)
             plt.show()
 
         fig = plt.figure()
@@ -173,11 +189,14 @@ class Solver_of_only_Q_space(InitialInformation):
             ani.save(self.path+'occupation.'+saveformat)
         return ani
 
+
 if __name__ == "__main__":
-    a = Solver_of_only_Q_space(degaussian=0.03,delta_T=1,T_total=500,play_interval=1,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,
-                               high_symm="0.0 0.0 0.0 ,0.33333 0.33333 0.0, 0.5 0.0 0, 0.0 0.0 0.0",
-                               initial_occupation=5,T=100)
+    a = Solver_of_only_Q_space(degaussian=0.02,delta_T=1,T_total=240,play_interval=5,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,
+                               high_symm="0.0 0.0 0.0 ,0.75 0.75 0.0, 0.5 0.0 0, 0.0 0.0 0.0",
+                               initial_occupation=5,T=100, onGPU=False)
     a.solve_it()
     a.write_occupation_evolution()
     ani = a.plot(saveformat=None,readfromh5=True)
     print('done!')
+
+    #plot_frame_occupation()
