@@ -19,16 +19,20 @@ def Gaussian(x,y,sigma=1,x0=10,y0=10):
 
 
 class Solver_of_phase_space_CPU(InitialInformation):
-    def __init__(self,degaussian,T,nX,nY, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=False):
+    def __init__(self,degaussian,T,delta_X,delta_Y, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=False):
         super(Solver_of_phase_space_CPU,self).__init__(path=path,deguassian=degaussian,T=T,initial_S=initial_S,initial_Q=initial_Q,initial_Gaussian_Braod=initial_Gaussian_Braod,onGPU=onGPU)
-        self.nX = nX
-        self.nY = nY
+
+        self.delta_X = delta_X
+        self.delta_Y = delta_Y
+
+        self.nX = int(X/delta_X)
+        self.nY = int(Y/delta_Y)
         self.delta_T = delta_T
         self.T_total = T_total
         # self.delta_T = T_total/nT
         self.nT = int(T_total/delta_T)
-        self.delta_X = X/nX
-        self.delta_Y = Y/nY
+        # self.delta_X = X/nX
+        # self.delta_Y = Y/nY
         # # differential_mat = -2*np.eye(nX) + np.eye(nX,k=-1) + np.eye(nX,k=1)
         # differential_mat = -1*np.eye(nX) + np.eye(nX,k=-1)
         # self.differential_mat = differential_mat[np.newaxis,np.newaxis,:,:]
@@ -61,7 +65,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
         a_neg1 = C * (1 + C) / 2
         a0 = -C ** 2
 
-        self.differential_mat = np.eye(nX, k=-1) * a_neg1 + np.eye(nX) * a0 + np.eye(nX, k=1) * a1
+        self.differential_mat = np.eye(self.nX, k=-1) * a_neg1 + np.eye(self.nX) * a0 + np.eye(self.nX, k=1) * a1
         self.differential_mat[:,:, -1, 0] =  a1[:,:, 0, 0]
         self.differential_mat[:,:, 0, -1] = a_neg1[:,:, 0, 0]
 
@@ -70,7 +74,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
         a_neg1 = C_y * (1 + C_y) / 2
         a0 = -C_y ** 2
 
-        self.differential_mat_y = np.eye(nY, k=-1) * a_neg1 + np.eye(nY) * a0 + np.eye(nY, k=1) * a1
+        self.differential_mat_y = np.eye(self.nY, k=-1) * a_neg1 + np.eye(self.nY) * a0 + np.eye(self.nY, k=1) * a1
         self.differential_mat_y[:,:, -1, 0] = a1[:,:, 0, 0]
         self.differential_mat_y[:,:, 0, -1] =  a_neg1[:,:, 0, 0]
 
@@ -100,7 +104,13 @@ class Solver_of_phase_space_CPU(InitialInformation):
         # self.F_nQxy_res = np.zeros((1,1,self.nX,self.nY, self.nT))
         # self.damping_term = np.zeros((1,1, self.nX ,self.nY))
 
-        print("Initialized information has been loaded")
+        self.first_round_report = True
+
+        comm = MPI.COMM_WORLD
+        rank = comm.Get_rank()
+        size = comm.Get_size()
+        if rank == 0:
+            print("Initialized information has been loaded\n-------------------------\n")
 
 
     def kmap_check_for_derivative(self):
@@ -151,8 +161,11 @@ class Solver_of_phase_space_CPU(InitialInformation):
         work_load_over_nXnY = int(self.nX * self.nY)
         plan_list, start_time, start_time_proc = before_parallel_job(rk=rank, size=size,workload_para=work_load_over_nXnY,mute=True)
         plan_list = comm.scatter(plan_list, root=0)
-        if rank == 0:
+        if rank == 0 and self.first_round_report:
+            print('------------------------')
             print('  process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1] - plan_list[0])
+            print('------------------------')
+            sys.stdout.flush()
         # plan_list_full = np.arange(plan_list[0],plan_list[-1])
         F_nQxy_last = comm.bcast(F_nQxy_last, root=0)
         F_nQxy_last_reshape = F_nQxy_last.reshape((self.n,self.Q,int(self.nX*self.nY),1)) # reshape F_nQxy_last into a "quasi" 1D array for better parallel
@@ -187,7 +200,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
 
         # print('size of F_abs_each_process',sys.getsizeof(F_abs_each_process)/1024/1024,'MB')
         # print('shape of F_abs_each_process',F_abs_each_process.shape)
-        if rank == 0:
+        if rank == 0 and self.first_round_report:
             memoery_in_0 = (sys.getsizeof(F_mQqxy_each_process) +
                     sys.getsizeof(F_nQxy_last_each_process)+
                     sys.getsizeof(dFdt_full_each_process) +
@@ -195,6 +208,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
                     sys.getsizeof(dFdt_each_process))/1024/1024
             print('  process_%d. memory for rhs_Fermi: %.2f'%(rank, memoery_in_0),'MB')
             print('  estimated ALL memory for rhs_Fermi: %.2f' % (size * memoery_in_0), 'MB')
+            sys.stdout.flush()
 
         dFdt = np.zeros_like(dFdt_full_each_process)
         comm.Reduce(dFdt_full_each_process, dFdt, op=MPI.SUM, root=0)
@@ -224,10 +238,9 @@ class Solver_of_phase_space_CPU(InitialInformation):
             # progress.current += 1
             # progress()
             if rank == 0:
-                print('\n--------------------------')
-                print('\n[PDE progress]: %s /%s'%(it+1, self.nT)," time lasted: %.2f" % (time.time() - t0), 's')
-
-            sys.stdout.flush()
+                # print('\n--------------------------')
+                print('[PDE progress]: %s /%s'%(it+1, self.nT)," time lasted: %.2f" % (time.time() - t0), 's')
+                sys.stdout.flush()
 
             self.damping_term[0, 0, :, :] = self.F_nQxy[0, 0, :, :]
             self.F_nQxy_res[:, :, :,:,it] = self.F_nQxy
@@ -245,6 +258,9 @@ class Solver_of_phase_space_CPU(InitialInformation):
                               - ( np.matmul(self.F_nQxy, self.differential_mat)
                                   + np.matmul(self.differential_mat_y, self.F_nQxy)) \
                               # - self.damping_term * self.delta_T * 0
+            if it == 0:
+                self.first_round_report = False
+
             else:
                 pass
 
@@ -301,7 +317,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
             # return ani
 
 if __name__ == "__main__":
-    a = Solver_of_phase_space_CPU(degaussian=0.05,delta_T=1, T_total=10,T=100,nX=80,nY=80, X=20,Y=20,
+    a = Solver_of_phase_space_CPU(degaussian=0.05,delta_T=1, T_total=10,T=300,delta_X=0.25,delta_Y=0.25, X=20,Y=20,
                               path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1)
     a.solve_it()
     a.write_diffusion_evolution()
@@ -312,5 +328,6 @@ if __name__ == "__main__":
     # plot_frame_diffusion()
 
     # bowen 14:48 02/23/2023
+    pass
 
 

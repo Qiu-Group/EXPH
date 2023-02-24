@@ -6,13 +6,13 @@ conduction_end_gkk = 14
 save_path = './test/save_MoS2_nosymm_441/'
 #save_path = './test/save_hBN_nosymm_221/'
 h5_path = './'
-T=300
+T=100
 degaussian = 0.02
 
 # (2) initialize includes creating Acv.h5, gkk.h5, kkqQmap.dat and bandmap.dat
-initialize =True
+initialize =False
 
-exph_mat_write = True
+exph_mat_write = False
 nS_initial = 3
 nS_final = 3
 
@@ -24,6 +24,20 @@ xct_scattering_rate_interpolation = 120
 xct_lifetime_all_BZ = False
 xct_lifetime_all_BZ_nS = 2
 xct_lifetime_all_BZ_interpolation = 120
+
+Diffusion_PDE = False
+delta_degaussian_occupation = 0.05
+delta_T = 1
+T_total = 100
+delta_X = 0.25
+delta_Y = 0.25
+X = 5
+Y = 5
+initial_S_diffusion = 3
+initial_Q_diffusion = 1
+initial_Gaussian_Broad = 1
+
+
 
 # (3) Plot: all index start with 1 --> band = 1 means quantum number =1
 plot_xt_band = False
@@ -46,4 +60,6 @@ plot_xct_lifetime_interposize_for_Lifetime = 120
 plot_xct_data = 'ex_S1_lifetime.dat'
 
 
-
+plot_diffusion = True
+plot_diffusion_state = 3
+plot_diffusion_frame = 100

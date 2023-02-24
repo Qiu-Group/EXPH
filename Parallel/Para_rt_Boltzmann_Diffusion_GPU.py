@@ -9,6 +9,7 @@ import time
 import h5py as h5
 from PLot_.plot_evolution import plot_diff_evolution
 import cupy as cp
+import sys
 from PLot_.plot_frame_evolution import plot_frame_diffusion
 
 def Gaussian(x,y,sigma=1,x0=10,y0=10):
@@ -16,16 +17,20 @@ def Gaussian(x,y,sigma=1,x0=10,y0=10):
 
 
 class Solver_of_phase_space_GPU(InitialInformation):
-    def __init__(self,degaussian,T,nX,nY, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=True):
+    def __init__(self,degaussian,T,delta_X,delta_Y, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=True):
         super(Solver_of_phase_space_GPU,self).__init__(path=path,deguassian=degaussian,T=T,initial_S=initial_S,initial_Q=initial_Q,initial_Gaussian_Braod=initial_Gaussian_Braod,onGPU=onGPU)
-        self.nX = nX
-        self.nY = nY
+
+        self.delta_X = delta_X
+        self.delta_Y = delta_Y
+
+        self.nX = int(X/delta_X)
+        self.nY = int(Y/delta_Y)
         self.delta_T = delta_T
         self.T_total = T_total
         # self.delta_T = T_total/nT
         self.nT = int(T_total/delta_T)
-        self.delta_X = X/nX
-        self.delta_Y = Y/nY
+        # self.delta_X = X/nX
+        # self.delta_Y = Y/nY
         # # differential_mat = -2*np.eye(nX) + np.eye(nX,k=-1) + np.eye(nX,k=1)
         # differential_mat = -1*np.eye(nX) + np.eye(nX,k=-1)
         # self.differential_mat = differential_mat[np.newaxis,np.newaxis,:,:]
@@ -58,7 +63,7 @@ class Solver_of_phase_space_GPU(InitialInformation):
         a_neg1 = C * (1 + C) / 2
         a0 = -C ** 2
 
-        self.differential_mat = np.eye(nX, k=-1) * a_neg1 + np.eye(nX) * a0 + np.eye(nX, k=1) * a1
+        self.differential_mat = np.eye(self.nX, k=-1) * a_neg1 + np.eye(self.nX) * a0 + np.eye(self.nX, k=1) * a1
         self.differential_mat[:,:, -1, 0] =  a1[:,:, 0, 0]
         self.differential_mat[:,:, 0, -1] = a_neg1[:,:, 0, 0]
 
@@ -67,7 +72,7 @@ class Solver_of_phase_space_GPU(InitialInformation):
         a_neg1 = C_y * (1 + C_y) / 2
         a0 = -C_y ** 2
 
-        self.differential_mat_y = np.eye(nY, k=-1) * a_neg1 + np.eye(nY) * a0 + np.eye(nY, k=1) * a1
+        self.differential_mat_y = np.eye(self.nY, k=-1) * a_neg1 + np.eye(self.nY) * a0 + np.eye(self.nY, k=1) * a1
         self.differential_mat_y[:,:, -1, 0] = a1[:,:, 0, 0]
         self.differential_mat_y[:,:, 0, -1] =  a_neg1[:,:, 0, 0]
 
@@ -218,11 +223,14 @@ class Solver_of_phase_space_GPU(InitialInformation):
         time_rhs = 0
         time_rhs_update_F_nQ = 0
         time_total_start = time.time()
+        t0 = time.time()
         for it in range(self.nT):
-            t0 = time.time()
+            print('[PDE progress]: %s /%s' % (it + 1, self.nT), " time lasted: %.2f" % (time.time() - t0), 's')
+            sys.stdout.flush()
+
             self.damping_term[0, 0, :, :] = self.F_nQxy[0, 0, :, :]
-            progress.current += 1
-            progress()
+            # progress.current += 1
+            # progress()
             self.F_nQxy_res[:, :, :,:,it] = self.F_nQxy
 
             if self.onGPU:
@@ -287,7 +295,7 @@ class Solver_of_phase_space_GPU(InitialInformation):
 if __name__ == "__main__":
 ############## Solve PDF and plot
 
-    a = Solver_of_phase_space_GPU(degaussian=0.05,delta_T=1, T_total=200,T=100,nX=80,nY=80, X=20,Y=20,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=True)
+    a = Solver_of_phase_space_GPU(degaussian=0.05,delta_T=1, T_total=100,T=100,delta_X=0.25,delta_Y=0.25, X=5,Y=5,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=True)
     a.solve_it()
     a.write_diffusion_evolution()
     ani = a.plot(n_plot=2,play_interval=1,saveformat=None,readfromh5=True)

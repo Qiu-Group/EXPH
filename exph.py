@@ -9,6 +9,9 @@ from Common.band_check import band_summary
 from Parallel.Para_EX_PH_mat import gqQ_h5_generator_Para
 from Parallel.Para_EX_PH_scat import para_Gamma_scat_inteqp
 from Parallel.Para_EX_PH_lifetime_all_Q import para_Exciton_Life_standard
+from Parallel.Para_rt_Boltzmann_Diffusion_CPU import Solver_of_phase_space_CPU
+
+from PLot_.plot_frame_evolution import plot_frame_diffusion
 from PLot_.plot_xct_band import plot_exciton_band_inteqp
 from PLot_.plot_phonon_band import plot_phonon_band_inteqp
 from PLot_.plot_xct_lifetime import plot_ex_lifetime_inteqp
@@ -16,6 +19,7 @@ from PLot_.plot_xct_ph_mat import plot_ex_ph_mat_inteqp
 from mpi4py import MPI
 import sys
 import time
+
 
 
 comm = MPI.COMM_WORLD
@@ -147,6 +151,60 @@ if 'xct_lifetime_all_BZ' in input and input['xct_lifetime_all_BZ'] == True: # xc
 else:
     pass
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
+
+# (v) Diffusion PDE
+if 'Diffusion_PDE' in input and input['Diffusion_PDE'] == True: # xct_lifetime_all_BZ default is False, calculate it only when xct_lifetime_all_BZ is in input and set as True
+    if rank == 0: # for print!
+        print("\nStarting Solving Diffusion PDE:")
+    if "delta_degaussian_occupation" in input \
+            and "delta_T" in input\
+            and "T_total" in input\
+            and "delta_X" in input\
+            and "delta_Y" in input\
+            and "X" in input\
+            and "Y" in input\
+            and "initial_S_diffusion" in input\
+            and "initial_Q_diffusion" in input\
+            and "initial_Gaussian_Broad" in input:
+        if rank == 0: # TODO: add onGPU
+            # print("xct_lifetime_all_BZ_nS: ",int(input["xct_lifetime_all_BZ_nS"]))
+            # print("xct_lifetime_all_BZ_interpolation", int(input["xct_lifetime_all_BZ_interpolation"]))
+            print("delta_T: %s T_total: %s delta_X: %s delta_Y: %s X: %s Y: %s"
+                  %(input['delta_T'] ,input['T_total'],  input['delta_X'], input['delta_Y'],input['X'],input['Y'] ))
+            print("delta_degaussian_occupation: %s initial_S_diffusion: %s initial_Q_diffusion: %s initial_Gaussian_Broad: %s"
+                  % (input["delta_degaussian_occupation"], input["initial_S_diffusion"], input['initial_Q_diffusion'], input['initial_Gaussian_Broad']))
+            sys.stdout.flush()
+
+        a = Solver_of_phase_space_CPU(degaussian=input["delta_degaussian_occupation"],
+                                      delta_T=input['delta_T'],
+                                      T_total=input['T_total'],
+                                      T=input["T"],
+                                      delta_X=input['delta_X'],
+                                      delta_Y=input['delta_Y'],
+                                      X=input['X'],
+                                      Y=input['Y'],
+                                      path=input["h5_path"],
+                                      initial_S=int(input['initial_S_diffusion']-1),
+                                      initial_Q=int(input['initial_Q_diffusion']-1),
+                                      initial_Gaussian_Braod=input['initial_Gaussian_Broad'])
+        a.solve_it()
+        a.write_diffusion_evolution()
+        # para_Exciton_Life_standard(path=input["h5_path"],
+        #                            interposize=int(input["xct_lifetime_all_BZ_interpolation"]),
+        #                            T=input["T"],
+        #                            degaussian=input["degaussian"],
+        #                            write=True,
+        #                            n_ext_acv_index=int(input["xct_lifetime_all_BZ_nS"]-1))
+        sys.stdout.flush()
+    else:
+        raise Exception("key parameter missing for xct_lifetime rate from input!")
+else:
+    pass
+
+
 ############################################ (3) Plot ##################################################################
 init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
 # (i) Plot Exciton Band
@@ -264,6 +322,32 @@ else:
     pass
 
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+init_status = comm.bcast(init_status, root=0) # synchronize all processor after init
+# (v) Plot Diffusion
+# print(input)
+if rank == 0:
+    if 'plot_diffusion' in input and input['plot_diffusion'] == True:
+        if rank == 0:  # for print!
+            print("\nPlotting Diffusion Frame:")
+        if "plot_diffusion_state" in input and "plot_diffusion_frame" in input:
+            if rank == 0:
+                print("plot_diffusion_state: ", int(input["plot_diffusion_state"]))
+                print("plot_diffusion_frame", int(input["plot_diffusion_frame"]))
+                sys.stdout.flush()
+
+            plot_frame_diffusion(i=int(input["plot_diffusion_frame"])-1,
+                                 path=input["h5_path"],
+                                 S = int(input["plot_diffusion_state"]) - 1)
+
+            sys.stdout.flush()
+        else:
+            raise Exception("key parameter missing for plotting phonon band!")
+    else:
+        pass
+else:
+    pass
 
 if rank == 0:
     print("\nJob Done!")

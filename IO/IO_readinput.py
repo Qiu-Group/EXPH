@@ -53,4 +53,8 @@ def keyword_list():
             'plot_xct_ph_mat', 'plot_xct_ph_mat_Q', 'plot_xct_ph_mat_n', 'plot_xct_ph_mat_m',
             'plot_xct_ph_mat_ph', 'plot_xct_ph_mat_interpolation', 'plot_xct_lifetime', 'plot_xct_lifetime_interposize_for_Lifetime',
             'plot_xct_data','exph_mat_write','nS_initial','nS_final'
+
+            ,'Diffusion_PDE' , 'delta_degaussian_occupation', 'delta_T', 'T_total', 'delta_X', 'delta_Y', 'X', 'Y', 'initial_S_diffusion',
+            'initial_Q_diffusion', 'initial_Gaussian_Broad', 'onGPU',
+            'plot_diffusion', 'plot_diffusion_state', 'plot_diffusion_frame'
             ]
