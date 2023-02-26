@@ -12,6 +12,9 @@ from PLot_.plot_frame_evolution import plot_frame_diffusion
 from mpi4py import MPI
 from Parallel.Para_common import before_parallel_job, after_parallel_sum_job
 import sys
+import os, psutil
+# import resource
+import os
 
 
 def Gaussian(x,y,sigma=1,x0=10,y0=10):
@@ -20,7 +23,24 @@ def Gaussian(x,y,sigma=1,x0=10,y0=10):
 
 class Solver_of_phase_space_CPU(InitialInformation):
     def __init__(self,degaussian,T,delta_X,delta_Y, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=False):
+        comm = MPI.COMM_WORLD
+        rank = comm.Get_rank()
+        size = comm.Get_size()
+        if rank == 0:
+            process = psutil.Process(os.getpid())
+            print('[>>>>> proc_%s <<<<<<]: before super: memory usage:' % rank,
+              process.memory_info().rss / 1024 / 1024, 'MB')
+
         super(Solver_of_phase_space_CPU,self).__init__(path=path,deguassian=degaussian,T=T,initial_S=initial_S,initial_Q=initial_Q,initial_Gaussian_Braod=initial_Gaussian_Braod,onGPU=onGPU)
+
+        if rank == 0:
+            process = psutil.Process(os.getpid())
+            print('[>>>>> proc_%s <<<<<<]: after super: memory usage:' % rank,
+              process.memory_info().rss / 1024 / 1024, 'MB')
+
+        if rank==0:
+            print('[GPU acceleration] OFF')
+        sys.stdout.flush()
 
         self.delta_X = delta_X
         self.delta_Y = delta_Y
@@ -31,11 +51,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
         self.T_total = T_total
         # self.delta_T = T_total/nT
         self.nT = int(T_total/delta_T)
-        # self.delta_X = X/nX
-        # self.delta_Y = Y/nY
-        # # differential_mat = -2*np.eye(nX) + np.eye(nX,k=-1) + np.eye(nX,k=1)
-        # differential_mat = -1*np.eye(nX) + np.eye(nX,k=-1)
-        # self.differential_mat = differential_mat[np.newaxis,np.newaxis,:,:]
+
 
         # Initialized occupation f(n,Q,X,Y)
         self.N_vq = BE(omega=self.get_E_vq(), T=T)
@@ -47,17 +63,6 @@ class Solver_of_phase_space_CPU(InitialInformation):
 
         self.V_x, self.V_y = self.get_group_velocity()
         self.V_x, self.V_y = self.V_x[:,:,np.newaxis,np.newaxis]*0.02, self.V_y[:,:,np.newaxis,np.newaxis]*0.02
-
-        # leave this for test
-        # self.V_x = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * (-0.02)  #
-        # self.V_y = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * 0.03
-        # self.V_x[0,0,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.  #
-        # self.V_y[0,0,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.
-        # self.V_x[0,2,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * -0.035 #
-        # self.V_y[0,2,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (-0.0)
-        # self.V_x[0,3,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * 0.025  #
-        # self.V_y[0,3,:,:] = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (0.)
-
 
         # Lax-wendroff:
         C = self.V_x * self.delta_T / self.delta_X
@@ -89,28 +94,47 @@ class Solver_of_phase_space_CPU(InitialInformation):
         self.F_nQxy = np.zeros((self.n,self.Q,self.nX,self.nY))
         self.F_nQxy[self.initial_S,self.initial_Q,:,:] = Gaussian(self.ini_xx,self.ini_yy,x0=X//2,y0=Y//2,sigma=self.initial_Gaussian) # tododone: add parameter to specify exciton state you want to initialize
 
-        self.F_nQxy_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
+        self.F_nQxy_res = np.ones((self.n, self.Q,self.nX,self.nY, self.nT))*0 # TODO: zero seems not occupying memory, BUT please write it after every step instead of saving it in memory
 
         self.damping_term = np.zeros((self.n, self.Q, self.nX ,self.nY))
-        self.dfdt_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
+        # self.dfdt_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
 
 
         self.Qq_2_Qpr_res = self.Qq_2_Qpr_kmap()
-        ### Debug:
-        # self.V_x = np.ones((1,1))[:,:,np.newaxis,np.newaxis] * (0.4)   #TODOdone: use Omega(S,Q)
-        # self.V_y = np.ones((1, 1))[:,:,np.newaxis,np.newaxis] * 0.4
-        # self.F_nQxy = np.ones((1,1,self.nX,self.nY))
-        # self.F_nQxy[0,0,:,:] = Gaussian(ini_xx,ini_yy) * 20
-        # self.F_nQxy_res = np.zeros((1,1,self.nX,self.nY, self.nT))
-        # self.damping_term = np.zeros((1,1, self.nX ,self.nY))
-
         self.first_round_report = True
 
-        comm = MPI.COMM_WORLD
-        rank = comm.Get_rank()
-        size = comm.Get_size()
+
         if rank == 0:
-            print("Initialized information has been loaded\n-------------------------\n")
+            # For debugging
+            print("\n-------------------------")
+            print("Initialized information has been loaded")
+
+            process = psutil.Process(os.getpid())
+            print('[>>>>> proc_%s <<<<<<]: finished initialization: memory usage:' % rank, process.memory_info().rss / 1024 / 1024, 'MB')
+
+            print("Memory usage for each variable")
+
+            # print the size of each variable
+            print('  self.acv                   %.2f' % (sys.getsizeof(self.acvmat) / 1024 / 1024), 'MB')
+            print('  self.gkk                   %.2f'%( sys.getsizeof(self.gkkmat) / 1024 / 1024 ),'MB')
+            print('  self.gqQ                   %.2f'%( sys.getsizeof(self.gqQ_mat) / 1024 / 1024 ),'MB')
+            print('  self.N_vq:                 %.2f'%( sys.getsizeof(self.N_vq) / 1024 / 1024 ),'MB')
+            print('  self.Delta_positive        %.2f'%(  sys.getsizeof(self.Delta_positive) / 1024 / 1024 ),'MB')
+            print('  self.Delta_negative        %.2f'%(  sys.getsizeof(self.Delta_negative) / 1024 / 1024), 'MB')
+            print('  self.V_x:                  %.2f'%(  sys.getsizeof(self.V_x) / 1024 / 1024), 'MB')
+            print('  self.differential_matrix:  %.2f'%(  sys.getsizeof(self.differential_mat) / 1024 / 1024), 'MB')
+            print('  self.differential_matrix_y:%.2f'%(  sys.getsizeof(self.differential_mat_y) / 1024 / 1024), 'MB')
+            print('  self.ini_x:                %.2f'%(  sys.getsizeof(self.ini_x) / 1024 / 1024), 'MB')
+            print('  self.ini_y:                %.2f'%(  sys.getsizeof(self.ini_y) / 1024 / 1024), 'MB')
+            print('  self.ini_xx:               %.2f'%(  sys.getsizeof(self.ini_xx) / 1024 / 1024), 'MB')
+            print('  self.ini_yy:               %.2f'%(  sys.getsizeof(self.ini_yy) / 1024 / 1024), 'MB')
+            print('  self.F_nQxy:               %.2f'%(  sys.getsizeof(self.F_nQxy) / 1024 / 1024), 'MB')
+            print('  self.F_nQxy_res:           %.2f'%(  sys.getsizeof(self.F_nQxy_res) / 1024 / 1024), 'MB')
+            print('  self.damping_term:         %.2f'%(  sys.getsizeof(self.damping_term) / 1024 / 1024), 'MB')
+            # print('  self.dfdt_res:             %.2f'%(  sys.getsizeof(self.dfdt_res) / 1024 / 1024), 'MB')
+            print('  self.Qq_2_Qpr_res:         %.2f'%(  sys.getsizeof(self.Qq_2_Qpr_res) / 1024 / 1024), 'MB')
+
+            print("-------------------------\n")
 
 
     def kmap_check_for_derivative(self):
@@ -162,10 +186,12 @@ class Solver_of_phase_space_CPU(InitialInformation):
         plan_list, start_time, start_time_proc = before_parallel_job(rk=rank, size=size,workload_para=work_load_over_nXnY,mute=True)
         plan_list = comm.scatter(plan_list, root=0)
         if rank == 0 and self.first_round_report:
-            print('------------------------')
-            print('  process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1] - plan_list[0])
-            print('------------------------')
-            sys.stdout.flush()
+            # print('------------------------')
+            # print('  process_%d. plan is ' % rank, plan_list, 'workload:', plan_list[-1] - plan_list[0])
+            # print('------------------------')
+            # sys.stdout.flush()
+            pass
+
         # plan_list_full = np.arange(plan_list[0],plan_list[-1])
         F_nQxy_last = comm.bcast(F_nQxy_last, root=0)
         F_nQxy_last_reshape = F_nQxy_last.reshape((self.n,self.Q,int(self.nX*self.nY),1)) # reshape F_nQxy_last into a "quasi" 1D array for better parallel
@@ -201,13 +227,15 @@ class Solver_of_phase_space_CPU(InitialInformation):
         # print('size of F_abs_each_process',sys.getsizeof(F_abs_each_process)/1024/1024,'MB')
         # print('shape of F_abs_each_process',F_abs_each_process.shape)
         if rank == 0 and self.first_round_report:
-            memoery_in_0 = (sys.getsizeof(F_mQqxy_each_process) +
-                    sys.getsizeof(F_nQxy_last_each_process)+
-                    sys.getsizeof(dFdt_full_each_process) +
-                    2 * sys.getsizeof(F_abs_each_process) +
-                    sys.getsizeof(dFdt_each_process))/1024/1024
-            print('  process_%d. memory for rhs_Fermi: %.2f'%(rank, memoery_in_0),'MB')
-            print('  estimated ALL memory for rhs_Fermi: %.2f' % (size * memoery_in_0), 'MB')
+            process = psutil.Process(os.getpid())
+            print('[>>>>>> proc_%s <<<<<<]: finished CPU: memory usage:' % rank, process.memory_info().rss / 1024 / 1024,'MB')
+            # memoery_in_0 = (sys.getsizeof(F_mQqxy_each_process) +
+            #         sys.getsizeof(F_nQxy_last_each_process)+
+            #         sys.getsizeof(dFdt_full_each_process) +
+            #         2 * sys.getsizeof(F_abs_each_process) +
+            #         sys.getsizeof(dFdt_each_process))/1024/1024
+            # print('  process_%d. memory for rhs_Fermi: %.2f'%(rank, memoery_in_0),'MB')
+            # print('  estimated ALL memory for rhs_Fermi: %.2f' % (size * memoery_in_0), 'MB')
             sys.stdout.flush()
 
         dFdt = np.zeros_like(dFdt_full_each_process)
@@ -225,9 +253,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
         rank = comm.Get_rank()
         size = comm.Get_size()
 
-        # if rank==0:
-        print('[GPU acceleration] OFF')
-        sys.stdout.flush()
+
         # progress = ProgressBar(self.nT, fmt=ProgressBar.FULL)
         time_rhs = 0
         time_rhs_update_F_nQ = 0
@@ -243,13 +269,17 @@ class Solver_of_phase_space_CPU(InitialInformation):
                 sys.stdout.flush()
 
             self.damping_term[0, 0, :, :] = self.F_nQxy[0, 0, :, :]
+
+            # TODO: directly write to disk instead of memory!!
             self.F_nQxy_res[:, :, :,:,it] = self.F_nQxy
+
+
             dfdt, time_rhs_Fermi_temp, time_rhs_Fermi_update_F_nQ_temp = self.__rhs_Fermi_Goldenrule_CPU(self.F_nQxy)
             # print('\ntime for F_nQ (%s / %s):' % (it, self.nT), time.time() - t0, 's')
 
             if rank == 0:
 
-                self.dfdt_res[:,:,:,:,it] = dfdt
+                # self.dfdt_res[:,:,:,:,it] = dfdt
 
                 time_rhs += time_rhs_Fermi_temp
                 time_rhs_update_F_nQ += time_rhs_Fermi_update_F_nQ_temp
@@ -317,10 +347,20 @@ class Solver_of_phase_space_CPU(InitialInformation):
             # return ani
 
 if __name__ == "__main__":
-    a = Solver_of_phase_space_CPU(degaussian=0.05,delta_T=1, T_total=10,T=300,delta_X=0.25,delta_Y=0.25, X=20,Y=20,
+
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    if rank == 0:
+        process = psutil.Process(os.getpid())
+        print('[>>>>> proc_%s <<<<<<]: before Class: memory usage:' % rank,
+              process.memory_info().rss / 1024 / 1024, 'MB')
+
+    a = Solver_of_phase_space_CPU(degaussian=0.05,delta_T=1, T_total=5,T=300,delta_X=0.25,delta_Y=0.25, X=20,Y=20,
                               path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1)
-    a.solve_it()
-    a.write_diffusion_evolution()
+    # a.solve_it()
+    # a.write_diffusion_evolution()
     #
     #
     # ani = a.plot(n_plot=2,play_interval=1,saveformat=None,readfromh5=True)

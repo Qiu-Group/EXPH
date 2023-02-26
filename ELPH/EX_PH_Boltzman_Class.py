@@ -40,7 +40,7 @@ class InitialInformation():
         self.onGPU = onGPU
         self.high_symm = high_symm
 
-        print("Initialized information has been created")
+        #print("Initialized information has been created")
     def get_E_vq(self):
         """
         q = q_kmap; v =gkk_map
@@ -89,6 +89,8 @@ class InitialInformation():
         E_nQ = self.get_E_nQ()[:, np.newaxis, np.newaxis, :, np.newaxis]
         E_mQq = self.get_E_mQq()[np.newaxis, :, np.newaxis, :, :]
         E_vq = self.get_E_vq()[np.newaxis, np.newaxis, :, np.newaxis, :]
+
+        # return Dirac_1(x=E_nQ - E_mQq + E_vq, sigma=self.deguassian), Dirac_1(x=E_nQ - E_mQq - E_vq, sigma=self.deguassian)
 
         Delta_pos_nmvQq = Dirac_1(x=E_nQ - E_mQq + E_vq, sigma=self.deguassian)
         Delta_neg_nmvQq = Dirac_1(x=E_nQ - E_mQq - E_vq, sigma=self.deguassian)
