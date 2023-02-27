@@ -7,7 +7,7 @@ import time
 import h5py as h5
 import sys
 
-def plot_diff_evolution(F_nQxy_res,nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_interval=2, path='../',saveformat='htm'):
+def plot_diff_evolution(F_nQxy_res,nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_interval=2, path='../',saveformat='htm',Q1=0,Q2=12,Q3=200,Q4=400):
     """
     :param nX: number of discrete X
     :param nY: number of discrete Y
@@ -33,9 +33,9 @@ def plot_diff_evolution(F_nQxy_res,nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_
         plt.clf()
         plt.subplot(2, 2, 1)
 
-        plt.contourf(XX, YY, F_nQxy_res[n, 0, :, :, i],
-                     levels=np.linspace(F_nQxy_res[n, 0, :, :, 0].min(), F_nQxy_res[n, 0, :, :, 0].max()+0.00000000001, 80))
-        plt.title('(n=%s,Q=%s)' % (n, 0) + 't=%s fs' % int(i * delta_T) + 'exciton number: %.2f' % F_nQxy_res[n, 0, :, :,
+        plt.contourf(XX, YY, F_nQxy_res[n, Q1, :, :, i],
+                     levels=np.linspace(F_nQxy_res[n, Q1, :, :, :].min(), F_nQxy_res[n, Q1, :, :, :].max(), 80))
+        plt.title('(n=%s,Q=%s)' % (n, Q1) + 't=%s fs' % int(i * delta_T) + 'exciton number: %.2f' % F_nQxy_res[n, Q1, :, :,
                                                                                                    i].sum())
 
         plt.colorbar()
@@ -43,10 +43,10 @@ def plot_diff_evolution(F_nQxy_res,nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_
         ######################3
         plt.subplot(2, 2, 2)
 
-        plt.contourf(XX, YY, F_nQxy_res[n, 1, :, :, i],
-                     levels=np.linspace(F_nQxy_res[n, 1, :, :, :].min(), F_nQxy_res[n, 1, :, :, :].max(), 80))
+        plt.contourf(XX, YY, F_nQxy_res[n, Q2, :, :, i],
+                     levels=np.linspace(F_nQxy_res[n,Q2, :, :, :].min(), F_nQxy_res[n, Q2, :, :, :].max(), 80))
         # plt.title(label='t=%s fs'%Time_series[i])
-        plt.title('(n=%s,Q=%s)' % (n, 1) + 't=%s fs' % int(i * delta_T) + 'exciton number: %.2f' % F_nQxy_res[n, 1, :, :,
+        plt.title('(n=%s,Q=%s)' % (n, Q2) + 't=%s fs' % int(i * delta_T) + 'exciton number: %.2f' % F_nQxy_res[n, Q2, :, :,
                                                                                                    i].sum())
 
         plt.colorbar()
@@ -54,10 +54,10 @@ def plot_diff_evolution(F_nQxy_res,nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_
         ######################3
         plt.subplot(2, 2, 3)
 
-        plt.contourf(XX, YY, F_nQxy_res[n, 2, :, :, i],
-                     levels=np.linspace(F_nQxy_res[n, 2, :, :, :].min(), F_nQxy_res[n, 2, :, :, :].max(), 80))
+        plt.contourf(XX, YY, F_nQxy_res[n, Q3, :, :, i],
+                     levels=np.linspace(F_nQxy_res[n,Q3, :, :, :].min(), F_nQxy_res[n, Q3, :, :, :].max(), 80))
         # plt.title(label='t=%s fs'%Time_series[i])
-        plt.title('(n=%s,Q=%s)' % (n, 2) + 't=%s fs' % int(i * delta_T) + 'exciton number: %.2f' % F_nQxy_res[n, 2, :, :,
+        plt.title('(n=%s,Q=%s)' % (n, Q3) + 't=%s fs' % int(i * delta_T) + 'exciton number: %.2f' % F_nQxy_res[n, Q3, :, :,
                                                                                                    i].sum())
 
         plt.colorbar()
@@ -65,10 +65,10 @@ def plot_diff_evolution(F_nQxy_res,nX=80,nY=80,n=2,T_total=40,delta_T=0.02,play_
         ######################3
         plt.subplot(2, 2, 4)
 
-        plt.contourf(XX, YY, F_nQxy_res[n, 3, :, :, i],
-                     levels=np.linspace(F_nQxy_res[n, 3, :, :, :].min(), F_nQxy_res[n, 3, :, :, :].max(), 80))
+        plt.contourf(XX, YY, F_nQxy_res[n, Q4, :, :, i],
+                     levels=np.linspace(F_nQxy_res[n, Q4, :, :, :].min(), F_nQxy_res[n, Q4, :, :, :].max(), 80))
         # plt.title(label='t=%s fs'%Time_series[i])
-        plt.title('(n=%s,Q=%s)' % (n, 3) + 't=%s fs' % int(i * delta_T) + 'exciton number: %.2f' % F_nQxy_res[n, 3, :, :,
+        plt.title('(n=%s,Q=%s)' % (n, Q4) + 't=%s fs' % int(i * delta_T) + 'exciton number: %.2f' % F_nQxy_res[n, Q4, :, :,
                                                                                                    i].sum())
 
         plt.colorbar()

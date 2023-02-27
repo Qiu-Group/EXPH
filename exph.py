@@ -331,15 +331,20 @@ if rank == 0:
     if 'plot_diffusion' in input and input['plot_diffusion'] == True:
         if rank == 0:  # for print!
             print("\nPlotting Diffusion Frame:")
-        if "plot_diffusion_state" in input and "plot_diffusion_frame" in input:
+        if "plot_diffusion_state" in input \
+                and "plot_diffusion_frame" in input\
+                and 'Q1' in input and 'Q2' in input and 'Q3' in input and 'Q4' in input:
             if rank == 0:
                 print("plot_diffusion_state: ", int(input["plot_diffusion_state"]))
                 print("plot_diffusion_frame", int(input["plot_diffusion_frame"]))
+                print("Q1: %s, Q2: %s, Q3: %s, Q4: %s"%(int(input["Q1"]), int(input["Q2"]),int(input["Q3"]),int(input["Q4"]))  )
                 sys.stdout.flush()
 
             plot_frame_diffusion(i=int(input["plot_diffusion_frame"])-1,
                                  path=input["h5_path"],
-                                 S = int(input["plot_diffusion_state"]) - 1)
+                                 S = int(input["plot_diffusion_state"]) - 1,
+                                 Q1=int(input["Q1"])-1, Q2=int(input["Q2"])-1,
+                                 Q3=int(input["Q3"])-1, Q4=int(input["Q4"])-1)
 
             sys.stdout.flush()
         else:

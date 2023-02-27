@@ -15,7 +15,7 @@ def plot_frame_occupation(i,a,size=1): # TODO: use path instead of a
     plt.show()
     plt.savefig('occupation.pdf')
 
-def plot_frame_diffusion(i,S, path):
+def plot_frame_diffusion(i,S, path,Q1=0,Q2=12,Q3=200,Q4=400):
     f = h5.File(path + 'EX_diffusion_evolution.h5', 'r')
     F_nQxy_res = f['data']
 
@@ -26,9 +26,9 @@ def plot_frame_diffusion(i,S, path):
     plt.clf()
     plt.subplot(2, 2, 1)
 
-    plt.contourf(XX, YY, F_nQxy_res[S, 0, :, :, i],
-                 levels=np.linspace(F_nQxy_res[S, 0, :, :, 0].min(), F_nQxy_res[S, 0, :, :, 0].max()+0.00000000001, 80))
-    plt.title('(n=%s,Q=%s)' % (S, 0) + 'frame: %s ' % int(i) + 'exciton number: %.2f' % F_nQxy_res[S, 0, :, :,
+    plt.contourf(XX, YY, F_nQxy_res[S, Q1, :, :, i],
+                 levels=np.linspace(F_nQxy_res[S, Q1, :, :, :].min(), F_nQxy_res[S, Q1, :, :, :].max(), 80))
+    plt.title('(n=%s,Q=%s)' % (S, Q1) + 'frame: %s ' % int(i) + 'exciton number: %.2f' % F_nQxy_res[S, Q1, :, :,
                                                                                                i].sum())
 
     plt.colorbar()
@@ -36,10 +36,10 @@ def plot_frame_diffusion(i,S, path):
     ######################3
     plt.subplot(2, 2, 2)
 
-    plt.contourf(XX, YY, F_nQxy_res[S, 1, :, :, i],
-                 levels=np.linspace(F_nQxy_res[S, 1, :, :, :].min(), F_nQxy_res[S, 1, :, :, :].max(), 80))
+    plt.contourf(XX, YY, F_nQxy_res[S, Q2, :, :, i],
+                 levels=np.linspace(F_nQxy_res[S, Q2, :, :, :].min(), F_nQxy_res[S, Q2, :, :, :].max(), 80))
     # plt.title(label='t=%s fs'%Time_series[i])
-    plt.title('(n=%s,Q=%s)' % (S, 1) + 'frame: %s ' % int(i) + 'exciton number: %.2f' % F_nQxy_res[S, 1, :, :,
+    plt.title('(n=%s,Q=%s)' % (S,Q2) + 'frame: %s ' % int(i) + 'exciton number: %.2f' % F_nQxy_res[S, Q2, :, :,
                                                                                                i].sum())
 
     plt.colorbar()
@@ -47,10 +47,10 @@ def plot_frame_diffusion(i,S, path):
     ######################3
     plt.subplot(2, 2, 3)
 
-    plt.contourf(XX, YY, F_nQxy_res[S, 2, :, :, i],
-                 levels=np.linspace(F_nQxy_res[S, 2, :, :, :].min(), F_nQxy_res[S, 2, :, :, :].max(), 80))
+    plt.contourf(XX, YY, F_nQxy_res[S, Q3, :, :, i],
+                 levels=np.linspace(F_nQxy_res[S,Q3, :, :, :].min(), F_nQxy_res[S, Q3, :, :, :].max(), 80))
     # plt.title(label='t=%s fs'%Time_series[i])
-    plt.title('(n=%s,Q=%s)' % (S, 2) + 'frame: %s ' % int(i) + 'exciton number: %.2f' % F_nQxy_res[S, 2, :, :,
+    plt.title('(n=%s,Q=%s)' % (S, Q3) + 'frame: %s ' % int(i) + 'exciton number: %.2f' % F_nQxy_res[S, Q3, :, :,
                                                                                                i].sum())
 
     plt.colorbar()
@@ -58,10 +58,10 @@ def plot_frame_diffusion(i,S, path):
     ######################3
     plt.subplot(2, 2, 4)
 
-    plt.contourf(XX, YY, F_nQxy_res[S, 3, :, :, i],
-                 levels=np.linspace(F_nQxy_res[S, 3, :, :, :].min(), F_nQxy_res[S, 3, :, :, :].max(), 80))
+    plt.contourf(XX, YY, F_nQxy_res[S, Q4, :, :, i],
+                 levels=np.linspace(F_nQxy_res[S, Q4, :, :, :].min(), F_nQxy_res[S, Q4, :, :, :].max(), 80))
     # plt.title(label='t=%s fs'%Time_series[i])
-    plt.title('(n=%s,Q=%s)' % (S, 3) + 'frame: %s ' % int(i ) + 'exciton number: %.2f' % F_nQxy_res[S, 3, :, :,
+    plt.title('(n=%s,Q=%s)' % (S, Q4) + 'frame: %s ' % int(i ) + 'exciton number: %.2f' % F_nQxy_res[S, Q4, :, :,
                                                                                                i].sum())
     f.close()
     plt.colorbar()

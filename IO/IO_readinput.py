@@ -56,5 +56,5 @@ def keyword_list():
 
             ,'Diffusion_PDE' , 'delta_degaussian_occupation', 'delta_T', 'T_total', 'delta_X', 'delta_Y', 'X', 'Y', 'initial_S_diffusion',
             'initial_Q_diffusion', 'initial_Gaussian_Broad', 'onGPU',
-            'plot_diffusion', 'plot_diffusion_state', 'plot_diffusion_frame'
+            'plot_diffusion', 'plot_diffusion_state', 'plot_diffusion_frame','Q1','Q2','Q3','Q4'
             ]

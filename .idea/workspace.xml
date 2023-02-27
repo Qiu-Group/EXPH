@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Major: GPU for occupation is done!!">
-      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Major: Memory Issue of parallel PDE is fixed!!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_Boltzman_Class.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_Boltzman_Class.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PLot_/plot_evolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_evolution.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PLot_/plot_frame_evolution.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_frame_evolution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_CPU.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_CPU.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exph.in" beforeDir="false" afterPath="$PROJECT_DIR$/exph.in" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exph.py" beforeDir="false" afterPath="$PROJECT_DIR$/exph.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,11 +50,14 @@
       <recent name="D:\OneDrive\03-research\02-research@yale\03-elph\code_exph\Deprecated" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.exph">
+  <component name="RunManager" selected="Python.Para_rt_Boltzmann_Diffusion_CPU">
     <configuration name="Para_rt_Boltzmann_Diffusion_CPU" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -96,6 +97,9 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -135,6 +139,9 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel/trash" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -151,8 +158,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.exph" />
         <item itemvalue="Python.Para_rt_Boltzmann_Diffusion_CPU" />
+        <item itemvalue="Python.exph" />
         <item itemvalue="Python.test2" />
         <item itemvalue="Python.Para_rt_Boltzmann_Diffusion_GPU" />
         <item itemvalue="Python.Para_rt_Boltzmann_Diffusion_CPU" />
@@ -378,7 +385,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676926521689</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Major: Memory Issue of parallel PDE is fixed!!">
+      <created>1677458573533</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1677458573533</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -426,6 +440,7 @@
     <MESSAGE value="Major Change: (1) Conservation of Exciton Number has been fixed!! (Reason: joint density in Bernardi's paper is wrong, F(n,Q+q) --&gt; F(m,Q+q))!!&#10;(2) High symmetry selecting system is added&#10;&#10;TODO: Delta function needed to be checked for 12 12 1!!! (Since I change it to np.ones, and PDE solving works)" />
     <MESSAGE value="GPU acceleration will come soon!!" />
     <MESSAGE value="Major: GPU for occupation is done!!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Major: GPU for occupation is done!!" />
+    <MESSAGE value="Major: Memory Issue of parallel PDE is fixed!!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Major: Memory Issue of parallel PDE is fixed!!" />
   </component>
 </project>

@@ -64,3 +64,7 @@ plot_xct_data = 'ex_S1_lifetime.dat'
 plot_diffusion = True
 plot_diffusion_state = 3
 plot_diffusion_frame = 100
+Q1 = 1
+Q2 = 13
+Q3 = 201
+Q4 = 2
