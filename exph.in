@@ -12,6 +12,7 @@ degaussian = 0.02
 # (2) initialize includes creating Acv.h5, gkk.h5, kkqQmap.dat and bandmap.dat
 initialize =False
 
+# this could be paralleled over nQ * nq
 exph_mat_write = False
 nS_initial = 3
 nS_final = 3
@@ -31,8 +32,8 @@ delta_T = 1
 T_total = 100
 delta_X = 0.25
 delta_Y = 0.25
-X = 5
-Y = 5
+X = 10
+Y = 10
 initial_S_diffusion = 3
 initial_Q_diffusion = 1
 initial_Gaussian_Broad = 1

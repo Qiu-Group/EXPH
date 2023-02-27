@@ -191,7 +191,7 @@ if 'Diffusion_PDE' in input and input['Diffusion_PDE'] == True: # xct_lifetime_a
                                       initial_Q=int(input['initial_Q_diffusion']-1),
                                       initial_Gaussian_Braod=input['initial_Gaussian_Broad'])
         a.solve_it()
-        a.write_diffusion_evolution()
+        # a.write_diffusion_evolution()
         # para_Exciton_Life_standard(path=input["h5_path"],
         #                            interposize=int(input["xct_lifetime_all_BZ_interpolation"]),
         #                            T=input["T"],

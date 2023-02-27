@@ -6,7 +6,7 @@ Author: Bowen Hou
 
 Creating Time: 10/03/2022
 
-Last Updated: 02/24/2023
+Last Updated: 02/26/2023
 
 ---
 ## Exciton-Phonon Interaction
@@ -37,7 +37,7 @@ Last Updated: 02/24/2023
 
 7. GPU acceleration is available for ODE and PDE (only for small system, used for benchmark and test)!! (*new!*)
 
-8. CPU parallel is available for PDE!! (*new!*)
+8. CPU parallel is available for PDE!! (*new!*: Memory usage is optimized!!)
 
 ## Workflow
 

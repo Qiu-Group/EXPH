@@ -16,8 +16,10 @@ class InitialInformation():
         self.deguassian = deguassian
         self.T = T
         self.bvec = read_lattice('b', path)
-        self.acvmat = read_Acv(path=path)
-        self.gkkmat = read_gkk(path=path)
+
+        # self.acvmat = read_Acv(path=path)
+        # self.gkkmat = read_gkk(path=path)
+
         self.kmap = read_kmap(path=path)
         self.kmap_dic = construct_kmap(path=path)
         self.bandmap_occ = read_bandmap(path=path)

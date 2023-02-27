@@ -91,12 +91,12 @@ class Solver_of_phase_space_CPU(InitialInformation):
         self.ini_y = np.arange(0, Y, self.delta_Y)
         self.ini_xx, self.ini_yy = np.meshgrid(self.ini_x, self.ini_y)
 
-        self.F_nQxy = np.zeros((self.n,self.Q,self.nX,self.nY))
+        self.F_nQxy = np.ones((self.n,self.Q,self.nX,self.nY)) * 0.
         self.F_nQxy[self.initial_S,self.initial_Q,:,:] = Gaussian(self.ini_xx,self.ini_yy,x0=X//2,y0=Y//2,sigma=self.initial_Gaussian) # tododone: add parameter to specify exciton state you want to initialize
 
-        self.F_nQxy_res = np.ones((self.n, self.Q,self.nX,self.nY, self.nT))*0 # TODO: zero seems not occupying memory, BUT please write it after every step instead of saving it in memory
+        # self.F_nQxy_res = np.ones((self.n, self.Q,self.nX,self.nY, self.nT)) * 0. # TODOdone: zero seems not occupying memory, BUT please write it after every step instead of saving it in memory
 
-        self.damping_term = np.zeros((self.n, self.Q, self.nX ,self.nY))
+        self.damping_term = np.ones((self.n, self.Q, self.nX ,self.nY)) * 0.
         # self.dfdt_res = np.zeros((self.n, self.Q,self.nX,self.nY, self.nT))
 
 
@@ -115,8 +115,8 @@ class Solver_of_phase_space_CPU(InitialInformation):
             print("Memory usage for each variable")
 
             # print the size of each variable
-            print('  self.acv                   %.2f' % (sys.getsizeof(self.acvmat) / 1024 / 1024), 'MB')
-            print('  self.gkk                   %.2f'%( sys.getsizeof(self.gkkmat) / 1024 / 1024 ),'MB')
+            # print('  self.acv                   %.2f' % (sys.getsizeof(self.acvmat) / 1024 / 1024), 'MB')
+            # print('  self.gkk                   %.2f'%( sys.getsizeof(self.gkkmat) / 1024 / 1024 ),'MB')
             print('  self.gqQ                   %.2f'%( sys.getsizeof(self.gqQ_mat) / 1024 / 1024 ),'MB')
             print('  self.N_vq:                 %.2f'%( sys.getsizeof(self.N_vq) / 1024 / 1024 ),'MB')
             print('  self.Delta_positive        %.2f'%(  sys.getsizeof(self.Delta_positive) / 1024 / 1024 ),'MB')
@@ -129,7 +129,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
             print('  self.ini_xx:               %.2f'%(  sys.getsizeof(self.ini_xx) / 1024 / 1024), 'MB')
             print('  self.ini_yy:               %.2f'%(  sys.getsizeof(self.ini_yy) / 1024 / 1024), 'MB')
             print('  self.F_nQxy:               %.2f'%(  sys.getsizeof(self.F_nQxy) / 1024 / 1024), 'MB')
-            print('  self.F_nQxy_res:           %.2f'%(  sys.getsizeof(self.F_nQxy_res) / 1024 / 1024), 'MB')
+            # print('  self.F_nQxy_res:           %.2f'%(  sys.getsizeof(self.F_nQxy_res) / 1024 / 1024), 'MB')
             print('  self.damping_term:         %.2f'%(  sys.getsizeof(self.damping_term) / 1024 / 1024), 'MB')
             # print('  self.dfdt_res:             %.2f'%(  sys.getsizeof(self.dfdt_res) / 1024 / 1024), 'MB')
             print('  self.Qq_2_Qpr_res:         %.2f'%(  sys.getsizeof(self.Qq_2_Qpr_res) / 1024 / 1024), 'MB')
@@ -270,8 +270,9 @@ class Solver_of_phase_space_CPU(InitialInformation):
 
             self.damping_term[0, 0, :, :] = self.F_nQxy[0, 0, :, :]
 
-            # TODO: directly write to disk instead of memory!!
-            self.F_nQxy_res[:, :, :,:,it] = self.F_nQxy
+            # TODOdone: directly write to disk instead of memory!!
+            # self.F_nQxy_res[:, :, :,:,it] = self.F_nQxy
+            self.write_diffusion_evolution(it=it)
 
 
             dfdt, time_rhs_Fermi_temp, time_rhs_Fermi_update_F_nQ_temp = self.__rhs_Fermi_Goldenrule_CPU(self.F_nQxy)
@@ -301,21 +302,31 @@ class Solver_of_phase_space_CPU(InitialInformation):
             print('total time for updating F_mQq:', time_rhs_update_F_nQ)
             sys.stdout.flush()
 
-    def write_diffusion_evolution(self):
+    def write_diffusion_evolution(self,it):
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
         size = comm.Get_size()
 
         if rank == 0:
-            print('Start writing EX_diffusion_evolution.h5')
-            f = h5.File(self.path+'EX_diffusion_evolution.h5','w')
-            f.create_dataset('data',data=self.F_nQxy_res)
-            f.close()
-            print('EX_diffusion_evolution.h5 has been written')
+            if self.first_round_report:
+                print('EX_diffusion_evolution.h5 Created')
+                f = h5.File(self.path + 'EX_diffusion_evolution.h5', 'w')
+                f.create_dataset('data',data=np.zeros((self.n, self.Q,self.nX,self.nY, self.nT)))
+                print('Writing frame %s EX_diffusion_evolution.h5\n'%it)
+                f['data'][:, :, :,:,it] = self.F_nQxy
+                f.close()
+            else:
+                # print('Start writing EX_diffusion_evolution.h5')
+                f = h5.File(self.path+'EX_diffusion_evolution.h5','a')
+                f['data'][:, :, :,:,it] = self.F_nQxy
+                print('Writing frame %s EX_diffusion_evolution.h5\n' % it)
+                # f.create_dataset('data',data=np.zeros((self.n, self.Q,self.nX,self.nY, self.nT)))
+                f.close()
+                # print('EX_diffusion_evolution.h5 has been written')
         else:
             pass
 
-    def plot(self,n_plot,play_interval=2,saveformat=None,readfromh5=False):
+    def plot(self,n_plot,play_interval=2,saveformat=None):
         """
         :param n_plot: state you want to see: start from 1,2,3...
         :param play_inverval:  plot evolution in every "plat_interval" [fs]
@@ -326,10 +337,10 @@ class Solver_of_phase_space_CPU(InitialInformation):
         size = comm.Get_size()
 
         if rank == 0:
-            if readfromh5:
-                f = h5.File(self.path+'EX_diffusion_evolution.h5','r')
-                self.F_nQxy_res = f['data'][()]
-                f.close()
+
+            f = h5.File(self.path+'EX_diffusion_evolution.h5','r')
+            self.F_nQxy_res = f['data'][()]
+            f.close()
 
             n_plot = n_plot
             ani = plot_diff_evolution(F_nQxy_res=self.F_nQxy_res,
@@ -357,15 +368,15 @@ if __name__ == "__main__":
         print('[>>>>> proc_%s <<<<<<]: before Class: memory usage:' % rank,
               process.memory_info().rss / 1024 / 1024, 'MB')
 
-    a = Solver_of_phase_space_CPU(degaussian=0.05,delta_T=1, T_total=5,T=300,delta_X=0.25,delta_Y=0.25, X=20,Y=20,
+    a = Solver_of_phase_space_CPU(degaussian=0.05,delta_T=1, T_total=100,T=100,delta_X=0.25,delta_Y=0.25, X=10,Y=10,
                               path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1)
     # a.solve_it()
     # a.write_diffusion_evolution()
     #
     #
-    # ani = a.plot(n_plot=2,play_interval=1,saveformat=None,readfromh5=True)
+    # ani = a.plot(n_plot=2,play_interval=1,saveformat=None)
     #
-    # plot_frame_diffusion()
+    # plot_frame_diffusion(i=99,S=2,path='../')
 
     # bowen 14:48 02/23/2023
     pass
