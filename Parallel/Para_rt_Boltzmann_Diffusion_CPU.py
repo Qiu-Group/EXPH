@@ -63,6 +63,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
 
         self.V_x, self.V_y = self.get_group_velocity()
         # self.V_x, self.V_y = self.V_x[:,:,np.newaxis,np.newaxis]*0.02, self.V_y[:,:,np.newaxis,np.newaxis]*0.02
+        self.V_x, self.V_y = self.V_x[:, :, np.newaxis, np.newaxis] , self.V_y[:, :, np.newaxis,np.newaxis]
 
         # Lax-wendroff:
         C = self.V_x * self.delta_T / self.delta_X
@@ -383,9 +384,9 @@ if __name__ == "__main__":
                               path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1)
     # a.solve_it()
 
-    ani = a.plot(n_plot=2,play_interval=1,saveformat='html',Q1=0,Q2=12,Q3=200,Q4=1)
+    # ani = a.plot(n_plot=2,play_interval=1,saveformat='html',Q1=0,Q2=12,Q3=200,Q4=1)
     #
-    plot_frame_diffusion(i=99,S=2,path='../',Q1=0,Q2=12,Q3=200,Q4=1)
+    # plot_frame_diffusion(i=99,S=2,path='../',Q1=0,Q2=12,Q3=200,Q4=1)
 
     # bowen 14:48 02/23/2023
     pass

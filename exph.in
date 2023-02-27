@@ -61,7 +61,7 @@ plot_xct_lifetime_interposize_for_Lifetime = 120
 plot_xct_data = 'ex_S1_lifetime.dat'
 
 
-plot_diffusion = True
+plot_diffusion = False
 plot_diffusion_state = 3
 plot_diffusion_frame = 100
 Q1 = 1
