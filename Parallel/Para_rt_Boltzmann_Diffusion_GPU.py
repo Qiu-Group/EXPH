@@ -17,7 +17,7 @@ def Gaussian(x,y,sigma=1,x0=10,y0=10):
 
 
 class Solver_of_phase_space_GPU(InitialInformation):
-    def __init__(self,degaussian,T,delta_X,delta_Y, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=True):
+    def __init__(self,degaussian,T,delta_X,delta_Y, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1.,onGPU=True):
         super(Solver_of_phase_space_GPU,self).__init__(path=path,deguassian=degaussian,T=T,initial_S=initial_S,initial_Q=initial_Q,initial_Gaussian_Braod=initial_Gaussian_Braod,onGPU=onGPU)
 
         self.delta_X = delta_X
@@ -44,7 +44,8 @@ class Solver_of_phase_space_GPU(InitialInformation):
         # Finding Group Velocity for each exciton state
 
         self.V_x, self.V_y = self.get_group_velocity()
-        self.V_x, self.V_y = self.V_x[:,:,np.newaxis,np.newaxis]*0.02, self.V_y[:,:,np.newaxis,np.newaxis]*0.02
+        # self.V_x, self.V_y = self.V_x[:,:,np.newaxis,np.newaxis]*0.02, self.V_y[:,:,np.newaxis,np.newaxis]*0.02
+        self.V_x, self.V_y = self.V_x[:, :, np.newaxis, np.newaxis]*1 , self.V_y[:, :, np.newaxis,np.newaxis]*1
 
         # leave this for test
         # self.V_x = np.ones((self.n, self.Q))[:,:,np.newaxis,np.newaxis] * (-0.02)  #
@@ -64,8 +65,8 @@ class Solver_of_phase_space_GPU(InitialInformation):
         a0 = -C ** 2
 
         self.differential_mat = np.eye(self.nX, k=-1) * a_neg1 + np.eye(self.nX) * a0 + np.eye(self.nX, k=1) * a1
-        self.differential_mat[:,:, -1, 0] =  a1[:,:, 0, 0]
-        self.differential_mat[:,:, 0, -1] = a_neg1[:,:, 0, 0]
+        # self.differential_mat[:,:, -1, 0] =  a1[:,:, 0, 0]
+        # self.differential_mat[:,:, 0, -1] = a_neg1[:,:, 0, 0]
 
         C_y = self.V_y * self.delta_T / self.delta_Y
         a1 = -1 * C_y * (1 - C_y) / 2
@@ -73,8 +74,8 @@ class Solver_of_phase_space_GPU(InitialInformation):
         a0 = -C_y ** 2
 
         self.differential_mat_y = np.eye(self.nY, k=-1) * a_neg1 + np.eye(self.nY) * a0 + np.eye(self.nY, k=1) * a1
-        self.differential_mat_y[:,:, -1, 0] = a1[:,:, 0, 0]
-        self.differential_mat_y[:,:, 0, -1] =  a_neg1[:,:, 0, 0]
+        # self.differential_mat_y[:,:, -1, 0] = a1[:,:, 0, 0]
+        # self.differential_mat_y[:,:, 0, -1] =  a_neg1[:,:, 0, 0]
 
         # Lax-wendroff<
 
@@ -113,7 +114,7 @@ class Solver_of_phase_space_GPU(InitialInformation):
         E_nQ = self.get_E_nQ()
         nQ_sqrt = int(np.sqrt(self.Q))
         nS = int(self.n)
-        b1, b2 = self.bvec[0, :2], self.bvec[1, :2]
+        b1, b2 = self.bvec[0, :2]/self.bohr2angstrom, self.bvec[1, :2]/self.bohr2angstrom # bohr --> angstrom BOwen Hou 2023/02/27
         cos_theta_b1, sin_theta_b1 = b1[0] / np.linalg.norm(b1), b1[1] / np.linalg.norm(b1)
         cos_theta_b2, sin_theta_b2 = b2[0] / np.linalg.norm(b1), b2[1] / np.linalg.norm(b1)
         delta_Qb1 = (self.kmap[nQ_sqrt, 0] - self.kmap[0, 0]) * np.linalg.norm(b1)  # todo: this can be used for kmap check!
@@ -265,7 +266,7 @@ class Solver_of_phase_space_GPU(InitialInformation):
         f.close()
         print('EX_diffusion_evolution.h5 has been written')
 
-    def plot(self,n_plot,play_interval=2,saveformat=None,readfromh5=False):
+    def plot(self,n_plot,play_interval=2,saveformat=None,readfromh5=False,Q1=0,Q2=12,Q3=200,Q4=400):
         """
         :param n_plot: state you want to see: start from 1,2,3...
         :param play_inverval:  plot evolution in every "plat_interval" [fs]
@@ -285,7 +286,11 @@ class Solver_of_phase_space_GPU(InitialInformation):
                                   delta_T=self.delta_T,
                                   play_interval=play_interval,
                                   path=self.path,
-                                  saveformat=saveformat
+                                  saveformat=saveformat,
+                                  Q1=Q1,
+                                  Q2=Q2,
+                                  Q3=Q3,
+                                  Q4=Q4,
                                   )
         return ani
 
@@ -295,10 +300,10 @@ class Solver_of_phase_space_GPU(InitialInformation):
 if __name__ == "__main__":
 ############## Solve PDF and plot
 
-    a = Solver_of_phase_space_GPU(degaussian=0.05,delta_T=1, T_total=100,T=100,delta_X=0.25,delta_Y=0.25, X=5,Y=5,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=True)
+    a = Solver_of_phase_space_GPU(degaussian=0.05,delta_T=0.5, T_total=200,T=100,delta_X=5,delta_Y=5, X=250,Y=250,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=10,onGPU=True)
     a.solve_it()
     a.write_diffusion_evolution()
-    ani = a.plot(n_plot=2,play_interval=1,saveformat=None,readfromh5=True)
+    ani = a.plot(n_plot=2,play_interval=1,saveformat='gif',readfromh5=True,Q1=0,Q2=1,Q3=2,Q4=3)
 
 
     # plot_frame_diffusion

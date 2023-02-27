@@ -26,6 +26,7 @@ class InitialInformation():
         self.exciton_energy = read_Acv_exciton_energy(path=path)
         self.omega_mat = read_omega(path=path)  # dimension [meV]
         self.h_bar = 6.582119569E-16 * 1E15  # dimension = [eV.fs]
+        self.bohr2angstrom = 0.529177
         self.Constant = -1 * (2 * np.pi / self.h_bar) * (1 / int(self.kmap.shape[0]))
         f = h5.File(path+'gqQ.h5', 'r')
         self.gqQ_mat = f['data'][()]

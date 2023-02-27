@@ -26,17 +26,17 @@ xct_lifetime_all_BZ = False
 xct_lifetime_all_BZ_nS = 2
 xct_lifetime_all_BZ_interpolation = 120
 
-Diffusion_PDE = False
+Diffusion_PDE = True
 delta_degaussian_occupation = 0.05
-delta_T = 1
+delta_T = 0.5
 T_total = 100
-delta_X = 0.25
-delta_Y = 0.25
-X = 10
-Y = 10
+delta_X = 5
+delta_Y = 5
+X = 200
+Y = 200
 initial_S_diffusion = 3
 initial_Q_diffusion = 1
-initial_Gaussian_Broad = 1
+initial_Gaussian_Broad = 8
 
 
 

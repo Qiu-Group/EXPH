@@ -22,7 +22,7 @@ def Gaussian(x,y,sigma=1,x0=10,y0=10):
 
 
 class Solver_of_phase_space_CPU(InitialInformation):
-    def __init__(self,degaussian,T,delta_X,delta_Y, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,onGPU=False):
+    def __init__(self,degaussian,T,delta_X,delta_Y, X,Y, delta_T,T_total,path='../', initial_S=2,initial_Q=0,initial_Gaussian_Braod=1.,onGPU=False):
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
         size = comm.Get_size()
@@ -72,8 +72,8 @@ class Solver_of_phase_space_CPU(InitialInformation):
         a0 = -C ** 2
 
         self.differential_mat = np.eye(self.nX, k=-1) * a_neg1 + np.eye(self.nX) * a0 + np.eye(self.nX, k=1) * a1
-        self.differential_mat[:,:, -1, 0] =  a1[:,:, 0, 0]
-        self.differential_mat[:,:, 0, -1] = a_neg1[:,:, 0, 0]
+        # self.differential_mat[:,:, -1, 0] =  a1[:,:, 0, 0]
+        # self.differential_mat[:,:, 0, -1] = a_neg1[:,:, 0, 0]
 
         C_y = self.V_y * self.delta_T / self.delta_Y
         a1 = -1 * C_y * (1 - C_y) / 2
@@ -81,8 +81,8 @@ class Solver_of_phase_space_CPU(InitialInformation):
         a0 = -C_y ** 2
 
         self.differential_mat_y = np.eye(self.nY, k=-1) * a_neg1 + np.eye(self.nY) * a0 + np.eye(self.nY, k=1) * a1
-        self.differential_mat_y[:,:, -1, 0] = a1[:,:, 0, 0]
-        self.differential_mat_y[:,:, 0, -1] =  a_neg1[:,:, 0, 0]
+        # self.differential_mat_y[:,:, -1, 0] = a1[:,:, 0, 0]
+        # self.differential_mat_y[:,:, 0, -1] =  a_neg1[:,:, 0, 0]
 
         # Lax-wendroff<
 
@@ -146,7 +146,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
         E_nQ = self.get_E_nQ()
         nQ_sqrt = int(np.sqrt(self.Q))
         nS = int(self.n)
-        b1, b2 = self.bvec[0, :2], self.bvec[1, :2]
+        b1, b2 = self.bvec[0, :2]/self.bohr2angstrom, self.bvec[1, :2]/self.bohr2angstrom
         cos_theta_b1, sin_theta_b1 = b1[0] / np.linalg.norm(b1), b1[1] / np.linalg.norm(b1)
         cos_theta_b2, sin_theta_b2 = b2[0] / np.linalg.norm(b1), b2[1] / np.linalg.norm(b1)
         delta_Qb1 = (self.kmap[nQ_sqrt, 0] - self.kmap[0, 0]) * np.linalg.norm(b1)  # todo: this can be used for kmap check!
@@ -215,14 +215,14 @@ class Solver_of_phase_space_CPU(InitialInformation):
         F_abs_each_process = np.einsum('npxy,vq,mpqxy->nmpqvxy',F_nQxy_last_each_process, self.N_vq, 1 + F_mQqxy_each_process,optimize='optimal') \
                 - np.einsum('npxy,vq,mpqxy->nmpqvxy', 1 + F_nQxy_last_each_process, 1 + self.N_vq, F_mQqxy_each_process,optimize='optimal')
 
-        if rank == 0:
-            print('  F_abs done!')
+        # if rank == 0:
+        #     print('  F_abs done!')
 
         F_em_each_process = np.einsum('npxy,vq,mpqxy->nmpqvxy', F_nQxy_last_each_process, 1 + self.N_vq, 1 + F_mQqxy_each_process,optimize='optimal') \
                 - np.einsum('npxy,vq,npqxy->npqvxy', 1 + F_nQxy_last_each_process, self.N_vq, F_mQqxy_each_process,optimize='optimal')
 
-        if rank == 0:
-            print('  F_em done! \n')
+        # if rank == 0:
+        #     print('  F_em done! \n')
         # Debugging: 02/11/2023 n --> m  !!!! Bowen Hou
         dFdt_each_process =  np.einsum('pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_positive, F_abs_each_process,optimize='optimal') \
                 + np.einsum('pqnmv,nmvpq,nmpqvxy->npxy', self.gqQ_mat, self.Delta_negative, F_em_each_process,optimize='optimal')
@@ -380,11 +380,11 @@ if __name__ == "__main__":
         print('[>>>>> proc_%s <<<<<<]: before Class: memory usage:' % rank,
               process.memory_info().rss / 1024 / 1024, 'MB')
 
-    a = Solver_of_phase_space_CPU(degaussian=0.05,delta_T=1, T_total=100,T=100,delta_X=0.25,delta_Y=0.25, X=10,Y=10,
-                              path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1)
+    a = Solver_of_phase_space_CPU(degaussian=0.05,delta_T=0.5, T_total=100,T=100,delta_X=5,delta_Y=5, X=200,Y=200,
+                              path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=10)
     # a.solve_it()
-
-    # ani = a.plot(n_plot=2,play_interval=1,saveformat='html',Q1=0,Q2=12,Q3=200,Q4=1)
+    #
+    ani = a.plot(n_plot=2,play_interval=1,saveformat='gif',Q1=0,Q2=1,Q3=2,Q4=3)
     #
     # plot_frame_diffusion(i=99,S=2,path='../',Q1=0,Q2=12,Q3=200,Q4=1)
 

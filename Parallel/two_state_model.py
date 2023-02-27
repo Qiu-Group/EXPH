@@ -35,7 +35,7 @@ def solve_it(F_qxy_res,F_qxy, dfdt_res,diff_mat, delta_T, diff_mat_y):
 X, Y = 20,20
 nX, nY = 80, 80
 T_total = 80
-delta_T = 0.02
+delta_T = 0.2
 nT = int(T_total/delta_T)
 
 delta_X, delta_Y = X / nX , Y / nY
@@ -50,8 +50,8 @@ F_qxy = np.zeros((5,nX,nY)) # .shape = (2,nX,nY)
 F_qxy[0] = Gaussian(ini_xx,ini_yy)  # Initial Ccondition
 F_qxy_res = np.zeros((5,nX,nY,nT)) # .shape = (2,nX,nY,nT)
 dfdt_res = np.zeros((5,nX,nY,nT))
-V_x = np.array([0., 0.1, -0.1, 0.2, -0.2])[:,np.newaxis,np.newaxis] # .shape(2,1,1)
-V_y = np.array([0., 0.2, -0.2, 0. , 0.])[:,np.newaxis,np.newaxis] # .shape(2,1,1)
+V_x = np.array([0., 0.1, -0.1, 0.2, -0.2])[:,np.newaxis,np.newaxis]*5 # .shape(2,1,1)
+V_y = np.array([0., 0.2, -0.2, 0. , 0.])[:,np.newaxis,np.newaxis]*5 # .shape(2,1,1)
 
 # Euler Forward
 # differential_mat = -1*np.eye(nX) + np.eye(nX,k=-1)
@@ -138,5 +138,5 @@ def animate(i):
 
 ani = animation.FuncAnimation(fig, animate, np.arange(0, nT, int(play_interval/delta_T)), interval=100)
 plt.show()
-# ani.save('simple_model_200.htm')
+ani.save('simple_model_200.gif')
 
