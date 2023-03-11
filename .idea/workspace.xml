@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Major: Memory Issue of parallel PDE is fixed!!">
-      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Major: (1) Velocity: 1/a.u. --&gt; 1/A. (2) Find that larger X and Y could solve boundary condition issue!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_Boltzman_Class.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_Boltzman_Class.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_CPU.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_CPU.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_GPU.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Diffusion_GPU.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/two_state_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/two_state_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exph.in" beforeDir="false" afterPath="$PROJECT_DIR$/exph.in" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Occupation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Occupation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +54,9 @@
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -93,6 +92,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Para_rt_Boltzmann_Occupation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="code_exph" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Occupation.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="exph" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="code_exph" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -106,27 +126,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/exph.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="code_exph" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Parallel/trash" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Parallel/trash/test2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -159,10 +158,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.Para_rt_Boltzmann_Diffusion_CPU" />
+        <item itemvalue="Python.Para_rt_Boltzmann_Occupation" />
         <item itemvalue="Python.Para_rt_Boltzmann_Diffusion_GPU" />
         <item itemvalue="Python.two_state_model" />
         <item itemvalue="Python.exph" />
-        <item itemvalue="Python.test2" />
       </list>
     </recent_temporary>
   </component>
@@ -392,7 +391,14 @@
       <option name="project" value="LOCAL" />
       <updated>1677458573533</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Major: (1) Velocity: 1/a.u. --&gt; 1/A. (2) Find that larger X and Y could solve boundary condition issue!">
+      <created>1677529204170</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1677529204170</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -441,6 +447,7 @@
     <MESSAGE value="GPU acceleration will come soon!!" />
     <MESSAGE value="Major: GPU for occupation is done!!" />
     <MESSAGE value="Major: Memory Issue of parallel PDE is fixed!!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Major: Memory Issue of parallel PDE is fixed!!" />
+    <MESSAGE value="Major: (1) Velocity: 1/a.u. --&gt; 1/A. (2) Find that larger X and Y could solve boundary condition issue!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Major: (1) Velocity: 1/a.u. --&gt; 1/A. (2) Find that larger X and Y could solve boundary condition issue!" />
   </component>
 </project>

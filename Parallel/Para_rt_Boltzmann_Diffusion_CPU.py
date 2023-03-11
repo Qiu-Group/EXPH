@@ -347,7 +347,7 @@ class Solver_of_phase_space_CPU(InitialInformation):
         if rank == 0:
 
             f = h5.File(self.path+'EX_diffusion_evolution.h5','r')
-            self.F_nQxy_res = f['data']
+            self.F_nQxy_res = f['data'][()]
             # f.close()
 
             n_plot = n_plot
@@ -381,12 +381,12 @@ if __name__ == "__main__":
               process.memory_info().rss / 1024 / 1024, 'MB')
 
     a = Solver_of_phase_space_CPU(degaussian=0.05,delta_T=0.5, T_total=100,T=100,delta_X=5,delta_Y=5, X=200,Y=200,
-                              path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=10)
+                              path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=8)
     # a.solve_it()
     #
-    ani = a.plot(n_plot=2,play_interval=1,saveformat='gif',Q1=0,Q2=1,Q3=2,Q4=3)
+    ani = a.plot(n_plot=2,play_interval=2,saveformat=None,Q1=0,Q2=1,Q3=2,Q4=3)
     #
-    # plot_frame_diffusion(i=99,S=2,path='../',Q1=0,Q2=12,Q3=200,Q4=1)
+    # plot_frame_diffusion(i=0,S=2,path='../',Q1=0,Q2=12,Q3=200,Q4=1)
 
     # bowen 14:48 02/23/2023
     pass

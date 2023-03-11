@@ -191,9 +191,9 @@ class Solver_of_only_Q_space(InitialInformation):
 
 
 if __name__ == "__main__":
-    a = Solver_of_only_Q_space(degaussian=0.02,delta_T=1,T_total=240,play_interval=5,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,
+    a = Solver_of_only_Q_space(degaussian=0.02,delta_T=1,T_total=100,play_interval=5,path='../',initial_S=2,initial_Q=0,initial_Gaussian_Braod=1,
                                high_symm="0.0 0.0 0.0 ,0.75 0.75 0.0, 0.5 0.0 0, 0.0 0.0 0.0",
-                               initial_occupation=5,T=100, onGPU=False)
+                               initial_occupation=5,T=100, onGPU=True)
     a.solve_it()
     a.write_occupation_evolution()
     ani = a.plot(saveformat=None,readfromh5=True)
