@@ -77,6 +77,10 @@
     !! Temporary phonon freq. 1
     REAL(KIND = DP) :: w_2
     !! Temporary phonon freq. 2
+    REAL(KIND = DP) :: gamma_real
+    !! Real part of electron-phonon matrix element (Bowen Hou, 03/11/2023)
+    REAL(KIND = DP) :: gamma_imag
+    !! Imaginary part of electron-phonon matrix elemetn (Bowen Hou, 03/11/2023)
     REAL(KIND = DP) :: gamma
     !! Temporary electron-phonon matrix element
     REAL(KIND = DP) :: ekk
@@ -85,20 +89,16 @@
     !! Eigenenergies at k+q
     REAL(KIND = DP) :: g2
     !! Temporary electron-phonon matrix element square
-    REAL(KIND = DP) :: g_real
-    !! Real part of electron-phonon matrix element (Bowen Hou, 03/11/2023)
-    REAL(KIND = DP) :: g_imag
-    !! Imaginary part of electron-phonon matrix elemetn (Bowen Hou, 03/11/2023)
     REAL(KIND = DP), ALLOCATABLE :: epc_real(:, :, :, :)
     !! real g vectex accross all pools (Bowen Hou, 03/11/2023)
     REAL(KIND = DP), ALLOCATABLE :: epc_imag(:, :, :, :)
     !! imaginary g vectex accross all pools (Bowen Hou, 03/11/2023)
     REAL(KIND = DP), ALLOCATABLE :: epc(:, :, :, :)
     !! g vectex accross all pools
-    REAL(KIND = DP), ALLOCATABLE :: epc_sym_real(:, :, :, :)
+    ! REAL(KIND = DP), ALLOCATABLE :: epc_sym_real(:, :, :)
     !! real Temporary g-vertex for each pool (Bowen Hou, 03/11/2023)
-    REAL(KIND = DP), ALLOCATABLE :: epc_sym_imag(:, :, :, :)
-    !! Imaginary Temporary g-vertex for each pool (Bowen Hou, 03/11/2023)
+    ! REAL(KIND = DP), ALLOCATABLE :: epc_sym_imag(:, :, :)
+    !! imaginary Temporary g-vertex for each pool (Bowen Hou, 03/11/2023)
     REAL(KIND = DP), ALLOCATABLE :: epc_sym(:, :, :)
     !! Temporary g-vertex for each pool
     !
@@ -116,19 +116,19 @@
     ! Bowen Hou (03/11/2023) >>>
     ALLOCATE(epc_real(nbndfst, nbndfst, nmodes, nktotf), STAT = ierr)
     IF (ierr /= 0) CALL errore('print_gkk', 'Error allocating epc_real', 1)
-    ALLOCATE(epc_sym_real(nbndfst, nbndfst, nmodes), STAT = ierr)
-    IF (ierr /= 0) CALL errore('print_gkk', 'Error allocating epc_sym_real', 1)
+    ! ALLOCATE(epc_sym_real(nbndfst, nbndfst, nmodes), STAT = ierr)
+    ! IF (ierr /= 0) CALL errore('print_gkk', 'Error allocating epc_sym_real', 1)
     !
     epc_real(:, :, :, :)  = zero
-    epc_sym_real(:, :, :) = zero
+    ! epc_sym_real(:, :, :) = zero
     !
     ALLOCATE(epc_imag(nbndfst, nbndfst, nmodes, nktotf), STAT = ierr)
     IF (ierr /= 0) CALL errore('print_gkk', 'Error allocating epc_imag', 1)
-    ALLOCATE(epc_sym_imag(nbndfst, nbndfst, nmodes), STAT = ierr)
-    IF (ierr /= 0) CALL errore('print_gkk', 'Error allocating epc_sym_imag', 1)
+    ! ALLOCATE(epc_sym_imag(nbndfst, nbndfst, nmodes), STAT = ierr)
+    ! IF (ierr /= 0) CALL errore('print_gkk', 'Error allocating epc_sym_imag', 1)
     !
     epc_imag(:, :, :, :)  = zero
-    epc_sym_imag(:, :, :) = zero
+    ! epc_sym_imag(:, :, :) = zero
     ! Bowen Hou (03/11/2023) <<<
     ! First do the average over bands and modes for each pool
     DO ik = 1, nkf
@@ -140,14 +140,24 @@
         DO ibnd = 1, nbndfst
           DO jbnd = 1, nbndfst
             gamma = (ABS(epf17(jbnd, ibnd, nu, ik)))**two
+            gamma_real = REAL(epf17(jbnd, ibnd, nu, ik))
+            gamma_imag = AIMAG(epf17(jbnd, ibnd, nu, ik))
             IF (wq > 0.d0) THEN
               gamma = gamma / (two * wq)
+              gamma_real = gamma_real/ DSQRT(two * wq)
+              gamma_imag = gamma_imag/ DSQRT(two * wq)
             ELSE
               gamma = 0.d0
+              gamma_real = 0.d0
+              gamma_imag = 0.d0
             ENDIF
             gamma = DSQRT(gamma)
-            ! gamma = |g| [Ry]
+            gamma_real = gamma_real
+            gamma_imag = gamma_imag
+            !! gamma = |g| [Ry]
             epc(ibnd, jbnd, nu, ik + lower_bnd - 1) = gamma
+            epc_real(ibnd, jbnd, nu, ik + lower_bnd - 1) = gamma_real
+            epc_imag(ibnd, jbnd, nu, ik + lower_bnd - 1) = gamma_imag
           ENDDO ! jbnd
         ENDDO   ! ibnd
       ENDDO ! loop on modes
@@ -230,6 +240,8 @@
     CALL poolgather2(3,       nkqtotf, nkqf, xkf, xkf_all)
     CALL poolgather2(nbndsub, nkqtotf, nkqf, etf, etf_all)
     CALL mp_sum(epc, inter_pool_comm )
+    CALL mp_sum(epc_imag, inter_pool_comm )
+    CALL mp_sum(epc_real, inter_pool_comm )
     CALL mp_barrier(inter_pool_comm)
     !
 #else
@@ -251,16 +263,17 @@
         ikq = ikk + 1
         !
         WRITE(stdout, '(5x, "ik = ", i7, " coord.: ", 3f12.7)') ik, xkf_all(:, ikk)
-        WRITE(stdout, '(5x, a)') ' ibnd     jbnd     imode   enk[eV]    enk+q[eV]  omega(q)[meV]   |g|[meV]'
+        WRITE(stdout, '(5x, a)') ' ibnd     jbnd     imode   enk[eV]    enk+q[eV]  omega(q)[meV]   |g|[meV]   g_real   g_imag'
         WRITE(stdout, '(5x, a)') REPEAT('-', 78)
-        !
+        ! Bowen Hou
         DO ibnd = 1, nbndfst
           ekk = etf_all(ibndmin - 1 + ibnd, ikk)
           DO jbnd = 1, nbndfst
             ekq = etf_all(ibndmin - 1 + jbnd, ikq)
             DO nu = 1, nmodes
-              WRITE(stdout, '(3i9, 3f12.4, 1E20.10)') ibndmin - 1 + ibnd, ibndmin - 1 + jbnd, &
-                   nu, ryd2ev * ekk, ryd2ev * ekq, ryd2mev * wf(nu, iq), ryd2mev * epc(ibnd, jbnd, nu, ik)
+              WRITE(stdout, '(3i9, 3f12.4, 3E20.10)') ibndmin - 1 + ibnd, ibndmin - 1 + jbnd, &
+                   nu, ryd2ev * ekk, ryd2ev * ekq, ryd2mev * wf(nu, iq), ryd2mev * epc(ibnd, jbnd, nu, ik), &
+                      ryd2mev * epc_real(ibnd,jbnd,nu,ik), ryd2mev * epc_imag(ibnd,jbnd,nu,ik)
             ENDDO
           ENDDO
           !
