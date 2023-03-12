@@ -23,6 +23,7 @@ elif sys.argv[1] == 'gkk':
     os.chdir('./gkk.save')
 
     os.system("cat epw.out | grep -E '^ +[0-9]+ +[0-9]+ +[0-9]+'|awk '{print $7}' > elphmat.dat")
+    os.system("cat epw.out | grep -E '^ +[0-9]+ +[0-9]+ +[0-9]+'|awk '{print $8,$9}' > elphmat_phase.dat")
     os.system("grep '     iq' epw.out |awk '{print $5,$6,$7}' > q.dat")
     os.system("grep 'lattice parameter ' epw.out |awk '{print $5}' >a0.dat")
     os.system("grep '            a' epw.out|awk '{print $4,$5,$6}' > a.dat")

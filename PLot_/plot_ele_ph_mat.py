@@ -4,7 +4,7 @@ from Common.h5_status import check_h5_tree
 from ELPH.EX_PH_mat import gqQ, gqQ_inteqp_q_nopara
 from IO.IO_common import read_kmap, read_lattice
 from IO.IO_acv import read_Acv
-from IO.IO_gkk import read_gkk, read_omega, create_gkkh5
+from IO.IO_gkk import read_gkk, read_omega, create_gkkh5, read_gkk_nophase
 from ELPH.EX_PH_inteqp import OMEGA_inteqp_Q, omega_inteqp_q
 from IO.IO_common import read_bandmap, read_kmap,construct_kmap
 from Common.progress import ProgressBar
@@ -32,7 +32,7 @@ q_inteqp_no = int(np.sqrt(kmap.shape[0]))
 # loop over nq
 
 # elphmat.shape = (nq,nk,ni,nj,nmode)
-elph_mat = read_gkk(path=path)
+elph_mat = read_gkk_nophase(path=path)
 [qxx_new, qyy_new, omega_res] = omega_inteqp_q(interpo_size=interposize, new_q_out=True, path=path)
 
 interposize = interposize + 1

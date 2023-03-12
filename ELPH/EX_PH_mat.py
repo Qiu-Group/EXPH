@@ -254,9 +254,10 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
                     # Bowen Hou 01/11/2023: I change the position of cpr and c since Bernardi's equation is wrong
                     gkk_temp = gkkmat[int(q_gkk_index), int(kpr_as_k_plus_Q_gkk_index),int(cpr_gkk_index),int(c_gkk_index),int(v_ph_gkk)] # initial is c' ->i; final is c -> j
 
-                    # (iv) res_temp
-                    # first_res = first_res + Acv_temp1_conjugated * Acv_temp2 * gkk_temp
-                    first_res = first_res + np.abs(Acv_temp1_conjugated) * np.abs(Acv_temp2) * gkk_temp
+                    # (iv) res_temp B
+                    # Bowen Hou 03/12/2023: Here we introduce phase again! (since gkk is currently including phase)
+                    first_res = first_res + Acv_temp1_conjugated * Acv_temp2 * gkk_temp
+                    # first_res = first_res + np.abs(Acv_temp1_conjugated) * np.abs(Acv_temp2) * gkk_temp
 
 
         # II. second part of equation (5) in Bernardi's paper
@@ -327,10 +328,11 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
                     gkk_temp_second = gkkmat[int(q_gkk_index), int(kpr_as_k_minus_q_gkk_index),int(v_gkk_index),int(vpr_gkk_index),int(v_ph_gkk)] # initial is v ->i; final is v' -> j
 
                     # (iv) res_temp
-                    # second_res = second_res + Acv_temp1_conjugated_second * Acv_temp2_second * gkk_temp_second
-                    second_res = second_res + np.abs(Acv_temp1_conjugated_second) * np.abs(Acv_temp2_second) * gkk_temp_second
-        # res = res + (first_res - second_res)  # Bug fixed 11/14/2022: + -> -
-        res = res + (first_res + second_res)  # Bug fixed 01/11/2023: - -> +: because here we use abs() to calculate wave-function of exciton
+                    # Bowen Hou 03/12/2023: Here we introduce phase again! (since gkk is currently including phase)
+                    second_res = second_res + Acv_temp1_conjugated_second * Acv_temp2_second * gkk_temp_second
+                    # second_res = second_res + np.abs(Acv_temp1_conjugated_second) * np.abs(Acv_temp2_second) * gkk_temp_second
+        res = res + (first_res - second_res)  # Bug fixed 11/14/2022(03/12/2023): + -> -
+        # res = res + (first_res + second_res)  # Bug fixed 01/11/2023: - -> +: because here we use abs() to calculate wave-function of exciton
     return res * 10**(-3) # meV to eV
 
 def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,
