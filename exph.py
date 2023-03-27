@@ -52,7 +52,14 @@ nband_gkk = comm.bcast(nband_gkk, root=0)
 # (i) initialization: creating Acv.h5, gkk.h5, kkqQmap.dat and bandmap.dat
 if rank == 0:
     if 'initialize' in input and input['initialize'] == True: # initialize default is False, calculate it only when xct_scattering_rate is in input and set as True
-        create_acvsh5(nQ, save_path=input['save_path'] +  'acvs.save/')
+        if 'S_list' not in input:
+            raise Exception('S_list is not specified, it could be False pr [x,x]')
+        elif input['S_list']:
+            print('note: S_list: ', input['S_list'])
+            input['S_list'] = [input['S_list'][0]-1, input['S_list'][-1]-1]
+        else:
+            print('note: S_list:', input['S_list'])
+        create_acvsh5(nQ, save_path=input['save_path'] +  'acvs.save/', S_list=input['S_list'])
         sys.stdout.flush()
         create_gkkh5(nq,nk,nmode,nband_gkk, nband_gkk, save_path=input['save_path'] +  'gkk.save/')
         sys.stdout.flush()

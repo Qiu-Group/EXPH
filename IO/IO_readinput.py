@@ -46,7 +46,7 @@ def readin(path):
 
 def keyword_list():
     return ['valence_start_gkk','conduction_end_gkk','save_path','h5_path','T', 'degaussian',
-            'initialize', 'xct_scattering_rate', 'xct_scattering_rate_Q_kmap', 'xct_scattering_rate_nS',
+            'initialize', 'S_list', 'xct_scattering_rate', 'xct_scattering_rate_Q_kmap', 'xct_scattering_rate_nS',
             'xct_scattering_rate_interpolation', 'xct_lifetime_all_BZ', 'xct_lifetime_all_BZ_nS',
             'xct_lifetime_all_BZ_interpolation', 'plot_xt_band', 'plot_xt_band_number',
             'plot_xt_interpolation', 'plot_ph_band', 'plot_ph_band_number', 'plot_ph_band_interpolation',

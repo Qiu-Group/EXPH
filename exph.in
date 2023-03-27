@@ -10,7 +10,8 @@ T=100
 degaussian = 0.02
 
 # (2) initialize includes creating Acv.h5, gkk.h5, kkqQmap.dat and bandmap.dat
-initialize =False
+initialize =True
+S_list = [5,5]
 
 # this could be paralleled over nQ * nq
 exph_mat_write = False
@@ -26,7 +27,7 @@ xct_lifetime_all_BZ = False
 xct_lifetime_all_BZ_nS = 2
 xct_lifetime_all_BZ_interpolation = 120
 
-Diffusion_PDE = True
+Diffusion_PDE = False
 delta_degaussian_occupation = 0.05
 delta_T = 0.5
 T_total = 100
