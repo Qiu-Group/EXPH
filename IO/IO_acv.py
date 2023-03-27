@@ -100,7 +100,7 @@ def create_acvsh5_only_from_nQ(nQ, save_path):
         f_temp = h5.File(save_path+'eigenvectors_%s.h5'%(1+i_Q),'r')
         f['exciton_header/kpoints/Qpt_coor'][i_Q] = -1*f_temp['exciton_header/kpoints/exciton_Q_shifts'][()]
         f['exciton_data/eigenvalues'][i_Q] = f_temp['exciton_data/eigenvalues'][()]
-        f['exciton_data/eigenvectors'][i_Q] = f_temp['exciton_data/eigenvectors'][0,:,:,:,:,0,:]
+        f['exciton_data/eigenvectors'][i_Q] = f_temp['exciton_data/eigenvectors'][0,:,:,:,:,0,:] #todo:select S
         f_temp.close()
     print("\nAcv.h5 has been created")
     f.create_dataset('mf_header/crystal/bvec_bohr', data=f['mf_header/crystal/bvec'][()] * f['mf_header/crystal/blat'][()])

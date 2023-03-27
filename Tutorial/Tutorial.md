@@ -30,7 +30,8 @@ related properties, such as exciton band structure,exciton-phonon scattering mat
       - Then ``conda install mpi4py``
     
     - Install [EPW](https://docs.epw-code.org/doc/DownloadAndInstall.html) (I recommend you use EPW-5.3.0 and qe-6.6, which are 
-     stable from my experience)
+     stable based on my experience)
+      - ``cp ./EPW_src_modified/printing.f90 ~/software/your_qe_path/EPW/src/`` (This modified Fortran file could let EPW generate electron-phonon matrix with phase)
  
  - Tutorial Example
    - Here we will go though a simple case h-BN, and all instruction below will be finished in this case:  
