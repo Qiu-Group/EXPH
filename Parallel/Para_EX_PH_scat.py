@@ -18,7 +18,7 @@ from IO.IO_common import read_bandmap, read_kmap, read_lattice,construct_kmap
 
 # --> (2) para_Gamma_scat_inteqp: it is used for parallel!
 
-
+# hi here is a branch for high energy
 
 def para_Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001 , interposize=4, path='./'):
     # input===================
@@ -136,8 +136,8 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
         interposize = int(np.sqrt(interpolation_check_res[0].shape[0]))
 
 
-    # (2) load and construct map:
-    acvmat = read_Acv(path=path) # load acv matrix
+    # (2) load and construct map: # TODO: what if acvmat is very large?
+    acvmat = read_Acv(path=path) # load acv matrix # todo: can I write a read_Acv for parallel!
     gkkmat =read_gkk(path=path) # load gkk matrix
     kmap = read_kmap(path=path)  # load kmap matrix
     [bandmap, occ] = read_bandmap(path=path)  # load band map and number of occupation
