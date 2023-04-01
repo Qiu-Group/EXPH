@@ -14,6 +14,7 @@ from ELPH.EX_PH_mat import gqQ_inteqp_get_coarse_grid, gqQ_inteqp_q_series
 from Parallel.Para_common import before_parallel_job, after_parallel_sum_job
 from Common.common import frac2carte
 from IO.IO_common import read_bandmap, read_kmap, read_lattice,construct_kmap
+import h5py as h5
 # (1) para_Gamma_scat_low_efficiency_inteqp: it could calculate Gamma scat, but efficiency is pretty low! It is not good for parallel
 
 # --> (2) para_Gamma_scat_inteqp: it is used for parallel!
@@ -137,7 +138,7 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 
 
     # (2) load and construct map: # TODO: what if acvmat is very large?
-    acvmat = read_Acv(path=path) # load acv matrix # todo: can I write a read_Acv for parallel!
+    #acvmat = read_Acv(path=path) # load acv matrix # todo: can I write a read_Acv for parallel!
     gkkmat =read_gkk(path=path) # load gkk matrix
     kmap = read_kmap(path=path)  # load kmap matrix
     [bandmap, occ] = read_bandmap(path=path)  # load band map and number of occupation
@@ -166,21 +167,9 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
         print('\n[Exciton Scattering]: n=', n_ext_acv_index, ' Q=', Q_kmap, 'T=',T)
         progress = ProgressBar(exciton_energy.shape[1], fmt=ProgressBar.FULL) # progress
 
-    # loop start with q
-    # initialize for loop
-    collect = []
-    # it seems that we can directly add first and second together, so we don't need Gamma_res
+
     Gamma_res = 0
-    # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
-
-    Gamma_first_res = 0
-    Gamma_second_res = 0
     factor = 2*np.pi/(h_bar*Nqpt) # dimension = [eV-1.s-1]
-    # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
-    dirac_normalize_factor_first = 0.0
-    dirac_normalize_factor_second = 0.0
-
-
     workload_over_q_co = len(kmap)
     workload_over_q_fi = interposize**2
 
@@ -198,6 +187,10 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
         if not muteProgress:
             progress.current += 1
             progress()
+
+        # 03/31/2023 Bowen Hou: this function could let loop only read part of acv instead of reading the whole acv. This is useful for high energy
+        # exciton study, which means S is a really large matrix.
+        new_n_index, new_m_index, acv_subspace = read_acv_for_para_Gamma_scat_inteqp(path=path, n=n_ext_acv_index, m=m_ext_acv_index_loop)
 
         for v_ph_gkk_index_loop in range(n_phonon): # loop over phonon mode v
 
@@ -222,12 +215,12 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
             #                                   muteProgress=True,
             #                                   ))**2 # unit [eV^2]
 
-            res_temp_each_process, new_q_out = gqQ_inteqp_get_coarse_grid(n_ex_acv_index=n_ext_acv_index,
-                                                                          m_ex_acv_index=m_ext_acv_index_loop,
+            res_temp_each_process, new_q_out = gqQ_inteqp_get_coarse_grid(n_ex_acv_index=new_n_index,
+                                                                          m_ex_acv_index=new_m_index,
                                                                           v_ph_gkk=v_ph_gkk_index_loop,
                                                                           Q_kmap=Q_kmap, #interpo_size=12
                                                                           new_q_out=False,
-                                                                          acvmat=acvmat,
+                                                                          acvmat=acv_subspace,
                                                                           gkkmat=gkkmat,
                                                                           kmap=kmap,
                                                                           kmap_dic=kmap_dic,
@@ -240,9 +233,6 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
             res_rcev_to_0 = comm.gather(res_temp_each_process, root=0)
             gqQ_sq_inteqp_temp_co = after_parallel_sum_job(rk=rank, size=size, receive_res=res_rcev_to_0, start_time=start_time,
                                            start_time_proc=start_time_proc,mute=True)
-            if n_ext_acv_index==2 and m_ext_acv_index_loop==0 and v_ph_gkk_index_loop ==3 and Q_kmap==15:
-                # print("gqQ_sq_temp:",gqQ_sq_inteqp_temp_co)
-                pass
             # gqQ_sq_inteqp.shape = (interpolate_size, interpolate_size)
             # gqQ_sq_inteqp.flatten.shape = (interpolate_size**2, 1)
             # same order as grid_q_gqQ_res
@@ -377,6 +367,35 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
         print('gamma_each_q sum:',gamma_each_q_res_matrix[:,3].sum()) # This is for sanity check
         return Gamma_res_val
 
+def read_acv_for_para_Gamma_scat_inteqp(path,n,m):
+    """
+    :return: new_n_index (=0), new_m_index (=1), acv_portion
+    """
+    # todo: maybe try to modify it to a parallel reading
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    acvmat = 'None'
+
+    if rank == 0:
+        try:
+            f = h5.File(path+"Acv.h5",'r')
+        except:
+            raise Exception("failed to open Acv.h5")
+        acvmat = np.zeros((f["exciton_data/eigenvectors"].shape[0],
+                          2,
+                          f["exciton_data/eigenvectors"].shape[2],
+                          f["exciton_data/eigenvectors"].shape[3],
+                          f["exciton_data/eigenvectors"].shape[4],
+                          f["exciton_data/eigenvectors"].shape[5]))
+        acvmat[:, 0, :, :, :, :] = f["exciton_data/eigenvectors"][:, n, :, :, :, :]
+        acvmat[:, 1, :, :, :, :] = f["exciton_data/eigenvectors"][:, m, :, :, :, :]
+        f.close()
+
+    acvmat = comm.bcast(acvmat, root=0)
+
+    return 0,1, acvmat # 0 is n; 1 is m
 
 
 #==============================================================================================================>>>>>>>
