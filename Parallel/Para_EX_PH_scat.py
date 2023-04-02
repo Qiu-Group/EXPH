@@ -14,6 +14,7 @@ from ELPH.EX_PH_mat import gqQ_inteqp_get_coarse_grid, gqQ_inteqp_q_series
 from Parallel.Para_common import before_parallel_job, after_parallel_sum_job
 from Common.common import frac2carte
 from IO.IO_common import read_bandmap, read_kmap, read_lattice,construct_kmap
+from IO.IO_acv import read_acv_for_para_Gamma_scat_inteqp
 import h5py as h5
 # (1) para_Gamma_scat_low_efficiency_inteqp: it could calculate Gamma scat, but efficiency is pretty low! It is not good for parallel
 
@@ -367,35 +368,7 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
         print('gamma_each_q sum:',gamma_each_q_res_matrix[:,3].sum()) # This is for sanity check
         return Gamma_res_val
 
-def read_acv_for_para_Gamma_scat_inteqp(path,n,m):
-    """
-    :return: new_n_index (=0), new_m_index (=1), acv_portion
-    """
-    # todo: maybe try to modify it to a parallel reading
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    size = comm.Get_size()
 
-    acvmat = 'None'
-
-    if rank == 0:
-        try:
-            f = h5.File(path+"Acv.h5",'r')
-        except:
-            raise Exception("failed to open Acv.h5")
-        acvmat = np.zeros((f["exciton_data/eigenvectors"].shape[0],
-                          2,
-                          f["exciton_data/eigenvectors"].shape[2],
-                          f["exciton_data/eigenvectors"].shape[3],
-                          f["exciton_data/eigenvectors"].shape[4],
-                          f["exciton_data/eigenvectors"].shape[5]))
-        acvmat[:, 0, :, :, :, :] = f["exciton_data/eigenvectors"][:, n, :, :, :, :]
-        acvmat[:, 1, :, :, :, :] = f["exciton_data/eigenvectors"][:, m, :, :, :, :]
-        f.close()
-
-    acvmat = comm.bcast(acvmat, root=0)
-
-    return 0,1, acvmat # 0 is n; 1 is m
 
 
 #==============================================================================================================>>>>>>>
