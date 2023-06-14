@@ -23,6 +23,7 @@ def band_summary(v_start_gkk=11, c_end_gkk=14):
         range(occ - nv_acv + 1, occ + nc_acv + 1))  # Fortran order means band index start with 1
     gkk_band_fortran_order = list(range(v_start_gkk, c_end_gkk + 1))
     band_intersection = list(set(acv_band_fortran_order).intersection((set(gkk_band_fortran_order))))
+    band_intersection.sort() # Bowen Hou 04/11/2023 it seems that sometimes the intersection is not rightly ordered.
     f = open('bandmap.dat', 'w')
     f.write("# band_quantum_number  acv   gkk   occ: %s\n" % occ)
 

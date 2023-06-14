@@ -15,6 +15,7 @@ from Parallel.Para_common import before_parallel_job, after_parallel_sum_job
 from Common.common import frac2carte
 from IO.IO_common import read_bandmap, read_kmap, read_lattice,construct_kmap
 from IO.IO_acv import read_acv_for_para_Gamma_scat_inteqp
+import sys
 import h5py as h5
 # (1) para_Gamma_scat_low_efficiency_inteqp: it could calculate Gamma scat, but efficiency is pretty low! It is not good for parallel
 
@@ -131,12 +132,15 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     plan_list = None
     plan_list_2 = None
 
+    print('Start para_Gamma_scat_inteqp')
+
     if not interpolation_check_res:
         [grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA] = interpolation_check_for_Gamma_calculation(interpo_size=interposize,path=path,mute=muteProgress)
     else:
         [grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA] = interpolation_check_res
         interposize = int(np.sqrt(interpolation_check_res[0].shape[0]))
 
+    print('interpolation check is finished!')
 
     # (2) load and construct map: # TODO: what if acvmat is very large?
     #acvmat = read_Acv(path=path) # load acv matrix # todo: can I write a read_Acv for parallel!
@@ -183,11 +187,14 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 
     gamma_each_q_res_each_process = np.zeros((workload_over_q_fi,4)) # This matrix store gamma for every phonon-q points, and gamma_each_q_res.sum() == Gamma_res: True
 
-
+    progress = ProgressBar(exciton_energy.shape[1], fmt=ProgressBar.FULL)
+    print("exciton energy:",exciton_energy[Q_kmap,n_ext_acv_index],'eV')
     for m_ext_acv_index_loop in range(exciton_energy.shape[1]):  # loop over initial exciton state m
-        if not muteProgress:
+        # if not muteProgress:
+        if True and rank==0:
             progress.current += 1
             progress()
+            sys.stdout.flush()
 
         # 03/31/2023 Bowen Hou: this function could let loop only read part of acv instead of reading the whole acv. This is useful for high energy
         # exciton study, which means S is a really large matrix.
@@ -369,7 +376,14 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
         return Gamma_res_val
 
 
-
+def v_q_mesh(number_v_point,number_q_point):
+    count = 0
+    v_q_dic = {} # {0:(v,q)}
+    for v in range(number_v_point):
+        for q in range(number_q_point):
+            v_q_dic[count] = (v,q)
+            count += 1
+    return v_q_dic
 
 #==============================================================================================================>>>>>>>
 

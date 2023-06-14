@@ -257,7 +257,7 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
                     # (iv) res_temp B
                     # Bowen Hou 03/12/2023: Here we introduce phase again! (since gkk is currently including phase)
                     # first_res = first_res + Acv_temp1_conjugated * Acv_temp2 * gkk_temp
-                    first_res = first_res + np.abs(Acv_temp1_conjugated) * np.abs(Acv_temp2) * gkk_temp
+                    first_res = first_res + Acv_temp1_conjugated * Acv_temp2 * gkk_temp
 
 
         # II. second part of equation (5) in Bernardi's paper
@@ -330,9 +330,9 @@ def gqQ(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=3, Q_kmap=6, q_kmap=12,
                     # (iv) res_temp
                     # Bowen Hou 03/12/2023: Here we introduce phase again! (since gkk is currently including phase)
                     # second_res = second_res + Acv_temp1_conjugated_second * Acv_temp2_second * gkk_temp_second
-                    second_res = second_res + np.abs(Acv_temp1_conjugated_second) * np.abs(Acv_temp2_second) * gkk_temp_second
+                    second_res = second_res + Acv_temp1_conjugated_second * Acv_temp2_second * gkk_temp_second
         # res = res + (first_res - second_res)  # Bug fixed 11/14/2022(03/12/2023): + -> -
-        res = res + (first_res + second_res)  # Bug fixed 01/11/2023: - -> +: because here we use abs() to calculate wave-function of exciton
+        res = res + (first_res - second_res)  # Bug fixed 01/11/2023: - -> +: because here we use abs() to calculate wave-function of exciton
     return res * 10**(-3) # meV to eV
 
 def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0, interpo_size=12 ,new_q_out=False,
