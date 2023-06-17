@@ -369,3 +369,5 @@ if rank == 0:
     print("the wall time is: %.3f s      |" % (end_time - start_time))
     print("the proc time is: %.3f s      |" % (end_time_proc - start_time_proc))
     print("--------------------------------")
+
+    # hi, this is merged from parallel_high_energy
