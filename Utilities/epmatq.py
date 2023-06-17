@@ -19,16 +19,16 @@ ep = f.read_reals(dtype='float')
 ep_reshap4complex = ep.reshape((nj*ni*nmu*nk*nq,2))
 
 # These three variables el-ph mat in EPW order
-ep_real = ep_reshap4complex[:,0].reshape((nj,ni,nk,nmu,nq),order='F')
-ep_imag = ep_reshap4complex[:,1].reshape((nj,ni,nk,nmu,nq),order='F')
-g2 = ep_imag**2 + ep_real**2
+ep_real_epworder = ep_reshap4complex[:,0].reshape((nj,ni,nk,nmu,nq),order='F')
+ep_imag_epworder = ep_reshap4complex[:,1].reshape((nj,ni,nk,nmu,nq),order='F')
+g2_epworder = ep_imag_epworder**2 + ep_real_epworder**2
 
 # Reshape this to fit order in my EXPH order elph_mat(nq,nk,ni,nj,nmode), this order is actually the same as el-ph matrix on interpolated fine grid
 # Well, anyway, here is how I organize the el-ph matrix in a very simple way (this might have some memory issue if el-ph matrix is very large)
 # (1) (nj,ni,nk,nmu,nq) --> (ni,nj,nk,nmu,nq)
-ep_real = np.swapaxes(ep_real,0,1)
-ep_imag = np.swapaxes(ep_imag,0,1)
-g2 = np.swapaxes(g2,0,1)
+ep_real = np.swapaxes(ep_real_epworder,0,1)
+ep_imag = np.swapaxes(ep_imag_epworder,0,1)
+g2 = np.swapaxes(g2_epworder,0,1)
 # (2) (ni,nj,nk,nmu,nq) --> (nk,ni,nj,nmu,nq)
 ep_real = np.swapaxes(ep_real,1,2)
 ep_imag = np.swapaxes(ep_imag,1,2)
