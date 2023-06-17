@@ -5,6 +5,7 @@ from Common.h5_status import print_attrs, check_h5_tree
 from Common.common import move_k_back_to_BZ_1
 from IO.IO_common import read_kgrid_log
 import os
+from mpi4py import MPI
 
 # notice: Qpt_coor and kpt_for_each_Q are in a crystal coordinate. But kpoints in kpt_for_each_Q are in the first BZ.
 # notice: eigenvalues.shape = (nQ,nS,1); eigenvectors.shape = (nQ,nS,nk,nc,nv,2)
@@ -147,8 +148,11 @@ def create_acvsh5_only_from_nQ_select_nS(nQ, save_path, S_list):
     # 3.0 'exciton_data'
     # i) initialization
     [nS, nc, nv, nk] = [f['exciton_header/params/nS'][()],f['exciton_header/params/nc'][()],f['exciton_header/params/nv'][()], f['exciton_header/kpoints/nk'][()]]
-    f.create_dataset('exciton_data/eigenvalues', data=np.zeros(nQ*nS).reshape(nQ,nS)) # eigenvalues.shape = (nQ,nS,1)
-    f.create_dataset('exciton_data/eigenvectors', data=np.zeros(nQ*nS*nk*nc*nv*2).reshape(nQ,nS,nk,nc,nv,2)) # eigenvectors.shape = (nQ,nS,nk,nc,nv,2)
+    # f.create_dataset('exciton_data/eigenvalues', data=np.zeros(nQ*nS).reshape(nQ,nS)) # eigenvalues.shape = (nQ,nS,1)
+    # f.create_dataset('exciton_data/eigenvectors', data=np.zeros(nQ*nS*nk*nc*nv*2).reshape(nQ,nS,nk,nc,nv,2)) # eigenvectors.shape = (nQ,nS,nk,nc,nv,2)
+    f.create_dataset('exciton_data/eigenvalues', shape=(nQ, nS),dtype='f8')  # eigenvalues.shape = (nQ,nS,1)
+    f.create_dataset('exciton_data/eigenvectors', shape=(nQ, nS, nk, nc, nv, 2),dtype='f8')  # eigenvectors.shape = (nQ,nS,nk,nc,nv,2)
+
     # ii) construct Acv.h5
     progress = ProgressBar(nQ, fmt=ProgressBar.FULL)
     print("creating Acv.h5")
@@ -200,7 +204,35 @@ def read_Acv_exciton_energy(path='./'):
 #     kpt = f['exciton_header/kpoints/kpt_for_each_Q'][()]
 #     return kpt
 
+def read_acv_for_para_Gamma_scat_inteqp(path,n,m):
+    """
+    :return: new_n_index (=0), new_m_index (=1), acv_portion
+    """
+    # todo: maybe try to modify it to a parallel reading
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
 
+    acvmat = 'None'
+
+    if rank == 0:
+        try:
+            f = h5.File(path+"Acv.h5",'r')
+        except:
+            raise Exception("failed to open Acv.h5")
+        acvmat = np.zeros((f["exciton_data/eigenvectors"].shape[0],
+                          2,
+                          f["exciton_data/eigenvectors"].shape[2],
+                          f["exciton_data/eigenvectors"].shape[3],
+                          f["exciton_data/eigenvectors"].shape[4],
+                          f["exciton_data/eigenvectors"].shape[5]))
+        acvmat[:, 0, :, :, :, :] = f["exciton_data/eigenvectors"][:, n, :, :, :, :]
+        acvmat[:, 1, :, :, :, :] = f["exciton_data/eigenvectors"][:, m, :, :, :, :]
+        f.close()
+
+    acvmat = comm.bcast(acvmat, root=0)
+
+    return 0,1, acvmat # 0 is n; 1 is m
 
 
 if __name__ == "__main__":

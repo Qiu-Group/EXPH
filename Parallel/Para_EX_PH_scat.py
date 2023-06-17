@@ -14,11 +14,14 @@ from ELPH.EX_PH_mat import gqQ_inteqp_get_coarse_grid, gqQ_inteqp_q_series
 from Parallel.Para_common import before_parallel_job, after_parallel_sum_job
 from Common.common import frac2carte
 from IO.IO_common import read_bandmap, read_kmap, read_lattice,construct_kmap
+from IO.IO_acv import read_acv_for_para_Gamma_scat_inteqp
+import sys
+import h5py as h5
 # (1) para_Gamma_scat_low_efficiency_inteqp: it could calculate Gamma scat, but efficiency is pretty low! It is not good for parallel
 
 # --> (2) para_Gamma_scat_inteqp: it is used for parallel!
 
-
+# hi here is a branch for high energy
 
 def para_Gamma_scat_low_efficiency_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001 , interposize=4, path='./'):
     # input===================
@@ -129,15 +132,18 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     plan_list = None
     plan_list_2 = None
 
+    print('Start para_Gamma_scat_inteqp')
+
     if not interpolation_check_res:
         [grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA] = interpolation_check_for_Gamma_calculation(interpo_size=interposize,path=path,mute=muteProgress)
     else:
         [grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA] = interpolation_check_res
         interposize = int(np.sqrt(interpolation_check_res[0].shape[0]))
 
+    print('interpolation check is finished!')
 
-    # (2) load and construct map:
-    acvmat = read_Acv(path=path) # load acv matrix
+    # (2) load and construct map: # TODO: what if acvmat is very large?
+    #acvmat = read_Acv(path=path) # load acv matrix # todo: can I write a read_Acv for parallel!
     gkkmat =read_gkk(path=path) # load gkk matrix
     kmap = read_kmap(path=path)  # load kmap matrix
     [bandmap, occ] = read_bandmap(path=path)  # load band map and number of occupation
@@ -166,21 +172,9 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
         print('\n[Exciton Scattering]: n=', n_ext_acv_index, ' Q=', Q_kmap, 'T=',T)
         progress = ProgressBar(exciton_energy.shape[1], fmt=ProgressBar.FULL) # progress
 
-    # loop start with q
-    # initialize for loop
-    collect = []
-    # it seems that we can directly add first and second together, so we don't need Gamma_res
+
     Gamma_res = 0
-    # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
-
-    Gamma_first_res = 0
-    Gamma_second_res = 0
     factor = 2*np.pi/(h_bar*Nqpt) # dimension = [eV-1.s-1]
-    # Since Gamma_first and Gamma_second don't share same renormalization factor, so we need to split them
-    dirac_normalize_factor_first = 0.0
-    dirac_normalize_factor_second = 0.0
-
-
     workload_over_q_co = len(kmap)
     workload_over_q_fi = interposize**2
 
@@ -193,11 +187,18 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 
     gamma_each_q_res_each_process = np.zeros((workload_over_q_fi,4)) # This matrix store gamma for every phonon-q points, and gamma_each_q_res.sum() == Gamma_res: True
 
-
+    progress = ProgressBar(exciton_energy.shape[1], fmt=ProgressBar.FULL)
+    print("exciton energy:",exciton_energy[Q_kmap,n_ext_acv_index],'eV')
     for m_ext_acv_index_loop in range(exciton_energy.shape[1]):  # loop over initial exciton state m
-        if not muteProgress:
+        # if not muteProgress:
+        if True and rank==0:
             progress.current += 1
             progress()
+            sys.stdout.flush()
+
+        # 03/31/2023 Bowen Hou: this function could let loop only read part of acv instead of reading the whole acv. This is useful for high energy
+        # exciton study, which means S is a really large matrix.
+        new_n_index, new_m_index, acv_subspace = read_acv_for_para_Gamma_scat_inteqp(path=path, n=n_ext_acv_index, m=m_ext_acv_index_loop)
 
         for v_ph_gkk_index_loop in range(n_phonon): # loop over phonon mode v
 
@@ -222,12 +223,12 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
             #                                   muteProgress=True,
             #                                   ))**2 # unit [eV^2]
 
-            res_temp_each_process, new_q_out = gqQ_inteqp_get_coarse_grid(n_ex_acv_index=n_ext_acv_index,
-                                                                          m_ex_acv_index=m_ext_acv_index_loop,
+            res_temp_each_process, new_q_out = gqQ_inteqp_get_coarse_grid(n_ex_acv_index=new_n_index,
+                                                                          m_ex_acv_index=new_m_index,
                                                                           v_ph_gkk=v_ph_gkk_index_loop,
                                                                           Q_kmap=Q_kmap, #interpo_size=12
                                                                           new_q_out=False,
-                                                                          acvmat=acvmat,
+                                                                          acvmat=acv_subspace,
                                                                           gkkmat=gkkmat,
                                                                           kmap=kmap,
                                                                           kmap_dic=kmap_dic,
@@ -240,9 +241,6 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
             res_rcev_to_0 = comm.gather(res_temp_each_process, root=0)
             gqQ_sq_inteqp_temp_co = after_parallel_sum_job(rk=rank, size=size, receive_res=res_rcev_to_0, start_time=start_time,
                                            start_time_proc=start_time_proc,mute=True)
-            if n_ext_acv_index==2 and m_ext_acv_index_loop==0 and v_ph_gkk_index_loop ==3 and Q_kmap==15:
-                # print("gqQ_sq_temp:",gqQ_sq_inteqp_temp_co)
-                pass
             # gqQ_sq_inteqp.shape = (interpolate_size, interpolate_size)
             # gqQ_sq_inteqp.flatten.shape = (interpolate_size**2, 1)
             # same order as grid_q_gqQ_res
@@ -378,6 +376,14 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
         return Gamma_res_val
 
 
+def v_q_mesh(number_v_point,number_q_point):
+    count = 0
+    v_q_dic = {} # {0:(v,q)}
+    for v in range(number_v_point):
+        for q in range(number_q_point):
+            v_q_dic[count] = (v,q)
+            count += 1
+    return v_q_dic
 
 #==============================================================================================================>>>>>>>
 

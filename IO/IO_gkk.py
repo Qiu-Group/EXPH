@@ -46,7 +46,7 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     # progress()
     # 1.0 load raw data (raw means the data need to be reshape)
     data_temp_raw = np.loadtxt(save_path+'elphmat.dat')
-    #data_phase_temp_raw = np.loadtxt(save_path + 'elphmat_phase.dat')
+    data_phase_temp_raw = np.loadtxt(save_path + 'elphmat_phase.dat')
     omega_raw = np.loadtxt(save_path+"omega.dat")
     k_temp = np.loadtxt(save_path+'k.dat')
     q_temp = np.loadtxt(save_path+'q.dat') #
@@ -58,11 +58,12 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     # progress()
     ####################
     # 1.1 check data
+    print('nq:%s ,nk:%s ,nmode:%s, ni:%s, nj:%s, data_len:%s'%(nq,nk,nmode,ni,nj,len(data_temp_raw)))
     if len(data_temp_raw) != nq*nk*nmode*ni*nj:
         raise Exception("nq*nk*nmode*ni*nj != gkk.shape, check elphmat.dat")
         # tododone: add a break in the final version of function
-  #  if data_phase_temp_raw.shape[0] != nq*nk*nmode*ni*nj:
-      #  raise Exception("nq*nk*nmode*ni*nj != gkk_phase.shape, check elphmat_phase.dat")
+    if data_phase_temp_raw.shape[0] != nq*nk*nmode*ni*nj:
+        raise Exception("nq*nk*nmode*ni*nj != gkk_phase.shape, check elphmat_phase.dat")
         # tododone: add a break in the final version of function
     if q_temp.shape[0] != nq:
         raise Exception("nq != q_temp.shape")
@@ -76,13 +77,13 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     ####################
     omega_temp = omega_raw.reshape(nq,nmode)
     data_temp = data_temp_raw.reshape(nq,nk,ni,nj,nmode)
-    #data_phase_temp = np.vectorize(complex)(data_phase_temp_raw[:,0],data_phase_temp_raw[:,1])
-    #data_phase_temp = data_phase_temp.reshape(nq,nk,ni,nj,nmode)
+    data_phase_temp = np.vectorize(complex)(data_phase_temp_raw[:,0],data_phase_temp_raw[:,1])
+    data_phase_temp = data_phase_temp.reshape(nq,nk,ni,nj,nmode)
     # 2.0 create gkk.h5 file
     f = h5.File('gkk.h5','w')
     header = f.create_group('epw_header')
     f.create_dataset('epw_data/elphmat', data=data_temp)
-    #f.create_dataset('epw_data_phase/elphmat_phase',data=data_phase_temp)
+    f.create_dataset('epw_data_phase/elphmat_phase',data=data_phase_temp)
     header.create_dataset('omega',data=omega_temp)
     header.create_dataset('kpt_coor',data=k_temp)
     header.create_dataset('qpt_coor',data=q_temp)
@@ -100,7 +101,7 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
 # LOL: memory is not an issue if you don't use mpi to partition memory... (Bowen Hou, 12/03/2023)
 
 # Read gkk with phase!!
-def read_gkk_phase(path="./"):
+def read_gkk(path="./"):
     try:
         f=h5.File(path+'gkk.h5','r')
     except:
@@ -111,7 +112,7 @@ def read_gkk_phase(path="./"):
     # return gkkmat
     return gkkmat_phase
 
-def read_gkk(path="./"):
+def read_gkk_nophase(path="./"):
     try:
         f=h5.File(path+'gkk.h5','r')
     except:
