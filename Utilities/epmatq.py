@@ -43,6 +43,7 @@ def read_epb(prefix): # elphmat*.dat is generated here
     q_frac_elph, q_frac_omega, _ = read_qkpoint_And_ab() # read q.dat, k.dat, a.dat, a0.dat and b.dat
     q_elph_map_based_on_q_elph, q_omega_map_based_on_q_elph = q_elph_map_q_omega(q_frac_elph=q_frac_elph, q_frac_omega=q_frac_omega)
 
+    q_omega_map_based_on_q_elph = np.array(q_omega_map_based_on_q_elph, dtype=int)
     omega_new_based_elph_q_order = omega[q_omega_map_based_on_q_elph,:]
     np.savetxt("omega.dat",omega_new_based_elph_q_order.reshape(nq*nmu))
 
@@ -51,9 +52,15 @@ def read_epb(prefix): # elphmat*.dat is generated here
 
     for iq in range(nq):
         for imu in range(nmu):
-            final_ep_real[iq,:,:,:,imu] = final_ep_real[iq,:,:,:,imu] / np.sqrt(2 * omega_new_based_elph_q_order[iq,imu])
-            final_ep_imag[iq,:,:,:,imu] = final_ep_imag[iq,:,:,:,imu] / np.sqrt(2 * omega_new_based_elph_q_order[iq,imu])
-            final_g2[iq,:,:,:,imu] = final_g2[iq,:,:,:,imu] / (2 * omega_new_based_elph_q_order[iq,imu])
+            if omega_new_based_elph_q_order[iq,imu] > 0:
+                final_ep_real[iq,:,:,:,imu] = final_ep_real[iq,:,:,:,imu] / np.sqrt(2 * omega_new_based_elph_q_order[iq,imu])
+                final_ep_imag[iq,:,:,:,imu] = final_ep_imag[iq,:,:,:,imu] / np.sqrt(2 * omega_new_based_elph_q_order[iq,imu])
+                final_g2[iq,:,:,:,imu] = final_g2[iq,:,:,:,imu] / (2 * omega_new_based_elph_q_order[iq,imu])
+            else:
+                print('skip: iq: %s, imode: %s, omega(iq,imode):%s'%(iq,imu,omega_new_based_elph_q_order[iq,imu]), ' [meV]')
+                final_ep_real[iq,:,:,:,imu] = np.zeros_like(final_ep_real[iq,:,:,:,imu])
+                final_ep_imag[iq,:,:,:,imu] = np.zeros_like(final_ep_imag[iq,:,:,:,imu])
+                final_g2[iq,:,:,:,imu] = np.zeros_like(final_g2[iq,:,:,:,imu])
 
     n_total = final_g2.shape[0] *\
               final_g2.shape[1] *\

@@ -24,6 +24,7 @@ elif sys.argv[1] == 'gkk':
     read_epb(prefix=second_parameter)
 
     os.mkdir('./gkk.save')
+    os.mkdir('./gkk.save/backup_parameter')
     os.system('cp epw.out gkk.save')
 
     os.system('mv elphmat.dat gkk.save/')
@@ -31,12 +32,15 @@ elif sys.argv[1] == 'gkk':
     os.system('mv omega.dat gkk.save')
     os.system('mv k.dat gkk.save')
     os.system('mv q.dat gkk.save')
-    os.system('mv q_car_elph.dat gkk.save')
-    os.system('mv q_frac_omega.dat gkk.save')
-    os.system('mv k_car_elph.dat gkk.save')
     os.system('mv a.dat gkk.save')
     os.system('mv a0.dat gkk.save')
     os.system('mv b.dat gkk.save')
+
+    os.system('mv q_car_elph.dat gkk.save/backup_parameter')
+    os.system('mv q_frac_omega.dat gkk.save/backup_parameter')
+    os.system('mv k_car_elph.dat gkk.save/backup_parameter')
+    os.system('mv qelph_qomega_qmap.dat gkk.save/backup_parameter')
+    os.system('mv omega_uniform_q.dat gkk.save/backup_parameter')
     # nmode, _, _, _, _, _, _ = read_parameter()
     os.chdir('./gkk.save')
 
