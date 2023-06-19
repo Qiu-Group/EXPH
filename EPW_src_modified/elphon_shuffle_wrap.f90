@@ -958,7 +958,7 @@
     IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error deallocating ityp', 1)
   ENDIF ! epwread
   !
-5 FORMAT (8x, "q(", i5, " ) = (", 3f12.7, " )")
+5 FORMAT (8x, "q(", i5, " ) = (", 3f16.12, " )")
   !
   RETURN
   !---------------------------------------------------------------------------

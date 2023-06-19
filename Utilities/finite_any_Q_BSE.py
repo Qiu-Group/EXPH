@@ -93,27 +93,28 @@ for i in range(len(k_list)):
     print(i+1, '/', len(k_list))
 
     os.system("mkdir Q-%s" % (i + 1))
-    os.system("mkdir Q-%s/5.0-inteqp-Q" % (i + 1))
+    # os.system("mkdir Q-%s/5.0-inteqp-Q" % (i + 1))
     os.system("mkdir Q-%s/5.1-kernel-Q" % (i + 1))
     os.system("mkdir Q-%s/5.2-absorp-Q" % (i + 1))
     os.chdir("./Q-%s" % (i + 1))
     os.system("echo %s > kpt" % k_list[i])
 
-    os.chdir("./5.0-inteqp-Q")
-    os.system("ln -sf ../../../../1-mf/2.1-wfn/WFN ./WFN_co")
-    os.system("ln -sf ../../../../1-mf/4.2-wfnq_co-%s/WFN ./WFN_fi"% (i + 1))
-    os.system("ln -sf ../../../../1-mf/4.2-wfnq_co-%s/WFN ./WFNq_fi"% (i + 1))
-    os.system("ln -sf ../../../2-sigma/eqp1.dat ./eqp_co.dat")
-    f = open("inteqp.inp", 'w')
-    f.write(inteqp_each)
-    f.close()
-    os.chdir('../')
+    # os.chdir("./5.0-inteqp-Q")
+    # os.system("ln -sf ../../../../1-mf/2.1-wfn/WFN ./WFN_co")
+    # os.system("ln -sf ../../../../1-mf/4.2-wfnq_co-%s/WFN ./WFN_fi"% (i + 1))
+    # os.system("ln -sf ../../../../1-mf/4.2-wfnq_co-%s/WFN ./WFNq_fi"% (i + 1))
+    # os.system("ln -sf ../../../2-sigma/eqp1.dat ./eqp_co.dat")
+    # f = open("inteqp.inp", 'w')
+    # f.write(inteqp_each)
+    # f.close()
+    # os.chdir('../')
 
     os.chdir("./5.1-kernel-Q")
     os.system("ln -sf ../../../1-epsilon/eps0mat.h5 ./")
     os.system("ln -sf ../../../1-epsilon/epsmat.h5 ./")
     os.system("ln -sf ../../../../1-mf/4.1-wfn_co_fullgrid/WFN ./WFN_co")
-    os.system("ln -sf ../../../../1-mf/4.2-wfnq_co-%s/WFN ./WFNq_co" % (i + 1))
+    # os.system("ln -sf ../../../../1-mf/4.2-wfnq_co-%s/WFN ./WFNq_co" % (i + 1))
+    os.system("ln -sf ../../../../1-mf/4.1-wfn_co_fullgrid/WFN ./WFNq_co" )
     kernel_temp = kernel + k_list[i]
     f = open("kernel.inp", 'w')
     f.write(kernel_temp)
@@ -124,10 +125,10 @@ for i in range(len(k_list)):
     os.system("ln -sf ../../../1-epsilon/epsmat.h5 ./")
     os.system("ln -sf ../../../../1-mf/4.1-wfn_co_fullgrid/WFN ./WFN_co")
     os.system("ln -sf ../../../../1-mf/4.1-wfn_co_fullgrid/WFN ./WFN_fi")
-    os.system("ln -sf ../../../../1-mf/4.2-wfnq_co-%s/WFN ./WFNq_co" % (i + 1))
-    os.system("ln -sf ../../../../1-mf/4.2-wfnq_co-%s/WFN ./WFNq_fi" % (i + 1))
+    os.system("ln -sf ../../../../1-mf/4.1-wfn_co_fullgrid/WFN ./WFNq_co" )
+    os.system("ln -sf ../../../../1-mf/4.1-wfn_co_fullgrid/WFN ./WFNq_fi" )
     os.system("ln -sf ../../inteqp/eqp.dat ./eqp_co.dat")
-    os.system("ln -sf ../5.0-inteqp-Q/eqp.dat ./eqp_co_q.dat")
+    os.system("ln -sf ../../inteqp/eqp.dat ./eqp_co_q.dat")
     if i != 0:
         absorption_temp = absorption + k_list[i]
     if i == 0:
@@ -149,9 +150,11 @@ go_sh_tacc = ['#!/bin/bash\n', '#SBATCH -J fin_Q\n', '#SBATCH -o myjob.o\%j\n' '
               "cd inteqp\nibrun $BGWPATH1/inteqp.cplx.x > inteqp.out\n",
               "cd ../\n",
               "for ((i=1;i<=%s;i++));\ndo\n" % n_kpt,
-              "cd ./Q-$i/5.0-inteqp-Q\nibrun   $BGWPATH1/inteqp.cplx.x > inteqp.out\n",
+              "cd ./Q-$i",
+              # "cd ./Q-$i/5.0-inteqp-Q\nibrun   $BGWPATH1/inteqp.cplx.x > inteqp.out\n",
               "cd ../5.1-kernel-Q\nibrun   $BGWPATH1/kernel.cplx.x > kernel.out\n",
-              "cd ../5.2-absorp-Q\n", "ibrun  $BGWPATH1/absorption.cplx.x > absorption.out\n", "cd ../../\ndone"]
+              "cd ../5.2-absorp-Q\n", "ibrun  $BGWPATH1/absorption.cplx.x > absorption.out\n",
+              "cd ../../\ndone"]
 
 go = open('go.sh', 'w')
 for go_line in go_sh_tacc:
