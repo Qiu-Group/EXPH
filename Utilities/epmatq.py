@@ -119,7 +119,7 @@ def read_parameter():
     print('WARNING: SEE epw.in for skipped bands and window energy')
     os.system("grep 'number of k points=' epw.out |awk '{print $5}' >> temp_parameter") # number of k points
     os.system("grep 'q(' epw.out | tail -n 1|awk '{print $2}' >> temp_parameter") # number of q points
-    os.system("grep 'pools' epw.out |head -n 1|awk '{print $6}' >> temp_parameter")
+    os.system("grep 'pools' epw.out |head -n 1|awk '{print $6}' >> temp_parameter") # number of pools
     temp_para = np.loadtxt('temp_parameter')
     [natom,nbnd_calculated, nbnd_total, nbnd_exclude, nk, nq, number_of_epb] = temp_para
     nmu = natom * 3
@@ -153,7 +153,7 @@ def car2frac(A,q_list_frac):
 
 def read_qkpoint_And_ab():
     os.system("grep 'q(' epw.out |awk '{print $6,$7,$8}' > q_car_elph.dat")
-    os.system("grep '     iq' epw.out |awk '{print $5,$6,$7}' > q_frac_omega.dat")
+    os.system("grep '     iq =' epw.out |awk '{print $5,$6,$7}' > q_frac_omega.dat")
     os.system("grep 'k(' epw.out |awk '{print $5,$6,$7}'|tr -d ')'|tr -d ',' > k_car_elph.dat")
     os.system("grep 'lattice parameter ' epw.out |awk '{print $5}' >a0.dat")
     os.system("grep '            a' epw.out|awk '{print $4,$5,$6}' > a.dat")
