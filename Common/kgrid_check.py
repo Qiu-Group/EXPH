@@ -82,17 +82,18 @@ def firstGridCheck(h5path='./',acvs_save_path='./save/acvs.save'):
     else:
         print("[first grid check]: not pass")
         print("We find", notMatch, "set k-grid not matching")
-        print("Reduced K-grid seeking...")
         print("+++++++++++++++++++++++++++++++++++++++++++++")
         print("WARNING: this will lead phase not aligned!!!")
         print("+++++++++++++++++++++++++++++++++++++++++++++")
+        print("Reduced K-grid seeking...")
+
 
     if notMatch == 0:
-        kmap_generate(Qpt_in_acv_frac, kpt_in_acv_frac, qpt_in_gkk_frac, kpt_in_gkk_frac, readwhat=3, acvs_save_path=acvs_save_path)
+        kmap_generate(Qpt_in_acv_frac, kpt_in_acv_frac, qpt_in_gkk_frac, kpt_in_gkk_frac, readwhat=4, acvs_save_path=acvs_save_path)
     return notMatch
 
 
-def kmap_generate(Q, k_acv, q, k_gkk, readwhat=1, acvs_save_path = './save/acvs.save'):
+def kmap_generate(Q, k_acv, q, k_gkk, readwhat=4, acvs_save_path = './save/acvs.save'):
     """
     :param Q: Q-grid in acv
     :param k_acv: k-grid in acv

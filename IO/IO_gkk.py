@@ -45,8 +45,20 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     # progress = ProgressBar(3, fmt=ProgressBar.FULL)
     # progress()
     # 1.0 load raw data (raw means the data need to be reshape)
-    data_temp_raw = np.loadtxt(save_path+'elphmat.dat')
-    data_phase_temp_raw = np.loadtxt(save_path + 'elphmat_phase.dat')
+
+    # Bowen Hou 2023/06/30: use h5 file instead of elphmat
+    # data_temp_raw = np.loadtxt(save_path+'elphmat.dat')
+    # data_phase_temp_raw = np.loadtxt(save_path + 'elphmat_phase.dat')
+
+    f_nophase = h5.File(save_path+'elphmat.h5','r')
+    f_phase = h5.File(save_path+'elphmat_phase.h5','r')
+
+    data_temp_raw = f_nophase['data/'][()]
+    data_phase_temp_raw = f_phase['data/'][()]
+
+    f_nophase.close()
+    f_phase.close()
+
     omega_raw = np.loadtxt(save_path+"omega.dat")
     k_temp = np.loadtxt(save_path+'k.dat')
     q_temp = np.loadtxt(save_path+'q.dat') #
@@ -77,8 +89,8 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     ####################
     omega_temp = omega_raw.reshape(nq,nmode)
     data_temp = data_temp_raw.reshape(nq,nk,ni,nj,nmode)
-    data_phase_temp = np.vectorize(complex)(data_phase_temp_raw[:,0],data_phase_temp_raw[:,1])
-    data_phase_temp = data_phase_temp.reshape(nq,nk,ni,nj,nmode)
+    # data_phase_temp = np.vectorize(complex)(data_phase_temp_raw[:,0],data_phase_temp_raw[:,1])
+    data_phase_temp = data_phase_temp_raw.reshape(nq,nk,ni,nj,nmode)
     # 2.0 create gkk.h5 file
     f = h5.File('gkk.h5','w')
     header = f.create_group('epw_header')

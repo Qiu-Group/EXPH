@@ -1,8 +1,8 @@
 import numpy as np
 
 eqp_name = 'eqp.dat'
-min_band = 89
-max_band = 90
+min_band = 230
+max_band = 240
 
 f = open(eqp_name,'r')
 lines = f.readlines()
@@ -28,6 +28,9 @@ for i in range(nk):
         else:
             omit += 1
         line += 1
+
+data_GW.sort(axis=1)
+data_LDA.sort(axis=1)
 
 f = open('band.dat','w')
 for i in range(max_band - min_band + 1):

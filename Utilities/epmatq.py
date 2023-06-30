@@ -3,6 +3,8 @@ from scipy.io import FortranFile
 import sys
 import os
 from Common.common import equivalence_order, move_k_back_to_BZ_1
+import h5py as h5
+
 
 # This script is used to read epmatq from .epb file and reorder electron-phonon matrix based on Fortran order
 # This should be integrated into collect.py
@@ -25,12 +27,26 @@ def read_epb(prefix): # elphmat*.dat is generated here
     if nk % number_of_epb != 0: raise Exception('nk % number_of_epb != 0')
     nk_each_pool = nk // number_of_epb
     print('number of k in each pool:',nk_each_pool)
-    final_ep_real, final_ep_imag, final_g2 = read_single_epb(prefix,1,ni,nj,nk_each_pool,nq,nmu)
-    for iepb in range(2,number_of_epb+1):
+
+    # TODO_done: find a better way to concatenate matrix together. (build a res matrix before)
+
+    # final_ep_real_epb1, final_ep_imag_epb1, final_g2_epb1 = read_single_epb(prefix,1,ni,nj,nk_each_pool,nq,nmu)
+
+    final_ep_real, final_ep_imag, final_g2 = np.zeros((nk,number_of_epb * nk_each_pool,ni,nj,nmu)), np.zeros((nk,number_of_epb * nk_each_pool,ni,nj,nmu)), np.zeros((nk,number_of_epb * nk_each_pool,ni,nj,nmu))
+    # final_ep_real[:, :nk_each_pool, :, :, :] = final_ep_real_epb1
+    # final_ep_imag[:, :nk_each_pool, :, :, :] = final_ep_imag_epb1
+    # final_g2[:, :nk_each_pool, :, :, :] = final_g2_epb1
+
+    print('shape of final_ep_real, final_ep_imag, final_g2',final_ep_real.shape, final_ep_imag.shape, final_g2.shape)
+    for iepb in range(1,number_of_epb+1):
         temp_ep_real, temp_ep_imag, temp_g2 = read_single_epb(prefix, iepb, ni, nj, nk_each_pool, nq, nmu)
-        final_ep_real = np.concatenate((final_ep_real,temp_ep_real),axis=1)
-        final_ep_imag = np.concatenate((final_ep_imag, temp_ep_imag), axis=1)
-        final_g2 = np.concatenate((final_g2, temp_g2), axis=1)
+        # final_ep_real = np.concatenate((final_ep_real,temp_ep_real),axis=1)
+        # final_ep_imag = np.concatenate((final_ep_imag, temp_ep_imag), axis=1)
+        # final_g2 = np.concatenate((final_g2, temp_g2), axis=1)
+        final_ep_real[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_ep_real
+        final_ep_imag[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_ep_imag
+        final_g2[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_g2
+
 
     # This step will transfer gkk to [meV]
     # inv_sqrt_two_omega_ = (np.sqrt(2*omega[:,np.newaxis,np.newaxis,np.newaxis,:]))**(-1)
@@ -62,6 +78,8 @@ def read_epb(prefix): # elphmat*.dat is generated here
                 final_ep_imag[iq,:,:,:,imu] = np.zeros_like(final_ep_imag[iq,:,:,:,imu])
                 final_g2[iq,:,:,:,imu] = np.zeros_like(final_g2[iq,:,:,:,imu])
 
+    print("gkk/omega is done!")
+
     n_total = final_g2.shape[0] *\
               final_g2.shape[1] *\
               final_g2.shape[2] *\
@@ -74,8 +92,19 @@ def read_epb(prefix): # elphmat*.dat is generated here
     f_phase[:,1] = final_ep_imag.reshape(n_total)
     f_nophase = np.sqrt(final_g2.reshape(n_total))
 
-    np.savetxt('elphmat_phase.dat', f_phase)
-    np.savetxt('elphmat.dat', f_nophase)
+
+    # todo_done: use h5 or binary format instead of txt
+    # np.savetxt('elphmat_phase.dat', f_phase)
+    # np.savetxt('elphmat.dat', f_nophase)
+
+    h5_elphmat_phase = h5.File('elphmat_phase.h5','w')
+    h5_elphmat_phase.create_dataset('data',data=f_phase)
+    h5_elphmat_phase.close()
+
+    h5_elphmat = h5.File('elphmat.h5','w')
+    h5_elphmat.create_dataset('data',data=f_nophase)
+    h5_elphmat.close()
+
 
 
 def q_elph_map_q_omega(q_frac_elph, q_frac_omega):
