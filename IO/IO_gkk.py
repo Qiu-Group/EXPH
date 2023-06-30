@@ -89,8 +89,8 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     ####################
     omega_temp = omega_raw.reshape(nq,nmode)
     data_temp = data_temp_raw.reshape(nq,nk,ni,nj,nmode)
-    # data_phase_temp = np.vectorize(complex)(data_phase_temp_raw[:,0],data_phase_temp_raw[:,1])
-    data_phase_temp = data_phase_temp_raw.reshape(nq,nk,ni,nj,nmode)
+    data_phase_temp = np.vectorize(complex)(data_phase_temp_raw[:,0],data_phase_temp_raw[:,1])
+    data_phase_temp = data_phase_temp.reshape(nq,nk,ni,nj,nmode)
     # 2.0 create gkk.h5 file
     f = h5.File('gkk.h5','w')
     header = f.create_group('epw_header')
