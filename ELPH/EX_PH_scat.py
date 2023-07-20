@@ -491,7 +491,7 @@ def interpolation_check_for_Gamma_calculation(interpo_size=4, path='./', mute=Fa
                                                  new_q_out=True,
                                                  n_ex_acv_index=new_n_index,
                                                  m_ex_acv_index=new_m_index,
-                                                 acvmat=acv_subspace)
+                                                 acvmat=acv_subspace,onlyGetGrid=True)
     res_gqQ = gqQ_inteqp_q_series(res=res0,interpo_size=interpo_size,path=path,new_q_out=new_q_out)
     # Note: This is used for generating grid_q_gqQ_res, we will not use this interpolated gqQ here! 12/25/2022 Bowen Hou
     res_omega = omega_inteqp_q(interpo_size=interpo_size, path=path,new_q_out=True)

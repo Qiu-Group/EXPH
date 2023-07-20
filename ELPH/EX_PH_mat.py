@@ -441,7 +441,7 @@ def gqQ_inteqp_q_nopara(n_ex_acv_index=0, m_ex_acv_index=1, v_ph_gkk=3, Q_kmap=0
 # These two functions are for para_ex_ph_scat.py
 def gqQ_inteqp_get_coarse_grid(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=0, Q_kmap=0, #interpo_size=12
                                new_q_out=False, acvmat=None, gkkmat=None,kmap=None, kmap_dic=None, bandmap_occ=None,muteProgress=True,
-                                 path='./',q_map_start_para='nopara', q_map_end_para='nopara'):
+                                 path='./',q_map_start_para='nopara', q_map_end_para='nopara',onlyGetGrid=False):
     """
     !!! parallel is over q!!!
     This function construct gnmv(Q,q)
@@ -504,18 +504,28 @@ def gqQ_inteqp_get_coarse_grid(n_ex_acv_index=0, m_ex_acv_index=0, v_ph_gkk=0, Q
             progress()
         if new_q_out:
             res[q_kmap,:3] = kmap[q_kmap,:3]
-        res[q_kmap,3] = np.abs(gqQ(n_ex_acv_index=n_ex_acv_index,
-                                   m_ex_acv_index=m_ex_acv_index,
-                                   v_ph_gkk=v_ph_gkk,
-                                   Q_kmap=Q_kmap,
-                                   q_kmap=q_kmap,
-                                   acvmat=acvmat,
-                                   gkkmat=gkkmat,
-                                   kmap=kmap,
-                                   kmap_dic=kmap_dic,
-                                   bandmap_occ=bandmap_occ,
-                                   muteProgress=True
-                                   ))
+
+        # ====================================================================================
+        # 2023/07/20 Bowen Hou: Actually, we will not use this function to do real calculations, we only need this to generate grid.
+        if onlyGetGrid:
+            res[q_kmap,3] = 0
+            print("Here we only get grid using func: gqQ_inteqp_get_coarse_grid")
+
+        else:
+            res[q_kmap,3] = np.abs(gqQ(n_ex_acv_index=n_ex_acv_index,
+                                       m_ex_acv_index=m_ex_acv_index,
+                                       v_ph_gkk=v_ph_gkk,
+                                       Q_kmap=Q_kmap,
+                                       q_kmap=q_kmap,
+                                       acvmat=acvmat,
+                                       gkkmat=gkkmat,
+                                       kmap=kmap,
+                                       kmap_dic=kmap_dic,
+                                       bandmap_occ=bandmap_occ,
+                                       muteProgress=True
+                                       ))
+        # ====================================================================================
+
     return res, new_q_out
 
 
