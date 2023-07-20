@@ -5,7 +5,7 @@ import os
 from Common.common import equivalence_order, move_k_back_to_BZ_1
 import h5py as h5
 
-
+ry2meV = 13605.662285137
 # This script is used to read epmatq from .epb file and reorder electron-phonon matrix based on Fortran order
 # This should be integrated into collect.py
 # TODO_done: (1) See how does k pool (uniform or non-uniform) affect parallel of epb
@@ -48,6 +48,23 @@ def read_epb(prefix): # elphmat*.dat is generated here
         final_g2[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_g2
 
 
+    #==========================DEBUG==================================
+    #=================================================================
+    n_total = final_g2.shape[0] *\
+              final_g2.shape[1] *\
+              final_g2.shape[2] *\
+              final_g2.shape[3] *\
+              final_g2.shape[4]\
+
+    # f_nophase = np.sqrt(final_g2.reshape(n_total))
+
+    h5_elphmat = h5.File('elphmat_before_omega.h5','w')
+    h5_elphmat.create_dataset('data',data=final_g2)
+    h5_elphmat.close()
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
     # This step will transfer gkk to [meV]
     # inv_sqrt_two_omega_ = (np.sqrt(2*omega[:,np.newaxis,np.newaxis,np.newaxis,:]))**(-1)
     # f_nophase = f_nophase * inv_sqrt_two_omega_
@@ -69,9 +86,9 @@ def read_epb(prefix): # elphmat*.dat is generated here
     for iq in range(nq):
         for imu in range(nmu):
             if omega_new_based_elph_q_order[iq,imu] > 0:
-                final_ep_real[iq,:,:,:,imu] = final_ep_real[iq,:,:,:,imu] / np.sqrt(2 * omega_new_based_elph_q_order[iq,imu])
-                final_ep_imag[iq,:,:,:,imu] = final_ep_imag[iq,:,:,:,imu] / np.sqrt(2 * omega_new_based_elph_q_order[iq,imu])
-                final_g2[iq,:,:,:,imu] = final_g2[iq,:,:,:,imu] / (2 * omega_new_based_elph_q_order[iq,imu])
+                final_ep_real[iq,:,:,:,imu] = final_ep_real[iq,:,:,:,imu] / np.sqrt(2 * (omega_new_based_elph_q_order[iq,imu]/ry2meV))
+                final_ep_imag[iq,:,:,:,imu] = final_ep_imag[iq,:,:,:,imu] / np.sqrt(2 * (omega_new_based_elph_q_order[iq,imu]/ry2meV))
+                final_g2[iq,:,:,:,imu] = final_g2[iq,:,:,:,imu] / (2 * omega_new_based_elph_q_order[iq,imu]/ry2meV)
             else:
                 print('skip: iq: %s, imode: %s, omega(iq,imode):%s'%(iq,imu,omega_new_based_elph_q_order[iq,imu]), ' [meV]')
                 final_ep_real[iq,:,:,:,imu] = np.zeros_like(final_ep_real[iq,:,:,:,imu])
@@ -86,23 +103,24 @@ def read_epb(prefix): # elphmat*.dat is generated here
               final_g2.shape[3] *\
               final_g2.shape[4]\
 
-    f_phase = np.zeros((n_total, 2))
-
-    f_phase[:,0] = final_ep_real.reshape(n_total)
-    f_phase[:,1] = final_ep_imag.reshape(n_total)
-    f_nophase = np.sqrt(final_g2.reshape(n_total))
-
+    # TODO: memory issue
+    # f_phase = np.zeros((n_total, 2))
+    # f_phase[:,0] = final_ep_real.reshape(n_total)
+    # f_phase[:,1] = final_ep_imag.reshape(n_total)
+    # f_nophase = np.sqrt(final_g2.reshape(n_total))
 
     # todo_done: use h5 or binary format instead of txt
     # np.savetxt('elphmat_phase.dat', f_phase)
     # np.savetxt('elphmat.dat', f_nophase)
 
     h5_elphmat_phase = h5.File('elphmat_phase.h5','w')
-    h5_elphmat_phase.create_dataset('data',data=f_phase)
+    h5_elphmat_phase.create_dataset('data', (n_total, 2))
+    h5_elphmat_phase['data'][:,0] = final_ep_real.reshape(n_total) * ry2meV
+    h5_elphmat_phase['data'][:,1] = final_ep_imag.reshape(n_total) * ry2meV
     h5_elphmat_phase.close()
 
     h5_elphmat = h5.File('elphmat.h5','w')
-    h5_elphmat.create_dataset('data',data=f_nophase)
+    h5_elphmat.create_dataset('data',data=np.sqrt(final_g2.reshape(n_total))*ry2meV)
     h5_elphmat.close()
 
 

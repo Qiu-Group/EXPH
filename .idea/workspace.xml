@@ -2,20 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Major: (1) Velocity: 1/a.u. --&gt; 1/A. (2) Find that larger X and Y could solve boundary condition issue!">
-      <change afterPath="$PROJECT_DIR$/Utilities/eqp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Common/band_check.py" beforeDir="false" afterPath="$PROJECT_DIR$/Common/band_check.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EPW_src_modified/printing.f90" beforeDir="false" afterPath="$PROJECT_DIR$/EPW_src_modified/printing.f90" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IO/IO_gkk.py" beforeDir="false" afterPath="$PROJECT_DIR$/IO/IO_gkk.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PLot_/plot_ele_ph_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_ele_ph_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Occupation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_rt_Boltzmann_Occupation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utilities/get_BSE_eigenvalue.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utilities/get_BSE_eigenvalue.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exph.in" beforeDir="false" afterPath="$PROJECT_DIR$/exph.in" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Utilities/epmatq.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utilities/epmatq.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Utilities/finite_any_Q_BSE.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utilities/finite_any_Q_BSE.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +39,7 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/OneDrive/03-research/02-research@yale/01+Bi2Te3/code_Bi2Te3&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/OneDrive/03-research/02-research@yale/01+Bi2Te3/code_B2T3&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>

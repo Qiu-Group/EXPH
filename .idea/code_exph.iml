@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="temp" />
     <orderEntry type="module" module-name="code" />
+    <orderEntry type="module" module-name="code_B2T3" />
   </component>
 </module>

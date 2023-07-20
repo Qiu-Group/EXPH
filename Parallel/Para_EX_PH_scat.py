@@ -131,16 +131,16 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     size = comm.Get_size()
     plan_list = None
     plan_list_2 = None
-
-    print('Start para_Gamma_scat_inteqp')
+    if rank == 0:
+        print('\nStart para_Gamma_scat_inteqp');sys.stdout.flush()
 
     if not interpolation_check_res:
         [grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA] = interpolation_check_for_Gamma_calculation(interpo_size=interposize,path=path,mute=muteProgress)
     else:
         [grid_q_gqQ_res, Qq_dic, res_omega, res_OMEGA] = interpolation_check_res
         interposize = int(np.sqrt(interpolation_check_res[0].shape[0]))
-
-    print('interpolation check is finished!')
+    if rank == 0:
+        print('interpolation check is finished!');sys.stdout.flush()
 
     # (2) load and construct map: # TODO: what if acvmat is very large?
     #acvmat = read_Acv(path=path) # load acv matrix # todo: can I write a read_Acv for parallel!
@@ -159,12 +159,12 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     Nqpt = interposize**2 # Nice!
 
     if interposize**2 != kmap.shape[0]:
-        if not muteProgress:
-            print("[interpolation] yes")
-            print(" (%s, %s, 1) -> (%s, %s, 1)"%(int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])),interposize,interposize))
+        if not muteProgress and rank==0:
+            print("[interpolation] yes"); sys.stdout.flush()
+            print(" (%s, %s, 1) -> (%s, %s, 1)"%(int(np.sqrt(kmap.shape[0])),int(np.sqrt(kmap.shape[0])),interposize,interposize));sys.stdout.flush()
     else:
         if not muteProgress:
-            print("[interpolation] no")
+            print("[interpolation] no"); sys.stdout.flush()
 
     # (3) calculate scattering rate
     # note: kmap.shape(nk, information=(kx,ky,kz,Q, k_acv, q, k_gkk))

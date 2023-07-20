@@ -95,7 +95,7 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     f = h5.File('gkk.h5','w')
     header = f.create_group('epw_header')
     f.create_dataset('epw_data/elphmat', data=data_temp)
-    f.create_dataset('epw_data_phase/elphmat_phase',data=data_phase_temp)
+    f.create_dataset('epw_data_phase/elphmat_phase',data=data_phase_temp,dtype=np.complex64)
     header.create_dataset('omega',data=omega_temp)
     header.create_dataset('kpt_coor',data=k_temp)
     header.create_dataset('qpt_coor',data=q_temp)
