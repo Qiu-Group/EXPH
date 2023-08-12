@@ -188,7 +188,8 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     gamma_each_q_res_each_process = np.zeros((workload_over_q_fi,4)) # This matrix store gamma for every phonon-q points, and gamma_each_q_res.sum() == Gamma_res: True
 
     progress = ProgressBar(exciton_energy.shape[1], fmt=ProgressBar.FULL)
-    print("exciton energy:",exciton_energy[Q_kmap,n_ext_acv_index],'eV')
+    if rank == 0:
+        print("exciton energy:",exciton_energy[Q_kmap,n_ext_acv_index],'eV'); sys.stdout.flush()
     for m_ext_acv_index_loop in range(exciton_energy.shape[1]):  # loop over initial exciton state m
         # if not muteProgress:
         if True and rank==0:

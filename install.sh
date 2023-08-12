@@ -14,6 +14,7 @@ chmod +x finite_any_Q_BSE.py
 chmod +x finite_any_Q_DFT.py
 chmod +x finite_Q_get_data.py
 chmod +x finite_uniform_Q_BSE.py
+chmod +x dat2h5_gkk.py
 
 echo 'link done!'
 
