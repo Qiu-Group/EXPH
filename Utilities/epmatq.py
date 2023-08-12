@@ -39,30 +39,13 @@ def read_epb(prefix): # elphmat*.dat is generated here
 
     print('shape of final_ep_real, final_ep_imag, final_g2',final_ep_real.shape, final_ep_imag.shape, final_g2.shape)
     for iepb in range(1,number_of_epb+1):
-        temp_ep_real, temp_ep_imag, temp_g2 = read_single_epb(prefix, iepb, ni, nj, nk_each_pool, nq, nmu)
+        temp_ep_real, temp_ep_imag, temp_g2 = read_single_epb(prefix, iepb)
         # final_ep_real = np.concatenate((final_ep_real,temp_ep_real),axis=1)
         # final_ep_imag = np.concatenate((final_ep_imag, temp_ep_imag), axis=1)
         # final_g2 = np.concatenate((final_g2, temp_g2), axis=1)
         final_ep_real[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_ep_real
         final_ep_imag[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_ep_imag
         final_g2[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_g2
-
-
-    #==========================DEBUG==================================
-    #=================================================================
-    n_total = final_g2.shape[0] *\
-              final_g2.shape[1] *\
-              final_g2.shape[2] *\
-              final_g2.shape[3] *\
-              final_g2.shape[4]\
-
-    # f_nophase = np.sqrt(final_g2.reshape(n_total))
-
-    h5_elphmat = h5.File('elphmat_before_omega.h5','w')
-    h5_elphmat.create_dataset('data',data=final_g2)
-    h5_elphmat.close()
-    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
     # This step will transfer gkk to [meV]
@@ -83,17 +66,17 @@ def read_epb(prefix): # elphmat*.dat is generated here
     # final_ep_real, final_ep_imag, final_g2 = (nq,nk,ni,nj,nmu)
     # omega_new_based_elph_q_order = (nq,nmu)
 
-    for iq in range(nq):
-        for imu in range(nmu):
-            if omega_new_based_elph_q_order[iq,imu] > 0:
-                final_ep_real[iq,:,:,:,imu] = final_ep_real[iq,:,:,:,imu] / np.sqrt(2 * (omega_new_based_elph_q_order[iq,imu]/ry2meV))
-                final_ep_imag[iq,:,:,:,imu] = final_ep_imag[iq,:,:,:,imu] / np.sqrt(2 * (omega_new_based_elph_q_order[iq,imu]/ry2meV))
-                final_g2[iq,:,:,:,imu] = final_g2[iq,:,:,:,imu] / (2 * omega_new_based_elph_q_order[iq,imu]/ry2meV)
-            else:
-                print('skip: iq: %s, imode: %s, omega(iq,imode):%s'%(iq,imu,omega_new_based_elph_q_order[iq,imu]), ' [meV]')
-                final_ep_real[iq,:,:,:,imu] = np.zeros_like(final_ep_real[iq,:,:,:,imu])
-                final_ep_imag[iq,:,:,:,imu] = np.zeros_like(final_ep_imag[iq,:,:,:,imu])
-                final_g2[iq,:,:,:,imu] = np.zeros_like(final_g2[iq,:,:,:,imu])
+    # for iq in range(nq):
+    #     for imu in range(nmu):
+    #         if omega_new_based_elph_q_order[iq,imu] > 0:
+    #             final_ep_real[iq,:,:,:,imu] = final_ep_real[iq,:,:,:,imu] / np.sqrt(2 * (omega_new_based_elph_q_order[iq,imu]/ry2meV))
+    #             final_ep_imag[iq,:,:,:,imu] = final_ep_imag[iq,:,:,:,imu] / np.sqrt(2 * (omega_new_based_elph_q_order[iq,imu]/ry2meV))
+    #             final_g2[iq,:,:,:,imu] = final_g2[iq,:,:,:,imu] / (2 * omega_new_based_elph_q_order[iq,imu]/ry2meV)
+    #         else:
+    #             print('skip: iq: %s, imode: %s, omega(iq,imode):%s'%(iq,imu,omega_new_based_elph_q_order[iq,imu]), ' [meV]')
+    #             final_ep_real[iq,:,:,:,imu] = np.zeros_like(final_ep_real[iq,:,:,:,imu])
+    #             final_ep_imag[iq,:,:,:,imu] = np.zeros_like(final_ep_imag[iq,:,:,:,imu])
+    #             final_g2[iq,:,:,:,imu] = np.zeros_like(final_g2[iq,:,:,:,imu])
 
     print("gkk/omega is done!")
 
@@ -221,7 +204,51 @@ def read_qkpoint_And_ab():
     return q_frac_elph, q_frac_omega, k_frac_elph
 
 
-def read_single_epb(prefix,epb_index,ni,nj,nk,nq,nmu):
+
+def read_single_epb(prefix,epb_index):
+    """
+    :param prefix: name of system, e.g.: bn.epbxx
+    :param epb_index: index of epb, which is based on pool number
+    :param ni: number of final states
+    :param nj: number of initial states
+    :param nk: number of k points
+    :param nq: number of q points
+    :param nmu: number of phonon
+    :return: it returns ep_real, ep_imag, g2
+    # g2 = ep_real**2 + ep_imag**2
+    """
+    f = h5.File(prefix+'_elph_%s.h5'%epb_index,'r')
+
+    # These three variables el-ph mat in EPW order
+    ep_real_epworder = f['elph_nu_real'][()] # (q, nu, k, j, i)
+    ep_imag_epworder = f['elph_nu_imag'][()]
+    g2_epworder = ep_imag_epworder**2 + ep_real_epworder**2
+
+    # Reshape this to fit order in my EXPH order elph_mat(nq,nk,ni,nj,nmode), this order is actually the same as el-ph matrix on interpolated fine grid
+    # Well, anyway, here is how I organize the el-ph matrix in a very simple way (this might have some memory issue if el-ph matrix is very large)
+
+    # (1) (q, nu, k, j ,i) --> (q, k ,nu, j ,i)
+    ep_real = np.swapaxes(ep_real_epworder,1,2)
+    ep_imag = np.swapaxes(ep_imag_epworder,1,2)
+    g2 = np.swapaxes(g2_epworder,1,2)
+    # (2) (q,k,nu,j,i) -->  (q,k,i,j,nu)
+    ep_real = np.swapaxes(ep_real,2,3)
+    ep_imag = np.swapaxes(ep_imag,2,3)
+    g2 = np.swapaxes(g2,2,3) # (q,k,j,nu,i)
+
+    ep_real = np.swapaxes(ep_real,3,4)
+    ep_imag = np.swapaxes(ep_imag,3,4)
+    g2 = np.swapaxes(g2,3,4) # (q,k,j,i,nu)
+
+    ep_real = np.swapaxes(ep_real,2,3)
+    ep_imag = np.swapaxes(ep_imag,2,3)
+    g2 = np.swapaxes(g2,2,3) # (q,k,i,j,nu)
+
+
+    return ep_real, ep_imag, g2
+
+
+def read_single_epb_binary(prefix,epb_index,ni,nj,nk,nq,nmu):
     """
     :param prefix: name of system, e.g.: bn.epbxx
     :param epb_index: index of epb, which is based on pool number
