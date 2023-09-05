@@ -20,7 +20,7 @@ from mpi4py import MPI
 import sys
 import time
 
-
+# here is debug
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()

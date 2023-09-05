@@ -220,29 +220,29 @@ def read_single_epb(prefix,epb_index):
     f = h5.File(prefix+'_elph_%s.h5'%epb_index,'r')
 
     # These three variables el-ph mat in EPW order
-    ep_real_epworder = f['elph_nu_real'][()] # (q, nu, k, j, i)
+    ep_real_epworder = f['elph_nu_real'][()] # (q, nu, k, j, i) WRONG!! -> #(q, nu, k, i, j) THIS SHOULD BE RIGHT!!! 2023/09/05 Bowen Hou
     ep_imag_epworder = f['elph_nu_imag'][()]
     g2_epworder = ep_imag_epworder**2 + ep_real_epworder**2
 
     # Reshape this to fit order in my EXPH order elph_mat(nq,nk,ni,nj,nmode), this order is actually the same as el-ph matrix on interpolated fine grid
     # Well, anyway, here is how I organize the el-ph matrix in a very simple way (this might have some memory issue if el-ph matrix is very large)
 
-    # (1) (q, nu, k, j ,i) --> (q, k ,nu, j ,i)
+    # (1) (q, nu, k, i ,j) --> (q, k ,nu, i ,j)
     ep_real = np.swapaxes(ep_real_epworder,1,2)
     ep_imag = np.swapaxes(ep_imag_epworder,1,2)
     g2 = np.swapaxes(g2_epworder,1,2)
-    # (2) (q,k,nu,j,i) -->  (q,k,i,j,nu)
+    # (2) (q,k,nu,i,j) -->  (q,k,i,j,nu)
     ep_real = np.swapaxes(ep_real,2,3)
     ep_imag = np.swapaxes(ep_imag,2,3)
-    g2 = np.swapaxes(g2,2,3) # (q,k,j,nu,i)
+    g2 = np.swapaxes(g2,2,3) # (q,k,i,nu,j)
 
     ep_real = np.swapaxes(ep_real,3,4)
     ep_imag = np.swapaxes(ep_imag,3,4)
-    g2 = np.swapaxes(g2,3,4) # (q,k,j,i,nu)
+    g2 = np.swapaxes(g2,3,4) # (q,k,i,j,nu)
 
-    ep_real = np.swapaxes(ep_real,2,3)
-    ep_imag = np.swapaxes(ep_imag,2,3)
-    g2 = np.swapaxes(g2,2,3) # (q,k,i,j,nu)
+    # ep_real = np.swapaxes(ep_real,2,3)
+    # ep_imag = np.swapaxes(ep_imag,2,3)
+    # g2 = np.swapaxes(g2,2,3) # (q,k,i,j,nu)
 
 
     return ep_real, ep_imag, g2

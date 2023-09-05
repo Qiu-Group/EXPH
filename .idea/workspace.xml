@@ -3,10 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Major: (1) Velocity: 1/a.u. --&gt; 1/A. (2) Find that larger X and Y could solve boundary condition issue!">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ELPH/EX_PH_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/ELPH/EX_PH_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utilities/dat2h5_gkk.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utilities/dat2h5_gkk.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/install.sh" beforeDir="false" afterPath="$PROJECT_DIR$/install.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exph.py" beforeDir="false" afterPath="$PROJECT_DIR$/exph.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,6 +137,9 @@
       <module name="temp" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$USER_HOME$/Desktop/temp" />
       <option name="IS_MODULE_SDK" value="true" />
