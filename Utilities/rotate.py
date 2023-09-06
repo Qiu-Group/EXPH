@@ -1,20 +1,21 @@
 import numpy as np
 import h5py as h5
-from constants import Ry2cm1
+from Utilities.constants import Ry2cm1
 
 class epbfile():
     def __init__(self, prefix="MoS2", read=True):
-        self.fname = prefix + '_elph.h5'
+        self.fname = prefix + '_elph_1.h5'
 
         if read and self.fname:
-            self.read_h5()
+            self.read_dynq_h5()
+            self.read_epmaq_h5()
 
-    def read_h5(self):
+    def read_dynq_h5(self):
 
-        self.f = h5.File(self.fname,'r')
-        self.amass = self.f.get('atomic_masses')[()]
-        self.dynq_real = self.f.get('dynq_real')[()]
-        self.dynq_imag = self.f.get('dynq_imag')[()]
+        self.f_dynq = h5.File(self.fname,'r')
+        self.amass = self.f_dynq.get('atomic_masses')[()]
+        self.dynq_real = self.f_dynq.get('dynq_real')[()]
+        self.dynq_imag = self.f_dynq.get('dynq_imag')[()]
 
         self.dynq = self.dynq_real + 1j * self.dynq_imag
         self.dynq = self.dynq.transpose([0,2,1])
@@ -24,12 +25,13 @@ class epbfile():
         self.nk = self.dynq.shape[0]
         self.nmodes = self.dynq.shape[1]
         self.nat = self.nmodes // 3
-        self.nband = self.f['elph_cart_real'].shape[-1]
+        self.nband = self.f_dynq['elph_cart_real'].shape[-1]
 
         self.omega = np.zeros([self.nq, self.nmodes])
         self.eigvect = np.zeros([self.nq, self.nmodes, self.nmodes], dtype=complex)
 
-
+    def read_epmaq_h5(self):
+        self.f_epmatq = h5.File('el_ph_cart.h5','r')
 
 
     def diagonalize_dynmat(self, dont_scale=False):
@@ -98,20 +100,20 @@ class epbfile():
 
         return gkkmodeq
 
-    def write_hdf5_qbyq(self,fout="epbmat_mode.h5"):
+    def write_hdf5_qbyq(self):
 
         # memory issue
-        with h5.File(fout,'w') as f:
-            f.create_dataset("elph_nu_real", (self.nq, self.nmodes, self.nk, self.nband, self.nband), dtype=np.float)
-            f.create_dataset("elph_nu_imag", (self.nq, self.nmodes, self.nk, self.nband, self.nband), dtype=np.float)
+        with h5.File("elphmat_phase.h5",'w') as f:
+            f.create_dataset("data", (self.nq, self.nk, self.nband, self.nband, self.nmodes, 2), dtype=np.float)
+            # f.create_dataset("elph_nu_imag", (self.nq, self.nmodes, self.nk, self.nband, self.nband), dtype=np.float)
 
             for iq in range(self.nq):
                 print("\n Computing gkk at iq: %d"%iq)
-                gkk = self.f.get('elph_cart_real')[iq] + 1j * self.f.get('elph_cart_imag')[iq]
-                gmode = self.get_gkk_modeq(iq,gkk)
-                f["elph_nu_real"][iq,...] = np.real(gmode)
-                f["elph_nu_imag"][iq,...] = np.imag(gmode)
-
+                gkk = self.f_epmatq.get('elph_cart_real')[iq] + 1j * self.f_epmatq.get('elph_cart_imag')[iq] # (nq,nmu,nk,ni,nj) ->  (nmu,nk,ni,nj)
+                gmode = self.get_gkk_modeq(iq,gkk) # (nmu,nk,ni,nj)
+                gmode.transpose([1,2,3,0]) #(nk,ni,nj,nu)
+                f["data"][iq,:,:,:,:,0] = np.real(gmode)
+                f["data"][iq,:,:,:,:,1] = np.imag(gmode)
         return
 
 

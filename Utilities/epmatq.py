@@ -28,31 +28,19 @@ def read_epb(prefix): # elphmat*.dat is generated here
     nk_each_pool = nk // number_of_epb
     print('number of k in each pool:',nk_each_pool)
 
-    # TODO_done: find a better way to concatenate matrix together. (build a res matrix before)
 
-    # final_ep_real_epb1, final_ep_imag_epb1, final_g2_epb1 = read_single_epb(prefix,1,ni,nj,nk_each_pool,nq,nmu)
+    h5_elphmat_phase = h5.File('el_ph_cart.h5', 'w') # this is temp file
+    h5_elphmat_phase.create_dataset('elph_cart_real', (nq,nmu,nk,ni,nj))
+    h5_elphmat_phase.create_dataset('elph_cart_imag', (nq,nmu,nk,ni,nj))
 
-    final_ep_real, final_ep_imag, final_g2 = np.zeros((nk,number_of_epb * nk_each_pool,ni,nj,nmu)), np.zeros((nk,number_of_epb * nk_each_pool,ni,nj,nmu)), np.zeros((nk,number_of_epb * nk_each_pool,ni,nj,nmu))
-    # final_ep_real[:, :nk_each_pool, :, :, :] = final_ep_real_epb1
-    # final_ep_imag[:, :nk_each_pool, :, :, :] = final_ep_imag_epb1
-    # final_g2[:, :nk_each_pool, :, :, :] = final_g2_epb1
-
-    print('shape of final_ep_real, final_ep_imag, final_g2',final_ep_real.shape, final_ep_imag.shape, final_g2.shape)
+    # merge epb files
     for iepb in range(1,number_of_epb+1):
-        temp_ep_real, temp_ep_imag, temp_g2 = read_single_epb(prefix, iepb)
-        # final_ep_real = np.concatenate((final_ep_real,temp_ep_real),axis=1)
-        # final_ep_imag = np.concatenate((final_ep_imag, temp_ep_imag), axis=1)
-        # final_g2 = np.concatenate((final_g2, temp_g2), axis=1)
-        final_ep_real[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_ep_real
-        final_ep_imag[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_ep_imag
-        final_g2[:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:,:] = temp_g2
+        temp_ep_real, temp_ep_imag, temp_g2 = read_single_epb(prefix, iepb) # (q, nu, k, i, j)
+        h5_elphmat_phase['elph_cart_real'][:,:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:] = temp_ep_real
+        h5_elphmat_phase['elph_cart_imag'][:,:,(iepb-1)*nk_each_pool:iepb*nk_each_pool,:,:] = temp_ep_imag
 
-
-    # This step will transfer gkk to [meV]
-    # inv_sqrt_two_omega_ = (np.sqrt(2*omega[:,np.newaxis,np.newaxis,np.newaxis,:]))**(-1)
-    # f_nophase = f_nophase * inv_sqrt_two_omega_
-    # f_phase[:, 0] = f_phase[:,0] * inv_sqrt_two_omega_
-    # f_phase[:, 1] = f_phase[:,1] * inv_sqrt_two_omega_
+    h5_elphmat_phase.close()
+    print('Merge is done! elph matrix in Cart basis is stored in el_ph_cart.h5, this is epw order: (q, nu, k, i, j)')
 
     # TODO_done: omega_qv is not the same order as gkk, it seems I need to modify the code and let epw output right omega too. build a map between omega q and gkk q
     omega = read_omega()  # omega_original.dat is generated here
@@ -63,50 +51,8 @@ def read_epb(prefix): # elphmat*.dat is generated here
     omega_new_based_elph_q_order = omega[q_omega_map_based_on_q_elph,:]
     np.savetxt("omega.dat",omega_new_based_elph_q_order.reshape(nq*nmu))
 
-    # final_ep_real, final_ep_imag, final_g2 = (nq,nk,ni,nj,nmu)
-    # omega_new_based_elph_q_order = (nq,nmu)
-
-    # for iq in range(nq):
-    #     for imu in range(nmu):
-    #         if omega_new_based_elph_q_order[iq,imu] > 0:
-    #             final_ep_real[iq,:,:,:,imu] = final_ep_real[iq,:,:,:,imu] / np.sqrt(2 * (omega_new_based_elph_q_order[iq,imu]/ry2meV))
-    #             final_ep_imag[iq,:,:,:,imu] = final_ep_imag[iq,:,:,:,imu] / np.sqrt(2 * (omega_new_based_elph_q_order[iq,imu]/ry2meV))
-    #             final_g2[iq,:,:,:,imu] = final_g2[iq,:,:,:,imu] / (2 * omega_new_based_elph_q_order[iq,imu]/ry2meV)
-    #         else:
-    #             print('skip: iq: %s, imode: %s, omega(iq,imode):%s'%(iq,imu,omega_new_based_elph_q_order[iq,imu]), ' [meV]')
-    #             final_ep_real[iq,:,:,:,imu] = np.zeros_like(final_ep_real[iq,:,:,:,imu])
-    #             final_ep_imag[iq,:,:,:,imu] = np.zeros_like(final_ep_imag[iq,:,:,:,imu])
-    #             final_g2[iq,:,:,:,imu] = np.zeros_like(final_g2[iq,:,:,:,imu])
 
     print("gkk/omega is done!")
-
-    n_total = final_g2.shape[0] *\
-              final_g2.shape[1] *\
-              final_g2.shape[2] *\
-              final_g2.shape[3] *\
-              final_g2.shape[4]\
-
-    # TODO: memory issue
-    # f_phase = np.zeros((n_total, 2))
-    # f_phase[:,0] = final_ep_real.reshape(n_total)
-    # f_phase[:,1] = final_ep_imag.reshape(n_total)
-    # f_nophase = np.sqrt(final_g2.reshape(n_total))
-
-    # todo_done: use h5 or binary format instead of txt
-    # np.savetxt('elphmat_phase.dat', f_phase)
-    # np.savetxt('elphmat.dat', f_nophase)
-
-    h5_elphmat_phase = h5.File('elphmat_phase.h5','w')
-    h5_elphmat_phase.create_dataset('data', (n_total, 2))
-    h5_elphmat_phase['data'][:,0] = final_ep_real.reshape(n_total) * ry2meV
-    h5_elphmat_phase['data'][:,1] = final_ep_imag.reshape(n_total) * ry2meV
-    h5_elphmat_phase.close()
-
-    h5_elphmat = h5.File('elphmat.h5','w')
-    h5_elphmat.create_dataset('data',data=np.sqrt(final_g2.reshape(n_total))*ry2meV)
-    h5_elphmat.close()
-
-
 
 def q_elph_map_q_omega(q_frac_elph, q_frac_omega):
     baseKgrid = q_frac_elph
@@ -220,32 +166,14 @@ def read_single_epb(prefix,epb_index):
     f = h5.File(prefix+'_elph_%s.h5'%epb_index,'r')
 
     # These three variables el-ph mat in EPW order
-    ep_real_epworder = f['elph_nu_real'][()] # (q, nu, k, j, i) WRONG!! -> #(q, nu, k, i, j) THIS SHOULD BE RIGHT!!! 2023/09/05 Bowen Hou
-    ep_imag_epworder = f['elph_nu_imag'][()]
+    ep_real_epworder = f['elph_cart_real'][()] # (q, nu, k, i, j) THIS SHOULD BE RIGHT!!! 2023/09/05 Bowen Hou
+    ep_imag_epworder = f['elph_cart_imag'][()]
     g2_epworder = ep_imag_epworder**2 + ep_real_epworder**2
 
     # Reshape this to fit order in my EXPH order elph_mat(nq,nk,ni,nj,nmode), this order is actually the same as el-ph matrix on interpolated fine grid
     # Well, anyway, here is how I organize the el-ph matrix in a very simple way (this might have some memory issue if el-ph matrix is very large)
 
-    # (1) (q, nu, k, i ,j) --> (q, k ,nu, i ,j)
-    ep_real = np.swapaxes(ep_real_epworder,1,2)
-    ep_imag = np.swapaxes(ep_imag_epworder,1,2)
-    g2 = np.swapaxes(g2_epworder,1,2)
-    # (2) (q,k,nu,i,j) -->  (q,k,i,j,nu)
-    ep_real = np.swapaxes(ep_real,2,3)
-    ep_imag = np.swapaxes(ep_imag,2,3)
-    g2 = np.swapaxes(g2,2,3) # (q,k,i,nu,j)
-
-    ep_real = np.swapaxes(ep_real,3,4)
-    ep_imag = np.swapaxes(ep_imag,3,4)
-    g2 = np.swapaxes(g2,3,4) # (q,k,i,j,nu)
-
-    # ep_real = np.swapaxes(ep_real,2,3)
-    # ep_imag = np.swapaxes(ep_imag,2,3)
-    # g2 = np.swapaxes(g2,2,3) # (q,k,i,j,nu)
-
-
-    return ep_real, ep_imag, g2
+    return ep_real_epworder, ep_imag_epworder, g2_epworder
 
 
 def read_single_epb_binary(prefix,epb_index,ni,nj,nk,nq,nmu):

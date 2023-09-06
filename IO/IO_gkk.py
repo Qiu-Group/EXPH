@@ -50,13 +50,13 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     # data_temp_raw = np.loadtxt(save_path+'elphmat.dat')
     # data_phase_temp_raw = np.loadtxt(save_path + 'elphmat_phase.dat')
 
-    f_nophase = h5.File(save_path+'elphmat.h5','r')
+    # f_nophase = h5.File(save_path+'elphmat.h5','r')
     f_phase = h5.File(save_path+'elphmat_phase.h5','r')
 
-    data_temp_raw = f_nophase['data/'][()]
+    # data_temp_raw = f_nophase['data/'][()]
     data_phase_temp_raw = f_phase['data/'][()]
 
-    f_nophase.close()
+    # f_nophase.close()
     f_phase.close()
 
     omega_raw = np.loadtxt(save_path+"omega.dat")
@@ -70,10 +70,10 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     # progress()
     ####################
     # 1.1 check data
-    print('nq:%s ,nk:%s ,nmode:%s, ni:%s, nj:%s, data_len:%s'%(nq,nk,nmode,ni,nj,len(data_temp_raw)))
-    if len(data_temp_raw) != nq*nk*nmode*ni*nj:
-        raise Exception("nq*nk*nmode*ni*nj != gkk.shape, check elphmat.dat")
-        # tododone: add a break in the final version of function
+    print('nq:%s ,nk:%s ,nmode:%s, ni:%s, nj:%s, data_len:%s'%(nq,nk,nmode,ni,nj,len(data_phase_temp_raw)))
+    # if len(data_temp_raw) != nq*nk*nmode*ni*nj:
+    #     raise Exception("nq*nk*nmode*ni*nj != gkk.shape, check elphmat.dat")
+    #     # tododone: add a break in the final version of function
     if data_phase_temp_raw.shape[0] != nq*nk*nmode*ni*nj:
         raise Exception("nq*nk*nmode*ni*nj != gkk_phase.shape, check elphmat_phase.dat")
         # tododone: add a break in the final version of function
@@ -88,13 +88,13 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     # progress()
     ####################
     omega_temp = omega_raw.reshape(nq,nmode)
-    data_temp = data_temp_raw.reshape(nq,nk,ni,nj,nmode)
-    data_phase_temp = np.vectorize(complex)(data_phase_temp_raw[:,0],data_phase_temp_raw[:,1])
-    data_phase_temp = data_phase_temp.reshape(nq,nk,ni,nj,nmode)
+    # data_temp = data_temp_raw.reshape(nq,nk,ni,nj,nmode)
+    data_phase_temp = np.vectorize(complex)(data_phase_temp_raw[...,0],data_phase_temp_raw[...,1])
+    # data_phase_temp = data_phase_temp.reshape(nq,nk,ni,nj,nmode)
     # 2.0 create gkk.h5 file
     f = h5.File('gkk.h5','w')
     header = f.create_group('epw_header')
-    f.create_dataset('epw_data/elphmat', data=data_temp)
+    # f.create_dataset('epw_data/elphmat', data=data_temp)
     f.create_dataset('epw_data_phase/elphmat_phase',data=data_phase_temp,dtype=np.complex64)
     header.create_dataset('omega',data=omega_temp)
     header.create_dataset('kpt_coor',data=k_temp)

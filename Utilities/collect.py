@@ -3,6 +3,8 @@
 import os
 import sys
 from Utilities.epmatq import read_epb, read_omega
+from Utilities.rotate import epbfile
+
 # TODO!!
 #for i in {1..3};do cp Q-$i/5.2-absorp-Q/eigenvectors.h5 save/eigenvectors_$i.h5;done
 if len(sys.argv) != 3:
@@ -20,15 +22,17 @@ if sys.argv[1] == 'acv':
     print('data collected!')
 
 elif sys.argv[1] == 'gkk':
-    # read_omega()
+    # read cart electron-phonon matrix
     read_epb(prefix=second_parameter)
+    # rotate el_ph_cart to el_ph_phonon
+    epb = epbfile(prefix="MoS2")
+    epb.diagonalize_dynmat()
+    epb.write_hdf5_qbyq()
 
     os.mkdir('./gkk.save')
     os.mkdir('./gkk.save/backup_parameter')
     os.system('cp epw.out gkk.save')
 
-    # os.system('mv elphmat.dat gkk.save/')
-    # os.system('mv elphmat_phase.dat gkk.save/')
     os.system('mv elphmat.h5 gkk.save/')
     os.system('mv elphmat_phase.h5 gkk.save/')
     os.system('mv omega.dat gkk.save')

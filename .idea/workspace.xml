@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Major: (1) Velocity: 1/a.u. --&gt; 1/A. (2) Find that larger X and Y could solve boundary condition issue!">
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="add yang-hao's method">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Utilities/collect.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utilities/collect.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +37,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/OneDrive/03-research/02-research@yale/01+Bi2Te3/code_B2T3&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -396,7 +397,14 @@
       <option name="project" value="LOCAL" />
       <updated>1677529204170</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="add yang-hao's method">
+      <created>1694011430453</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1694011430453</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -446,6 +454,7 @@
     <MESSAGE value="Major: GPU for occupation is done!!" />
     <MESSAGE value="Major: Memory Issue of parallel PDE is fixed!!" />
     <MESSAGE value="Major: (1) Velocity: 1/a.u. --&gt; 1/A. (2) Find that larger X and Y could solve boundary condition issue!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Major: (1) Velocity: 1/a.u. --&gt; 1/A. (2) Find that larger X and Y could solve boundary condition issue!" />
+    <MESSAGE value="add yang-hao's method" />
+    <option name="LAST_COMMIT_MESSAGE" value="add yang-hao's method" />
   </component>
 </project>
