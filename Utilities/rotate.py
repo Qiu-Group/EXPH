@@ -1,6 +1,6 @@
 import numpy as np
 import h5py as h5
-from Utilities.constants import Ry2cm1
+from Utilities.constants import Ry2cm1, Ry2meV
 
 class epbfile():
     def __init__(self, prefix="MoS2", read=True):
@@ -13,7 +13,8 @@ class epbfile():
     def read_dynq_h5(self):
 
         self.f_dynq = h5.File(self.fname,'r')
-        self.amass = self.f_dynq.get('atomic_masses')[()]
+        self.amass = self.f_dynq.get('atomic_masses')[::3]
+        print('amass:', self.amass)
         self.dynq_real = self.f_dynq.get('dynq_real')[()]
         self.dynq_imag = self.f_dynq.get('dynq_imag')[()]
 
@@ -50,9 +51,9 @@ class epbfile():
         # TODO: divide by mass
         for i in range(self.nat):
           for j in range(self.nat):
-             # massfac = 1./ np.sqrt( self.amass[self.ityp[i]] * self.amass[self.ityp[j]])
-             dynp[3*i:3*(i+1), 3*j:3*(j+1)] = self.dynq[iqpt, 3*i:3*(i+1), 3*j:3*(j+1)]
-                                             # * massfac
+             massfac = 1./ np.sqrt( self.amass[i] * self.amass[j])
+             dynp[3*i:3*(i+1), 3*j:3*(j+1)] = self.dynq[iqpt, 3*i:3*(i+1), 3*j:3*(j+1)]\
+                                             * massfac
 
         dyn1 = (dynp + dynp.transpose().conjugate())/2.0
         evals, eigvecs = np.linalg.eigh(dyn1)
@@ -62,12 +63,12 @@ class epbfile():
           if eig < 0.0:
             evals[i] = 0.0
 
-        # TODO: Scale the eigenvectors
-        # if not dont_scale:
-        #   for i in range(self.nat):
-        #     for dir1 in range(3):
-        #       ipert = i*3 + dir1
-        #       eigvecs[ipert,:] = eigvecs[ipert,:] * np.sqrt( 1./ self.amass[self.ityp[i]])
+        # Scale the eigenvectors
+        if not dont_scale:
+          for i in range(self.nat):
+            for dir1 in range(3):
+              ipert = i*3 + dir1
+              eigvecs[ipert,:] = eigvecs[ipert,:] * np.sqrt( 1./ self.amass[i])
 
         omega = np.sqrt(evals)
         eigvect = np.array(eigvecs[:])
@@ -111,9 +112,9 @@ class epbfile():
                 print("\n Computing gkk at iq: %d"%iq)
                 gkk = self.f_epmatq.get('elph_cart_real')[iq] + 1j * self.f_epmatq.get('elph_cart_imag')[iq] # (nq,nmu,nk,ni,nj) ->  (nmu,nk,ni,nj)
                 gmode = self.get_gkk_modeq(iq,gkk) # (nmu,nk,ni,nj)
-                gmode = gmode.transpose([1,2,3,0]) #(nk,ni,nj,nu)
-                f["data"][iq,:,:,:,:,0] = np.real(gmode)
-                f["data"][iq,:,:,:,:,1] = np.imag(gmode)
+                gmode = gmode.transpose([1,2,3,0]) * Ry2meV #(nk,ni,nj,nu) and unit becomes meV
+                f["data"][iq,:,:,:,:,0] = np.real(gmode) #(nk,ni,nj,nu) and unit becomes meV
+                f["data"][iq,:,:,:,:,1] = np.imag(gmode) #(nk,ni,nj,nu) and unit becomes meV
         return
 
 

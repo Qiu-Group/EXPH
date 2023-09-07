@@ -196,24 +196,24 @@ class epbfile():
         return
 
 
-    # def get_gkk_squared(self):
-    #     """
-    #     Get squared values of gkk
-    #
-    #     The factor sqrt(hbar/2/M/omega) is considered in get_gkk_mode
-    #     M is hidden in the normal modes
-    #
-    #     """
-    #     if not self.GKKmode_done:
-    #        self.get_gkk_mode()
-    #
-    #     # nq, nmode, nks, nbnd, nbnd
-    #     gkk2 = np.einsum('qjkst,qjkst->qjkst',\
-    #                       self.GKKmode.conjugate(), self.GKKmode)
-    #     # Symmetrize ?
-    #
-    #     return gkk2
-    #
+    def get_gkk_squared(self):
+        """
+        Get squared values of gkk
+
+        The factor sqrt(hbar/2/M/omega) is considered in get_gkk_mode
+        M is hidden in the normal modes
+
+        """
+        if not self.GKKmode_done:
+           self.get_gkk_mode()
+
+        # nq, nmode, nks, nbnd, nbnd
+        gkk2 = np.einsum('qjkst,qjkst->qjkst',\
+                          self.GKKmode.conjugate(), self.GKKmode)
+        # Symmetrize ?
+
+        return gkk2
+
     #
     # def crys_to_cart(self, kpts_in, mode):
     #     """
