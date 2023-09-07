@@ -33,7 +33,7 @@ elif sys.argv[1] == 'gkk':
     os.mkdir('./gkk.save/backup_parameter')
     os.system('cp epw.out gkk.save')
 
-    os.system('mv elphmat.h5 gkk.save/')
+    # os.system('mv elphmat.h5 gkk.save/')
     os.system('mv elphmat_phase.h5 gkk.save/')
     os.system('mv omega.dat gkk.save')
     os.system('mv k.dat gkk.save')

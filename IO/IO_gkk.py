@@ -70,11 +70,11 @@ def create_gkkh5(nq,nk,nmode,ni,nj,save_path):
     # progress()
     ####################
     # 1.1 check data
-    print('nq:%s ,nk:%s ,nmode:%s, ni:%s, nj:%s, data_len:%s'%(nq,nk,nmode,ni,nj,len(data_phase_temp_raw)))
+    print('nq:%s ,nk:%s ,nmode:%s, ni:%s, nj:%s, data_len:%s'%(nq,nk,nmode,ni,nj,data_phase_temp_raw.shape))
     # if len(data_temp_raw) != nq*nk*nmode*ni*nj:
     #     raise Exception("nq*nk*nmode*ni*nj != gkk.shape, check elphmat.dat")
     #     # tododone: add a break in the final version of function
-    if data_phase_temp_raw.shape[0] != nq*nk*nmode*ni*nj:
+    if data_phase_temp_raw.shape != (nq,nk,ni,nj,nmode,2):
         raise Exception("nq*nk*nmode*ni*nj != gkk_phase.shape, check elphmat_phase.dat")
         # tododone: add a break in the final version of function
     if q_temp.shape[0] != nq:

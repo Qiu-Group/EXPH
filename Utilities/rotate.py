@@ -111,7 +111,7 @@ class epbfile():
                 print("\n Computing gkk at iq: %d"%iq)
                 gkk = self.f_epmatq.get('elph_cart_real')[iq] + 1j * self.f_epmatq.get('elph_cart_imag')[iq] # (nq,nmu,nk,ni,nj) ->  (nmu,nk,ni,nj)
                 gmode = self.get_gkk_modeq(iq,gkk) # (nmu,nk,ni,nj)
-                gmode.transpose([1,2,3,0]) #(nk,ni,nj,nu)
+                gmode = gmode.transpose([1,2,3,0]) #(nk,ni,nj,nu)
                 f["data"][iq,:,:,:,:,0] = np.real(gmode)
                 f["data"][iq,:,:,:,:,1] = np.imag(gmode)
         return
