@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="EXPH-3.0">
-      <change beforePath="$PROJECT_DIR$/.idea/code_exph.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code_exph.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exph.in" beforeDir="false" afterPath="$PROJECT_DIR$/exph.in" afterDir="false" />
-    </list>
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Summation of |G(Q,q)|^2 is wrong. Sum |G(Q,q)| in the Para_EX_PH_mat.py instead." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -420,7 +415,14 @@
       <option name="project" value="LOCAL" />
       <updated>1694098545930</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Summation of |G(Q,q)|^2 is wrong. Sum |G(Q,q)| in the Para_EX_PH_mat.py instead.">
+      <created>1694354420470</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1694354420470</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -446,7 +448,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="normalization over delta function has been added" />
     <MESSAGE value="no normalization" />
     <MESSAGE value="interpolation is working" />
     <MESSAGE value="reconstruct mat.py, scat.py and inteqp.py&#10;&#10;(1) mat.py: add gqQ_inteqp_q&#10;(2) scat.py: add interpolation_check_for_Gamma_calculation&#10;(3) inteqp.py: rm gqQ_inteqp_q; rm interpolation_check_for_Gamma_calculation" />
@@ -471,6 +472,7 @@
     <MESSAGE value="add yang-hao's method" />
     <MESSAGE value="minor debug" />
     <MESSAGE value="EXPH-3.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="EXPH-3.0" />
+    <MESSAGE value="Summation of |G(Q,q)|^2 is wrong. Sum |G(Q,q)| in the Para_EX_PH_mat.py instead." />
+    <option name="LAST_COMMIT_MESSAGE" value="Summation of |G(Q,q)|^2 is wrong. Sum |G(Q,q)| in the Para_EX_PH_mat.py instead." />
   </component>
 </project>

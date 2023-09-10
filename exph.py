@@ -21,6 +21,7 @@ import sys
 import time
 
 # here is debug
+# here debug is done
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
