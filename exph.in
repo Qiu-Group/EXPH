@@ -17,6 +17,7 @@ S_list = [1,4]
 
 # this could be paralleled over nQ * nq
 # nS_initial/final means the number of initial "n" and final states "m".
+# This is |G(q,Q)|^2 [eV]
 exph_mat_write = True
 nS_initial = 3
 nS_final = 3
