@@ -189,6 +189,13 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 
     gamma_each_q_res_each_process = np.zeros((workload_over_q_fi,4)) # This matrix store gamma for every phonon-q points, and gamma_each_q_res.sum() == Gamma_res: True
 
+    # every processor create a h5 file
+    f_G_qn = h5.File('G_qm_%s.h5'%rank, 'w')
+    f_G_qn.create_dataset("G_qvm", (plan_list_2[1]-plan_list_2[0], n_phonon ,exciton_energy.shape[1]), dtype=np.float) # ex-ph matrix fine grid
+    f_G_qn.create_dataset("gamma_qvm", (plan_list_2[1]-plan_list_2[0], n_phonon ,exciton_energy.shape[1]), dtype=np.float) # scattering rate fine grid (Fermi-Golden Rule)
+    f_G_qn.create_dataset("Omega_Qm", (plan_list_2[1]-plan_list_2[0], exciton_energy.shape[1]), dtype=np.float) # exciton energy
+
+
     progress = ProgressBar(exciton_energy.shape[1], fmt=ProgressBar.FULL)
     if rank == 0:
         print("exciton energy:",exciton_energy[Q_kmap,n_ext_acv_index],'eV'); sys.stdout.flush()
@@ -205,26 +212,6 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 
         for v_ph_gkk_index_loop in range(n_phonon): # loop over phonon mode v
 
-            # get gqQ_inteqp before loop of q
-            # Therefore, no q_kmap needed in this equation!!!
-            # TODO: parallel over this!!!! write a function: para_gqQ_inteqp_()!!
-            # TODO: this step takes the longest time!!!
-            #  replace this with new gqQ_inteqp_q, which can realize parallel, it seems Gamma_Scat can only be a series function since it can not achieve
-            #  for this part: see EX_PH_mat_para_inteqp.py 150-154 lines
-            # we need to define another Gamma_scat_inteqp_q in parallel
-            # gqQ_sq_inteqp_temp = np.abs(gqQ_inteqp_q(n_ex_acv_index=n_ext_acv_index,
-            #                                   m_ex_acv_index=m_ext_acv_index_loop,
-            #                                   v_ph_gkk=v_ph_gkk_index_loop,
-            #                                   Q_kmap=Q_kmap, #!!! this Q_kmap from function parameter
-            #                                   interpo_size=interposize,
-            #                                   new_q_out=False,
-            #                                   acvmat=acvmat,
-            #                                   gkkmat=gkkmat,
-            #                                   kmap=kmap,
-            #                                   kmap_dic=kmap_dic,
-            #                                   bandmap_occ= [bandmap,occ],
-            #                                   muteProgress=True,
-            #                                   ))**2 # unit [eV^2]
 
             res_temp_each_process, new_q_out = gqQ_inteqp_get_coarse_grid(n_ex_acv_index=new_n_index,
                                                                           m_ex_acv_index=new_m_index,
@@ -242,17 +229,11 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
                                                                           q_map_end_para=plan_list[1])
 
             res_rcev_to_0 = comm.gather(res_temp_each_process, root=0)
+            #  gqQ_sq_inteqp_temp: (nq_co,) for each m,n,v
             gqQ_sq_inteqp_temp_co = after_parallel_sum_job(rk=rank, size=size, receive_res=res_rcev_to_0, start_time=start_time,
                                            start_time_proc=start_time_proc,mute=True)
-            # gqQ_sq_inteqp.shape = (interpolate_size, interpolate_size)
-            # gqQ_sq_inteqp.flatten.shape = (interpolate_size**2, 1)
-            # same order as grid_q_gqQ_res
             if rank == 0:
                 gqQ_sq_inteqp_temp_fi = gqQ_inteqp_q_series(res=gqQ_sq_inteqp_temp_co, new_q_out=new_q_out, path=path, interpo_size=interposize)
-                #
-                # if n_ext_acv_index == 2 and m_ext_acv_index_loop == 0 and v_ph_gkk_index_loop == 3 and Q_kmap == 15:
-                #     print("gqQ_sq_temp:",gqQ_sq_inteqp_temp_fi[0])
-                 #   pass
                 gqQ_sq_inteqp = (gqQ_sq_inteqp_temp_fi**2).flatten()
             else:
                 gqQ_sq_inteqp = 0
@@ -260,32 +241,7 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 
             gqQ_sq_inteqp = comm.bcast(gqQ_sq_inteqp,root=0)
 
-
-
-
-
             for q_qQmap in range(plan_list_2[0],plan_list_2[1]):  # q_kmap is the index of kmap from point 0-15 in kmap.dat (e.g)
-
-
-                # (1) ex-ph matrix
-                # gqQ(n_ex_acv_index, m_ex_acv_index, v_ph_gkk, Q_kmap, q_kmap,
-                #                  acvmat, gkkmat, kmap, kmap_dic, bandmap_occ,muteProgress)
-                #===============================================
-                # t_s = time.time()
-
-                # gqQ_sq_temp = np.abs(gqQ(n_ex_acv_index=n_ext_acv_index,
-                #            m_ex_acv_index=m_ext_acv_index_loop,
-                #            v_ph_gkk= v_ph_gkk_index_loop,
-                #            Q_kmap=Q_kmap,
-                #            q_kmap=q_kmap,
-                #            acvmat=acvmat,
-                #            gkkmat=gkkmat,
-                #            kmap=kmap,
-                #            kmap_dic=kmap_dic,
-                #            bandmap_occ= [bandmap,occ],
-                #            muteProgress=True
-                #            ))**2 # dimension [eV^2]
-                # ===============================================
 
                 Q_co_point = kmap[Q_kmap, :3] # Q_kmap is the index in kmap.dat
                 key_temp = '  %.5f    %.5f    %.5f' % (Q_co_point[0], Q_co_point[1], Q_co_point[2])
@@ -299,39 +255,14 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
                 key_temp = '  %.5f    %.5f    %.5f' % (Q_plus_q_inteqp_point[0], Q_plus_q_inteqp_point[1], Q_plus_q_inteqp_point[2])
                 Qpr_as_Q_plus_q_inteqp_index = Qq_dic[key_temp.replace('_','')]
 
-
-                # Qpr_as_Q_plus_q_acv_index = Q_plus_q_kmapout[0]
-
-                # tododone: double check this!!!
-
-
-                # find energy for exciton and phonon (you should use index_acv and index_gkk)
-                # omega.shape  = (nq, nmode)
-                # exciton_energy.shape = (nQ, nS)
-                # OMEGA_xx has included h_bar
-                #==================================================================
-                # gqQ_sq_inteqp.shape = (interpolate_size, interpolate_size)
-                # res_omega.shape = (n_phonon, interpolate_size, interpolate_size)
-                # res_OMEGA.shape = (n_exciton, interpolate_size, interpolate_size)
-
-                #==================================================================
-
                 g_nmvQ_temp = gqQ_sq_inteqp[q_inteqp_index]
-                # print("g_nmvQ_temp",g_nmvQ_temp)
-                # omega_v_q_temp = res_omega[int(v_ph_gkk_index_loop)].flatten()[q_inteqp_index]
-                # print("omega_q:", omega_v_q_temp)
                 if g_nmvQ_temp == 0:
-                    # print("g_nmvQ_temp == 0:", g_nmvQ_temp == 0)
                     continue
 
                 omega_v_q_temp = res_omega[int(v_ph_gkk_index_loop)].flatten()[q_inteqp_index] * 10 ** (-3) # dimension [eV]
                 OMEGA_n_Q_temp = res_OMEGA[int(n_ext_acv_index)].flatten()[Q_inteqp_index] # dimension [eV]
                 OMEGA_m_Q_plus_q_temp = res_OMEGA[int(m_ext_acv_index_loop)].flatten()[Qpr_as_Q_plus_q_inteqp_index] # dimension [eV]
 
-                # tododone Check this !!!
-                # omega_v_q_temp     = omega_mat[int(q_gkk_index),int(v_ph_gkk_index_loop)] * 10 ** (-3) # dimension [eV]
-                # OMEGA_m_Q_plus_q_temp = exciton_energy[int(Qpr_as_Q_plus_q_acv_index), int(m_ext_acv_index_loop)] # dimension [eV]
-                # OMEGA_n_Q_temp        = exciton_energy[int(Q_acv_index),               int(m_ext_acv_index_loop)] # dimension [eV]
 
                 distribution_first_temp = (
                                     (BE(omega=omega_v_q_temp, T=T) + 1 + BE(omega=OMEGA_m_Q_plus_q_temp, T=T))
@@ -347,18 +278,10 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
                 Gamma_res = Gamma_res + (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
                 # Gamma_second_res = Gamma_second_res +
                 gamma_each_q_res_each_process[q_qQmap,3] = gamma_each_q_res_each_process[q_qQmap,3] + (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
-                # print("distribution_first_temp", distribution_first_temp)
-                # print("BE part:", (BE(omega=omega_v_q_temp, T=T) + 1 + BE(omega=OMEGA_m_Q_plus_q_temp, T=T)))
-                # print("DIrac:", Dirac_1(OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp, sigma=degaussian))
-                # print("dirac energy",OMEGA_n_Q_temp - OMEGA_m_Q_plus_q_temp - omega_v_q_temp)
-                # print("\n")
 
-    # Gamma_first_to_0 = comm.gather(Gamma_first_res, root=0)
-    # Gamma_second_to_0 = comm.gather(Gamma_second_res, root=0)
-    # Gamma_fisrt_val  = after_parallel_sum_job(rk=rank, size=size, receive_res=Gamma_first_to_0 , start_time=start_time,
-    #                            start_time_proc=start_time_proc,mute=True)
-    # Gamma_second_val = after_parallel_sum_job(rk=rank, size=size, receive_res=Gamma_second_to_0 , start_time=start_time,
-    #                            start_time_proc=start_time_proc,mute=True)
+                f_G_qn["G_qvm"][q_qQmap - plan_list_2[0],v_ph_gkk_index_loop , m_ext_acv_index_loop] = g_nmvQ_temp
+                f_G_qn["gamma_qvm"][q_qQmap - plan_list_2[0], v_ph_gkk_index_loop  , m_ext_acv_index_loop] = (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
+                f_G_qn["Omega_Qm"][q_qQmap - plan_list_2[0], m_ext_acv_index_loop] = OMEGA_n_Q_temp
 
     Gamma_res_to_0 = comm.gather(Gamma_res, root=0)
     Gamma_res_val =    after_parallel_sum_job(rk=rank, size=size, receive_res=Gamma_res_to_0 , start_time=start_time,
@@ -368,9 +291,9 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     gamma_each_q_res_matrix = after_parallel_sum_job(rk=rank, size=size, receive_res=gamma_each_q_to_0 , start_time=start_time,
                                start_time_proc=start_time_proc,mute=True)
 
-    # TODO: Discuss with Diana!!!
-    # print("final value is",Gamma_fisrt_val)
-    # print("final value is",Gamma_second_val)
+    f_G_qn.close()
+    merge_f_G_qn()
+
     if rank == 0:
         bvec = read_lattice('b', path=path)
         gamma_each_q_res_matrix[:,0:3] = frac2carte(bvec,grid_q_gqQ_res[:,0:3])
@@ -387,6 +310,12 @@ def v_q_mesh(number_v_point,number_q_point):
             v_q_dic[count] = (v,q)
             count += 1
     return v_q_dic
+
+def merge_f_G_qn():
+    # todo
+    pass
+
+
 
 #==============================================================================================================>>>>>>>
 
