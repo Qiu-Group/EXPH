@@ -17,6 +17,7 @@ from IO.IO_common import read_bandmap, read_kmap, read_lattice,construct_kmap
 from IO.IO_acv import read_acv_for_para_Gamma_scat_inteqp
 import sys
 import h5py as h5
+import os
 # (1) para_Gamma_scat_low_efficiency_inteqp: it could calculate Gamma scat, but efficiency is pretty low! It is not good for parallel
 
 # --> (2) para_Gamma_scat_inteqp: it is used for parallel!
@@ -190,11 +191,12 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     gamma_each_q_res_each_process = np.zeros((workload_over_q_fi,4)) # This matrix store gamma for every phonon-q points, and gamma_each_q_res.sum() == Gamma_res: True
 
     # every processor create a h5 file
+# bowen hou 2023/09/23----------
     f_G_qn = h5.File('G_qm_%s.h5'%rank, 'w')
     f_G_qn.create_dataset("G_qvm", (plan_list_2[1]-plan_list_2[0], n_phonon ,exciton_energy.shape[1]), dtype=np.float) # ex-ph matrix fine grid
     f_G_qn.create_dataset("gamma_qvm", (plan_list_2[1]-plan_list_2[0], n_phonon ,exciton_energy.shape[1]), dtype=np.float) # scattering rate fine grid (Fermi-Golden Rule)
     f_G_qn.create_dataset("Omega_Qm", (plan_list_2[1]-plan_list_2[0], exciton_energy.shape[1]), dtype=np.float) # exciton energy
-
+# bowen hou 2023/09/23----------
 
     progress = ProgressBar(exciton_energy.shape[1], fmt=ProgressBar.FULL)
     if rank == 0:
@@ -278,11 +280,11 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
                 Gamma_res = Gamma_res + (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
                 # Gamma_second_res = Gamma_second_res +
                 gamma_each_q_res_each_process[q_qQmap,3] = gamma_each_q_res_each_process[q_qQmap,3] + (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
-
+# bowen hou 2023/09/23----------
                 f_G_qn["G_qvm"][q_qQmap - plan_list_2[0],v_ph_gkk_index_loop , m_ext_acv_index_loop] = g_nmvQ_temp
                 f_G_qn["gamma_qvm"][q_qQmap - plan_list_2[0], v_ph_gkk_index_loop  , m_ext_acv_index_loop] = (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
                 f_G_qn["Omega_Qm"][q_qQmap - plan_list_2[0], m_ext_acv_index_loop] = OMEGA_n_Q_temp
-
+# bowen hou 2023/09/23===========
     Gamma_res_to_0 = comm.gather(Gamma_res, root=0)
     Gamma_res_val =    after_parallel_sum_job(rk=rank, size=size, receive_res=Gamma_res_to_0 , start_time=start_time,
                                start_time_proc=start_time_proc,mute=False)
@@ -291,9 +293,11 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     gamma_each_q_res_matrix = after_parallel_sum_job(rk=rank, size=size, receive_res=gamma_each_q_to_0 , start_time=start_time,
                                start_time_proc=start_time_proc,mute=True)
 
+# bowen hou 2023/09/23----------
     f_G_qn.close()
-    merge_f_G_qn()
-
+    if rank == 0:
+        merge_f_G_qn(workload_over_q_fi=workload_over_q_fi,n_phonon=n_phonon,exciton_energy=exciton_energy,size=size)
+# bowen hou 2023/09/23==========
     if rank == 0:
         bvec = read_lattice('b', path=path)
         gamma_each_q_res_matrix[:,0:3] = frac2carte(bvec,grid_q_gqQ_res[:,0:3])
@@ -311,9 +315,38 @@ def v_q_mesh(number_v_point,number_q_point):
             count += 1
     return v_q_dic
 
-def merge_f_G_qn():
-    # todo
-    pass
+def merge_f_G_qn(workload_over_q_fi,n_phonon,exciton_energy,size):
+    if os.path.isfile('G_qm.h5'): os.remove('G_qm.h5')
+    f_G = h5.File('G_qm.h5', 'w')
+    f_G.create_dataset("G_qvm", (workload_over_q_fi, n_phonon ,exciton_energy.shape[1]), dtype=np.float) # ex-ph matrix fine grid
+    f_G.create_dataset("gamma_qvm", (workload_over_q_fi, n_phonon ,exciton_energy.shape[1]), dtype=np.float) # scattering rate fine grid (Fermi-Golden Rule)
+    f_G.create_dataset("Omega_Qm", (workload_over_q_fi, exciton_energy.shape[1]), dtype=np.float) # exciton energy
+
+    print('Saving G_qm.h5'); sys.stdout.flush()
+    progress = ProgressBar(size, fmt=ProgressBar.FULL)
+
+    start = 0
+    for i in range(1,size+1):
+
+        f_temp = h5.File('G_qm_%s.h5'%i, 'r')
+        G_qvn_temp = f_temp["G_qvm"][()]
+        gamma_qvm_temp = f_temp["gamma_qvm"][()]
+        Omega_Qm_temp = f_temp["Omega_Qm"][()]
+        f_temp.close()
+        os.remove('G_qm_%s.h5'%i)
+
+        f_G['G_qvm'][start:start+G_qvn_temp.shape[0],...] = G_qvn_temp
+        f_G['gamma_qvm'][start:start + gamma_qvm_temp.shape[0], ...] = gamma_qvm_temp
+        f_G['Omega_Qm'][start:start + Omega_Qm_temp.shape[0], ...] = Omega_Qm_temp
+
+
+        start = start+G_qvn_temp.shape[0]
+        progress.current += 1
+        progress()
+        sys.stdout.flush()
+
+    f_G.close()
+    print('Saving G_qm.h5 is done!'); sys.stdout.flush()
 
 
 
