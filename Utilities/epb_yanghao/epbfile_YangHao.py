@@ -214,186 +214,186 @@ class epbfile():
 
         return gkk2
 
-    #
-    # def crys_to_cart(self, kpts_in, mode):
-    #     """
-    #     Convert between Cartesian and crystal coordinates
-    #
-    #     """
-    #     kpts_out = np.zeros(kpts_in.shape)
-    #
-    #     if mode < 0:
-    #        # Cart to Cryst
-    #        binv = np.linalg.inv(self.bvec)
-    #        for ik, kpt in enumerate(kpts_in):
-    #          kpts_out[ik] = np.dot(kpt, binv)
-    #     else:
-    #        # Cryst to Cart
-    #        for ik, kpt in enumerate(kpts_in):
-    #          kpts_out[ik] = np.dot(kpt, self.bvec)
-    #
-    #     return kpts_out
-    #
-    #
-    # def fold_kpts(self, kpts_in):
-    #     """
-    #     kpts in the range of [0,1)
-    #
-    #     """
-    #     kpts_out = np.zeros(kpts_in.shape)
-    #
-    #     for ik, kpt in enumerate(kpts_in):
-    #        for i in range(3):
-    #          while kpt[i] < -1e-10:
-    #            kpt[i] = kpt[i] + 1.0
-    #          while kpt[i] >= 1-1e-10:
-    #            kpt[i] = kpt[i] - 1.0
-    #
-    #        kpts_out[ik] = kpt
-    #
-    #     return kpts_out
-    #
-    # def reorder_bandsq(self, gmode, ifmax, nvb_u, ncb_u):
-    #     """
-    #     Reorder bands at a single q point,
-    #     since BerkeleyGW counts bands from Fermi level
-    #
-    #     Input:
-    #         ifmax: valence band top
-    #         nvb_u, ncb_u: bands number we want to use
-    #
-    #     """
-    #     nvb_q = ifmax - nvb_u
-    #     ncb_q = ifmax + ncb_u
-    #     if nvb_q < 0 or ncb_q > self.nbnd:
-    #        raise Exception('  epb matrix does not have enough bands' )
-    #
-    #     nbnd = nvb_u + ncb_u
-    #     gmode_out = np.zeros([self.nmodes,self.nk,nbnd,nbnd], dtype=complex)
-    #
-    #     idx = np.append(np.arange(ifmax-1,ifmax-1-nvb_u,-1),\
-    #                     np.arange(ifmax, ifmax+ncb_u))
-    #     order = np.ix_(range(self.nmodes),range(self.nk),idx,idx)
-    #     gmode_out = gmode[order]
-    #
-    #     return gmode_out
-    #
-    # def reorder_bands(self, ifmax, nvb_u, ncb_u):
-    #     """
-    #     Reorder bands,
-    #     since BerkeleyGW counts bands from Fermi level
-    #
-    #     Input:
-    #         ifmax: valence band top
-    #         nvb_u, ncb_u: bands number we want to use
-    #
-    #     """
-    #     if not self.GKKmode_done:
-    #         raise Exception('GKK mode representation is not computed.')
-    #
-    #     self.nvb = nvb_u
-    #     self.ncb = ncb_u
-    #     self.ifmax = ifmax
-    #
-    #     nbnd = self.nvb+self.ncb
-    #
-    #     Gkktmp = np.zeros([self.nq,self.nmodes,self.nk,nbnd,nbnd], dtype=complex)
-    #
-    #     for ik in range(self.nk):
-    #
-    #        nvbtop = ifmax
-    #        nvb_q = nvbtop - nvb_u
-    #        ncb_q = nvbtop + ncb_u
-    #
-    #        if nvb_q < 0 or ncb_q > self.nbnd:
-    #           raise Exception('  epb matrix does not have enough bands' )
-    #
-    #        idx = np.append(np.arange(nvbtop-1,nvbtop-1-nvb_u,-1),\
-    #                        np.arange(nvbtop, ncb_u+nvbtop))
-    #        order = np.ix_(range(self.nq),range(self.nmodes),range(ik,ik+1),\
-    #                       idx,idx)
-    #        tmp = self.GKKmode[order]
-    #        Gkktmp[:,:,ik,:,:] = tmp.reshape([self.nq,self.nmodes,nbnd,nbnd])
-    #
-    #     self.GKKmode = np.array(Gkktmp[:])
-    #
-    #     self.reordered = True
-    #     print( '  New shape of GKK', self.GKKmode.shape)
-    #
-    #     return
-    #
-    # def reorder_kq(self):
-    #     """
-    #     g(k,q)_mn = < m k+q | Vq | n k >
-    #
-    #     We relable it as
-    #
-    #     g'(k',k)_mn = < m k' | V(k'-k) | n k>
-    #
-    #     """
-    #     if self.kreorder:
-    #         print( " Reordering has been done")
-    #         return
-    #
-    #     tmp = np.zeros(self.GKKmode.shape, dtype=complex)
-    #
-    #     for ik, kpt in enumerate(self.my_xk):
-    #       for iq, qpt in enumerate(self.xqc):
-    #         kpq = self.fold_kpts(np.array([kpt+qpt]))
-    #         ikpq = np.argmin(np.linalg.norm(kpq-self.my_xk, axis=1))
-    #         tmp[ikpq,:,ik,:,:] = self.GKKmode[iq,:,ik,:,:]
-    #
-    #     self.GKKmode = None
-    #     self.GKKmode = np.array(tmp[:])
-    #
-    #     self.kreorder = True
-    #
-    #     nb = self.GKKmode.shape[-1]
-    #     # Symmetrize. To ensure detailed balance
-    #     for ik in range(self.nk):
-    #       for ikp in range(ik):
-    #         for mu in range(self.nmodes):
-    #           for nn in range(nb):
-    #             for mm in range(nn+1):
-    #                self.GKKmode[ikp,mu,ik,mm,nn] = self.GKKmode[ik,mu,ikp,nn,mm].conjugate()
-    #
-    #     return
-    #
-    # def print_variables(self):
-    #
-    #     print( ' Data in the file:', self.fname)
-    #     if self.nk_first:
-    #        print('\n  Warning!')
-    #        print('  epmatq is ordered as [nk, nq, nmode, nb, nb]')
-    #     print( '   Total number of kpoints = ', self.nk)
-    #     print( '   Local number of kpoints = ', self.my_nk)
-    #     for kpt in self.my_xk:
-    #         print( kpt)
-    #
-    #     print( '   Number of bands = ', self.nbnd)
-    #     print( '   Number of modes = ', self.nmodes)
-    #     print( '   Number of qpoints= ', self.nq)
-    #
-    #     for qpt in self.xqc:
-    #         print( qpt)
-    #
-    # def write_phonons(self, fout='phonon.h5'):
-    #     """
-    #     write phonon frequency and eigenvectors
-    #
-    #     """
-    #     if not self.dyn_diagonalized:
-    #       self.diagonalize_dynmat()
-    #
-    #     with h5.File(fout, 'w') as f:
-    #       header = f.create_group("header")
-    #       header.create_dataset("nq", data=self.nq)
-    #       header.create_dataset("qpts", data=self.xqc)
-    #       header.create_dataset("nmodes", data=self.nmodes)
-    #       f.create_dataset("omega", data=self.omega)
-    #       f.create_dataset("eigvect", data=self.eigvect)
-    #
-    #     return
+
+    def crys_to_cart(self, kpts_in, mode):
+        """
+        Convert between Cartesian and crystal coordinates
+
+        """
+        kpts_out = np.zeros(kpts_in.shape)
+
+        if mode < 0:
+           # Cart to Cryst
+           binv = np.linalg.inv(self.bvec)
+           for ik, kpt in enumerate(kpts_in):
+             kpts_out[ik] = np.dot(kpt, binv)
+        else:
+           # Cryst to Cart
+           for ik, kpt in enumerate(kpts_in):
+             kpts_out[ik] = np.dot(kpt, self.bvec)
+
+        return kpts_out
+
+
+    def fold_kpts(self, kpts_in):
+        """
+        kpts in the range of [0,1)
+
+        """
+        kpts_out = np.zeros(kpts_in.shape)
+
+        for ik, kpt in enumerate(kpts_in):
+           for i in range(3):
+             while kpt[i] < -1e-10:
+               kpt[i] = kpt[i] + 1.0
+             while kpt[i] >= 1-1e-10:
+               kpt[i] = kpt[i] - 1.0
+
+           kpts_out[ik] = kpt
+
+        return kpts_out
+
+    def reorder_bandsq(self, gmode, ifmax, nvb_u, ncb_u):
+        """
+        Reorder bands at a single q point,
+        since BerkeleyGW counts bands from Fermi level
+
+        Input:
+            ifmax: valence band top
+            nvb_u, ncb_u: bands number we want to use
+
+        """
+        nvb_q = ifmax - nvb_u
+        ncb_q = ifmax + ncb_u
+        if nvb_q < 0 or ncb_q > self.nbnd:
+           raise Exception('  epb matrix does not have enough bands' )
+
+        nbnd = nvb_u + ncb_u
+        gmode_out = np.zeros([self.nmodes,self.nk,nbnd,nbnd], dtype=complex)
+
+        idx = np.append(np.arange(ifmax-1,ifmax-1-nvb_u,-1),\
+                        np.arange(ifmax, ifmax+ncb_u))
+        order = np.ix_(range(self.nmodes),range(self.nk),idx,idx)
+        gmode_out = gmode[order]
+
+        return gmode_out
+
+    def reorder_bands(self, ifmax, nvb_u, ncb_u):
+        """
+        Reorder bands,
+        since BerkeleyGW counts bands from Fermi level
+
+        Input:
+            ifmax: valence band top
+            nvb_u, ncb_u: bands number we want to use
+
+        """
+        if not self.GKKmode_done:
+            raise Exception('GKK mode representation is not computed.')
+
+        self.nvb = nvb_u
+        self.ncb = ncb_u
+        self.ifmax = ifmax
+
+        nbnd = self.nvb+self.ncb
+
+        Gkktmp = np.zeros([self.nq,self.nmodes,self.nk,nbnd,nbnd], dtype=complex)
+
+        for ik in range(self.nk):
+
+           nvbtop = ifmax
+           nvb_q = nvbtop - nvb_u
+           ncb_q = nvbtop + ncb_u
+
+           if nvb_q < 0 or ncb_q > self.nbnd:
+              raise Exception('  epb matrix does not have enough bands' )
+
+           idx = np.append(np.arange(nvbtop-1,nvbtop-1-nvb_u,-1),\
+                           np.arange(nvbtop, ncb_u+nvbtop))
+           order = np.ix_(range(self.nq),range(self.nmodes),range(ik,ik+1),\
+                          idx,idx)
+           tmp = self.GKKmode[order]
+           Gkktmp[:,:,ik,:,:] = tmp.reshape([self.nq,self.nmodes,nbnd,nbnd])
+
+        self.GKKmode = np.array(Gkktmp[:])
+
+        self.reordered = True
+        print( '  New shape of GKK', self.GKKmode.shape)
+
+        return
+
+    def reorder_kq(self):
+        """
+        g(k,q)_mn = < m k+q | Vq | n k >
+
+        We relable it as
+
+        g'(k',k)_mn = < m k' | V(k'-k) | n k>
+
+        """
+        if self.kreorder:
+            print( " Reordering has been done")
+            return
+
+        tmp = np.zeros(self.GKKmode.shape, dtype=complex)
+
+        for ik, kpt in enumerate(self.my_xk):
+          for iq, qpt in enumerate(self.xqc):
+            kpq = self.fold_kpts(np.array([kpt+qpt]))
+            ikpq = np.argmin(np.linalg.norm(kpq-self.my_xk, axis=1))
+            tmp[ikpq,:,ik,:,:] = self.GKKmode[iq,:,ik,:,:]
+
+        self.GKKmode = None
+        self.GKKmode = np.array(tmp[:])
+
+        self.kreorder = True
+
+        nb = self.GKKmode.shape[-1]
+        # Symmetrize. To ensure detailed balance
+        for ik in range(self.nk):
+          for ikp in range(ik):
+            for mu in range(self.nmodes):
+              for nn in range(nb):
+                for mm in range(nn+1):
+                   self.GKKmode[ikp,mu,ik,mm,nn] = self.GKKmode[ik,mu,ikp,nn,mm].conjugate()
+
+        return
+
+    def print_variables(self):
+
+        print( ' Data in the file:', self.fname)
+        if self.nk_first:
+           print('\n  Warning!')
+           print('  epmatq is ordered as [nk, nq, nmode, nb, nb]')
+        print( '   Total number of kpoints = ', self.nk)
+        print( '   Local number of kpoints = ', self.my_nk)
+        for kpt in self.my_xk:
+            print( kpt)
+
+        print( '   Number of bands = ', self.nbnd)
+        print( '   Number of modes = ', self.nmodes)
+        print( '   Number of qpoints= ', self.nq)
+
+        for qpt in self.xqc:
+            print( qpt)
+
+    def write_phonons(self, fout='phonon.h5'):
+        """
+        write phonon frequency and eigenvectors
+
+        """
+        if not self.dyn_diagonalized:
+          self.diagonalize_dynmat()
+
+        with h5.File(fout, 'w') as f:
+          header = f.create_group("header")
+          header.create_dataset("nq", data=self.nq)
+          header.create_dataset("qpts", data=self.xqc)
+          header.create_dataset("nmodes", data=self.nmodes)
+          f.create_dataset("omega", data=self.omega)
+          f.create_dataset("eigvect", data=self.eigvect)
+
+        return
     #
     def write_hdf5_qbyq(self, ifmax, nvb_u, ncb_u, fout='epbmat_mode.h5'):
         """
