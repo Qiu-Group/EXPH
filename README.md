@@ -41,6 +41,8 @@ Last Updated: 09/07/2023
 
 9. Phase issue is solved!! (*new!*)
 
+10. G_qm (exciton-phonon interaction) could be plotted along high symmetry line (*new!*)
+
 ## Workflow
 
 Please read Tutorial/Tutorial.md to learn how to use this tool! 

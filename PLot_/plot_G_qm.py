@@ -94,9 +94,9 @@ def get_highsymmetry_index_kmap(high_symm="0.0 0.0 0.0 , 0.5 0.0 0.0"):
 def plot_g_qm(high_symm, m_start, m_end, mu_start, mu_end):
     f = h5.File("G_qm.h5",'r')
     kmap_path_index = get_highsymmetry_index_kmap(high_symm=high_symm)
-    omega = f['Omega_Qm'][kmap_path_index,m_start:m_end]
-    gamma_qvm = f['gamma_qvm'][kmap_path_index, mu_start:mu_end ,m_start:m_end].sum(axis=1)
-    G_qvm = f['G_qvm'][kmap_path_index, mu_start:mu_end, m_start:m_end].sum(axis=1)
+    omega = f['Omega_Qm'][()][kmap_path_index,m_start:m_end]
+    gamma_qvm = f['gamma_qvm'][()][kmap_path_index, mu_start:mu_end ,m_start:m_end].sum(axis=1)
+    G_qvm = f['G_qvm'][()][kmap_path_index, mu_start:mu_end, m_start:m_end].sum(axis=1)
 
     nk = len(kmap_path_index)
     nS = m_end-m_start
@@ -107,13 +107,25 @@ def plot_g_qm(high_symm, m_start, m_end, mu_start, mu_end):
     res[:, 2] = (G_qvm.transpose()).flatten()
     res[:, 3] = (gamma_qvm.transpose()).flatten()
 
-    np.savetxt('G_qm.dat',res)
+    f = open('G_qm.dat','w')
+    f.write('# kpath    Exciton Energy (eV)   |G|^2 (eV^2)    EX-PH Scattering\n')
+
+    for s in range(nS):
+        section = (nS)//10 if nS >= 10 else 1
+        if s % section == 0: print(s,'/',nS)
+        for k in range(nk):
+            f.write("%.5f %.5f %.5f %.5f\n"%(res[s*nk + k, 0],res[s*nk + k, 1],res[s*nk + k, 2],res[s*nk + k, 3]))
+        f.write('\n')
+
+    f.close()
+
+
 
 if __name__ == "__main__":
     # This script could choose high symmetry point and find the high symmetry path
     # Then plot the exciton energy, exciton-phonon, exciton scattering rate along high-symmetry path
     # the required input file is "G_qm.h5"
-    high_symm = "0.0 0.0 0.0 , 0.0 0.5 0.0"
+    high_symm = "0.0 0.0 0.0, 0.333333333 0.333333333333 0 , 0.0 0.5 0.0, 0.0 0.0 0.0"
     m_start = 0
     m_end = 4 # number of m is m_end - m_start
     mu_start = 0
