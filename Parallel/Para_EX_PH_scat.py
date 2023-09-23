@@ -283,7 +283,7 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 # bowen hou 2023/09/23----------
                 f_G_qn["G_qvm"][q_qQmap - plan_list_2[0],v_ph_gkk_index_loop , m_ext_acv_index_loop] = g_nmvQ_temp
                 f_G_qn["gamma_qvm"][q_qQmap - plan_list_2[0], v_ph_gkk_index_loop  , m_ext_acv_index_loop] = (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
-                f_G_qn["Omega_Qm"][q_qQmap - plan_list_2[0], m_ext_acv_index_loop] = OMEGA_n_Q_temp
+                f_G_qn["Omega_Qm"][q_qQmap - plan_list_2[0], m_ext_acv_index_loop] = OMEGA_m_Q_plus_q_temp
 # bowen hou 2023/09/23===========
     Gamma_res_to_0 = comm.gather(Gamma_res, root=0)
     Gamma_res_val =    after_parallel_sum_job(rk=rank, size=size, receive_res=Gamma_res_to_0 , start_time=start_time,
@@ -297,6 +297,9 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     f_G_qn.close()
     if rank == 0:
         merge_f_G_qn(workload_over_q_fi=workload_over_q_fi,n_phonon=n_phonon,exciton_energy=exciton_energy,size=size)
+        f_G = h5.File('G_qm.h5', 'a')
+        f_G.create_dataset('q_fi_frac',data=grid_q_gqQ_res[:,0:3])
+        f_G.close()
 # bowen hou 2023/09/23==========
     if rank == 0:
         bvec = read_lattice('b', path=path)
@@ -326,7 +329,7 @@ def merge_f_G_qn(workload_over_q_fi,n_phonon,exciton_energy,size):
     progress = ProgressBar(size, fmt=ProgressBar.FULL)
 
     start = 0
-    for i in range(1,size+1):
+    for i in range(size):
 
         f_temp = h5.File('G_qm_%s.h5'%i, 'r')
         G_qvn_temp = f_temp["G_qvm"][()]

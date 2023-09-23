@@ -117,7 +117,7 @@ class InitialInformation():
             for i in range(kmap_points.shape[0]):
                 if np.all(True_False_matrix_to_be_determined[i]):
                     high_symm_kpoints_kmap_index.append([i,i//int(np.sqrt(self.Q)),i%int(np.sqrt(self.Q))])
-                    print('index of point: %.5f %.f5 0.00000 '%(h_kpt_array[0], h_kpt_array[1]),' in kmap :',i,' [%s,%s]'%(i//int(np.sqrt(self.Q)),i%int(np.sqrt(self.Q))))
+                    print('index of point: %.5f %.5f 0.00000 '%(h_kpt_array[0], h_kpt_array[1]),' in kmap :',i,' [%s,%s]'%(i//int(np.sqrt(self.Q)),i%int(np.sqrt(self.Q))))
                     found_high =True
                     break
             if not found_high:
