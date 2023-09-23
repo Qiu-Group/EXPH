@@ -192,10 +192,9 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
 
     # every processor create a h5 file
 # bowen hou 2023/09/23----------
-    f_G_qn = h5.File('G_qm_%s.h5'%rank, 'w')
-    f_G_qn.create_dataset("G_qvm", (plan_list_2[1]-plan_list_2[0], n_phonon ,exciton_energy.shape[1]), dtype=np.float) # ex-ph matrix fine grid
-    f_G_qn.create_dataset("gamma_qvm", (plan_list_2[1]-plan_list_2[0], n_phonon ,exciton_energy.shape[1]), dtype=np.float) # scattering rate fine grid (Fermi-Golden Rule)
-    f_G_qn.create_dataset("Omega_Qm", (plan_list_2[1]-plan_list_2[0], exciton_energy.shape[1]), dtype=np.float) # exciton energy
+    G_qvm_each_proc = np.zeros((plan_list_2[1]-plan_list_2[0], n_phonon ,exciton_energy.shape[1]))
+    gamma_qvm_each_proc = np.zeros((plan_list_2[1]-plan_list_2[0], n_phonon ,exciton_energy.shape[1]))
+    Omega_Qm_each_proc = np.zeros((plan_list_2[1]-plan_list_2[0], exciton_energy.shape[1]))
 # bowen hou 2023/09/23----------
 
     progress = ProgressBar(exciton_energy.shape[1], fmt=ProgressBar.FULL)
@@ -281,9 +280,14 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
                 # Gamma_second_res = Gamma_second_res +
                 gamma_each_q_res_each_process[q_qQmap,3] = gamma_each_q_res_each_process[q_qQmap,3] + (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
 # bowen hou 2023/09/23----------
-                f_G_qn["G_qvm"][q_qQmap - plan_list_2[0],v_ph_gkk_index_loop , m_ext_acv_index_loop] = g_nmvQ_temp
-                f_G_qn["gamma_qvm"][q_qQmap - plan_list_2[0], v_ph_gkk_index_loop  , m_ext_acv_index_loop] = (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
-                f_G_qn["Omega_Qm"][q_qQmap - plan_list_2[0], m_ext_acv_index_loop] = OMEGA_m_Q_plus_q_temp
+#                 f_G_qn["G_qvm"][q_qQmap - plan_list_2[0],v_ph_gkk_index_loop , m_ext_acv_index_loop] = g_nmvQ_temp
+#                 f_G_qn["gamma_qvm"][q_qQmap - plan_list_2[0], v_ph_gkk_index_loop  , m_ext_acv_index_loop] = (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
+#                 f_G_qn["Omega_Qm"][q_qQmap - plan_list_2[0], m_ext_acv_index_loop] = OMEGA_m_Q_plus_q_temp
+
+                G_qvm_each_proc[q_qQmap - plan_list_2[0],v_ph_gkk_index_loop , m_ext_acv_index_loop] = g_nmvQ_temp
+                gamma_qvm_each_proc[q_qQmap - plan_list_2[0], v_ph_gkk_index_loop  , m_ext_acv_index_loop] = (factor * g_nmvQ_temp * distribution_first_temp + factor * g_nmvQ_temp * distribution_second_temp)
+                Omega_Qm_each_proc[q_qQmap - plan_list_2[0], m_ext_acv_index_loop] = OMEGA_m_Q_plus_q_temp
+
 # bowen hou 2023/09/23===========
     Gamma_res_to_0 = comm.gather(Gamma_res, root=0)
     Gamma_res_val =    after_parallel_sum_job(rk=rank, size=size, receive_res=Gamma_res_to_0 , start_time=start_time,
@@ -294,7 +298,12 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
                                start_time_proc=start_time_proc,mute=True)
 
 # bowen hou 2023/09/23----------
+    f_G_qn = h5.File('G_qm_%s.h5'%rank, 'w')
+    f_G_qn.create_dataset("G_qvm", data=G_qvm_each_proc, dtype=np.float) # ex-ph matrix fine grid
+    f_G_qn.create_dataset("gamma_qvm", data=gamma_qvm_each_proc, dtype=np.float) # scattering rate fine grid (Fermi-Golden Rule)
+    f_G_qn.create_dataset("Omega_Qm", data=Omega_Qm_each_proc, dtype=np.float) # exciton energy
     f_G_qn.close()
+
     if rank == 0:
         merge_f_G_qn(workload_over_q_fi=workload_over_q_fi,n_phonon=n_phonon,exciton_energy=exciton_energy,size=size)
         f_G = h5.File('G_qm.h5', 'a')
