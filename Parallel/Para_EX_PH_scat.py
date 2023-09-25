@@ -304,6 +304,8 @@ def para_Gamma_scat_inteqp(Q_kmap=15, n_ext_acv_index=2,T=100, degaussian=0.001,
     f_G_qn.create_dataset("Omega_Qm", data=Omega_Qm_each_proc, dtype=np.float) # exciton energy
     f_G_qn.close()
 
+    comm.Barrier() # wait all processor finish writing job
+
     if rank == 0:
         merge_f_G_qn(workload_over_q_fi=workload_over_q_fi,n_phonon=n_phonon,exciton_energy=exciton_energy,size=size)
         f_G = h5.File('G_qm.h5', 'a')

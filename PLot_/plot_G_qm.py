@@ -114,7 +114,7 @@ def plot_g_qm(high_symm, m_start, m_end, mu_start, mu_end):
         section = (nS)//10 if nS >= 10 else 1
         if s % section == 0: print(s,'/',nS)
         for k in range(nk):
-            f.write("%.5f %.5f %.5f %.5f\n"%(res[s*nk + k, 0],res[s*nk + k, 1],res[s*nk + k, 2],res[s*nk + k, 3]))
+            f.write("%.2f %.8e %.8e %.8e\n"%(res[s*nk + k, 0],res[s*nk + k, 1],res[s*nk + k, 2],res[s*nk + k, 3]))
         f.write('\n')
 
     f.close()

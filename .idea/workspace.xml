@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="Complete README and tutorial">
+    <list default="true" id="e9d7abd5-4556-4e22-baeb-1107ec9f20a6" name="Changes" comment="optimize IO of G_qm.h5">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PLot_/plot_G_qm.py" beforeDir="false" afterPath="$PROJECT_DIR$/PLot_/plot_G_qm.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" beforeDir="false" afterPath="$PROJECT_DIR$/Parallel/Para_EX_PH_scat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -467,7 +467,14 @@
       <option name="project" value="LOCAL" />
       <updated>1695503894416</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="optimize IO of G_qm.h5">
+      <created>1695505485972</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1695505485972</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -505,7 +512,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="bug fixed! &#10;&#10;(1) lifetime_inteqp add new functions&#10;(2) BE suppress warning!" />
     <MESSAGE value="Symmetry is added!!&#10;&#10;(1) Do more test before merging to master&#10;(2) Basic test pass!&#10;(3) review all parst about IO_acv.py, IO_common.py and kgrid_check.py!" />
     <MESSAGE value="v1.4" />
     <MESSAGE value="save:11/10/2022 9:05am" />
@@ -530,6 +536,7 @@
     <MESSAGE value="merge G_qvm" />
     <MESSAGE value="A new feature added: G_qm can be plotted!!!!&#10;&#10;More Test needed." />
     <MESSAGE value="Complete README and tutorial" />
-    <option name="LAST_COMMIT_MESSAGE" value="Complete README and tutorial" />
+    <MESSAGE value="optimize IO of G_qm.h5" />
+    <option name="LAST_COMMIT_MESSAGE" value="optimize IO of G_qm.h5" />
   </component>
 </project>
