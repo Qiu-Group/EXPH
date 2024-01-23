@@ -3,9 +3,9 @@ import h5py as h5
 import matplotlib.pyplot as plt
 
 k_select = -1 # select the index of k (if=-1 -> all kpoints will be included)
-scale = 10E2
-e_min = 0
-e_high = 5
+scale = 10000.0
+e_min = 2.5
+e_high = 4
 
 
 f = h5.File('eigenvectors.h5','r')

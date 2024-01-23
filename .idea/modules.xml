@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../../10-ml-gw/GW-ML/.idea/GW-ML.iml" filepath="$PROJECT_DIR$/../../10-ml-gw/GW-ML/.idea/GW-ML.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../01+Bi2Te3/code_Bi2Te3/.idea/code.iml" filepath="$PROJECT_DIR$/../../01+Bi2Te3/code_Bi2Te3/.idea/code.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../01+Bi2Te3/code_B2T3/.idea/code_B2T3.iml" filepath="$PROJECT_DIR$/../../01+Bi2Te3/code_B2T3/.idea/code_B2T3.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/code_exph.iml" filepath="$PROJECT_DIR$/.idea/code_exph.iml" />
-      <module fileurl="file://$USER_HOME$/Desktop/temp/.idea/temp.iml" filepath="$USER_HOME$/Desktop/temp/.idea/temp.iml" />
     </modules>
   </component>
 </project>
