@@ -25,7 +25,7 @@ elif sys.argv[1] == 'gkk':
     # read cart electron-phonon matrix
     read_epb(prefix=second_parameter)
     # rotate el_ph_cart to el_ph_phonon
-    epb = epbfile(prefix="MoS2")
+    epb = epbfile(prefix=second_parameter)
     epb.diagonalize_dynmat()
     epb.write_hdf5_qbyq()
 
