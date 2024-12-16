@@ -17,16 +17,19 @@
   !! on the coarse mesh and then passes the data off to [[ephwann_shuffle]]
   !! to perform the interpolation.
   !!
+  !! SP - Apr 2021 - Addition of quadrupoles
+  !!
   !-----------------------------------------------------------------------
   !
   USE kinds,         ONLY : DP
   USE mp_global,     ONLY : my_pool_id, world_comm, npool
   USE mp_images,     ONLY : my_image_id, nimage
   USE mp_world,      ONLY : mpime
+  USE mp_bands,      ONLY : intra_bgrp_comm
   USE mp,            ONLY : mp_barrier, mp_bcast
   USE io_global,     ONLY : stdout, meta_ionode, meta_ionode_id, ionode_id
-  USE us,            ONLY : nqxq, dq, qrad
-  USE gvect,         ONLY : gcutm
+  USE uspp_data,     ONLY : nqxq, dq, qrad
+  USE gvect,         ONLY : gcutm, ngm, g, gg
   USE cellmd,        ONLY : cell_factor
   USE uspp_param,    ONLY : lmaxq, nbetam
   USE io_files,      ONLY : prefix, tmp_dir
@@ -35,32 +38,45 @@
   USE eqv,           ONLY : vlocq, dmuxc
   USE ions_base,     ONLY : nat, nsp, tau, ityp, amass
   USE control_flags, ONLY : iverbosity
-  USE io_var,        ONLY : iuepb, iuqpeig, crystal, iunpattern
+  USE io_var,        ONLY : iuepb, iuqpeig, crystal, iunpattern, iuquad
   USE pwcom,         ONLY : nks, nbnd, nkstot, nelec
   USE cell_base,     ONLY : at, bg, alat, omega, tpiba
   USE symm_base,     ONLY : irt, s, nsym, ft, sname, invs, s_axis_to_cart,      &
                             sr, nrot, set_sym_bl, find_sym, inverse_s, t_rev,   &
-                            remove_sym, allfrac, time_reversal
+                            allfrac, time_reversal
   USE phcom,         ONLY : evq
   USE qpoint,        ONLY : igkq, xq, eigqts
   USE modes,         ONLY : nmodes, u, npert
   USE lr_symm_base,  ONLY : minus_q, rtau, gi, gimq, irotmq, nsymq, invsymq
   USE epwcom,        ONLY : epbread, epbwrite, epwread, lifc, etf_mem, vme,     &
                             nbndsub, iswitch, kmaps, eig_read, dvscf_dir,       &
-                            nkc1, nkc2, nkc3, nqc1, nqc2, nqc3, lpolar, system_2d, &
-                            fixsym, epw_noinv
+                            nkc1, nkc2, nkc3, nqc1, nqc2, nqc3, lpolar,         &
+                            fixsym, epw_noinv, system_2d
+#if defined(__HDF5)
+  ! KV: Included to import selected variables alone. 
+  USE elph2,         ONLY : epmatq, dynq, et_ks, xkq, ifc, umat, umat_all, veff,&
+                              zstar, epsi, cu, cuq, lwin, lwinq, bmat, nbndep,    &
+                              ngxx, exband, wscache, area, ngxxf, ng0vec, shift,  &
+                              gmap, g0vec_all_r, Qmat, qrpl, &
+                              atomic_masses, &
+                              dynmat, &
+                              ph_eigs, &
+                              ph_evecs, &
+                              elph_nu
+#else
   USE elph2,         ONLY : epmatq, dynq, et_ks, xkq, ifc, umat, umat_all, veff,&
                             zstar, epsi, cu, cuq, lwin, lwinq, bmat, nbndep,    &
                             ngxx, exband, wscache, area, ngxxf, ng0vec, shift,  &
-                            gmap, g0vec_all_r
+                            gmap, g0vec_all_r, Qmat, qrpl
+#endif
+
   USE klist_epw,     ONLY : et_loc, et_all
   USE constants_epw, ONLY : ryd2ev, zero, two, czero, eps6, eps8
   USE fft_base,      ONLY : dfftp
   USE control_ph,    ONLY : u_from_file
-  USE noncollin_module, ONLY : m_loc, npol, noncolin
+  USE noncollin_module, ONLY : m_loc, npol, noncolin, lspinorb
   USE division,      ONLY : fkbounds
   USE uspp,          ONLY : okvan
-  USE spin_orb,      ONLY : lspinorb
   USE lrus,          ONLY : becp1
   USE becmod,        ONLY : deallocate_bec_type
   USE phus,          ONLY : int1, int1_nc, int2, int2_so, alphap
@@ -69,12 +85,17 @@
   USE ph_restart,    ONLY : read_disp_pattern_only
   USE io_epw,        ONLY : read_ifc_epw, readdvscf, readgmap
   USE poolgathering, ONLY : poolgather
-  USE rigid_epw,     ONLY : compute_umn_c
+  USE rigid_epw,     ONLY : compute_umn_c !, find_gmin ! Temporarily commented by H. Lee
   USE rotate,        ONLY : rotate_epmat, rotate_eigenm, star_q2, gmap_sym
   USE pw2wan2epw,    ONLY : compute_pmn_para
 #if defined(__NAG)
   USE f90_unix_io,   ONLY : flush
 #endif
+
+! KV: Include HDF5 module for file writing. 
+#if defined(__HDF5)
+  USE hdf5 
+#endif 
   !
   ! --------------------------------------------------------------
   !
@@ -86,6 +107,8 @@
   !! Name of the directory
   CHARACTER(LEN = 256) :: filename
   !! Name of the file
+  CHARACTER(LEN = 256) :: dummy
+  !! Dummy character reading
   CHARACTER(LEN = 4) :: filelab
   !! Append the number of the core that works on that file
   CHARACTER(LEN = 80)   :: line
@@ -157,6 +180,10 @@
   !! Polarization index
   INTEGER :: ierr
   !! Error index when reading/writing a file
+  INTEGER :: na
+  !! Atom index
+  INTEGER :: idir
+  !! Cartesian direction
   !INTEGER :: iunpun
   !! Unit of the file
   INTEGER, ALLOCATABLE :: gmapsym(:, :)
@@ -185,6 +212,8 @@
   !! Absolute value of xqc_irr
   REAL(KIND = DP) :: sumr(2, 3, nat, 3)
   !! Sum to impose the ASR
+  REAL(KIND = DP) :: Qxx, Qyy, Qzz, Qyz, Qxz, Qxy
+  !! Specific quadrupole value read from file.
   REAL(KIND = DP), ALLOCATABLE :: xqc_irr(:, :)
   !! The qpoints in the irr wedge
   REAL(KIND = DP), ALLOCATABLE :: xqc(:, :)
@@ -197,6 +226,41 @@
   !! The rotated eigenvectors, for the current q in the star
   COMPLEX(KIND = DP), ALLOCATABLE :: eigv(:, :)
   !! $e^{ iGv}$ for 1...nsym (v the fractional translation)
+
+  ! KV: Included variables for HDF5 IO. 
+  ! No parallel writing. Each pool/image writes its one HDF5 file. 
+#if defined(__HDF5)
+  integer(kind=hid_t) :: file_id, &
+    filespace_id, &
+    dataset_id ! HDF5 file parameters. 
+  integer :: atomic_masses_rank, &
+    amass_rank, &
+    ityp_rank, &
+    dynq_rank, &
+    dynmat_rank, &
+    ph_eigs_rank, &
+    ph_evecs_rank, &
+    elph_cart_rank, &
+    elph_nu_rank   ! Dataset ranks. 
+  integer(kind=hsize_t) :: atomic_masses_dims(1), &
+    amass_dims(1), &
+    ityp_dims(1), &
+    dynq_dims(3), &
+    dynmat_dims(3), &
+    ph_eigs_dims(2), &
+    ph_evecs_dims(3), &
+    elph_cart_dims(5), &
+    elph_nu_dims(5)     ! Dataset dimensions. 
+  integer :: iter_idx = 0, &
+    iter_i, &
+    iter_j, &
+    iter_k, &
+    iter_mode, &
+    iter_3nat, &
+    iter_q   ! Variable for iteration in do while loops. 
+#endif 
+
+
   !
   CALL start_clock('elphon_wrap')
   !
@@ -207,6 +271,7 @@
   IF (epwread .AND. .NOT. epbread) THEN
     CONTINUE
   ELSE
+    IF (vme == 'dipole') CALL compute_pmn_para
     !
     ! Regenerate qpoint list
     !
@@ -243,7 +308,8 @@
         !
         qrad(:, :, :, :) = zero
         ! RM - need to call init_us_1 to re-calculate qrad
-        CALL init_us_1()
+        ! PG - maybe it would be sufficient to call init_tab_qrad?
+        CALL init_us_1(nat, ityp, omega, ngm, g, gg, intra_bgrp_comm)
       ENDIF
     ENDIF
     !
@@ -253,45 +319,44 @@
   !
   ! Read in external electronic eigenvalues. e.g. GW
   !
-  ALLOCATE(et_ks(nbnd, nks), STAT = ierr)
-  IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating et_ks', 1)
-  et_ks(:, :) = zero
-  IF (eig_read) THEN
-    IF (meta_ionode) THEN
-      WRITE(stdout, '(5x, a, i5, a, i5, a)') "Reading external electronic eigenvalues (", &
-            nbnd, ",", nkstot,")"
-      tempfile = TRIM(prefix) // '.eig'
-      OPEN(iuqpeig, FILE = tempfile, FORM = 'formatted', ACTION = 'read', IOSTAT = ios)
-      IF (ios /= 0) CALL errore('elphon_shuffle_wrap', 'error opening' // tempfile, 1)
-      READ(iuqpeig, '(a)') line
-      DO ik = 1, nkstot
-        ! We do not save the k-point for the moment ==> should be read and
-        ! tested against the current one
+  IF (.NOT. epwread) THEN
+    ALLOCATE(et_ks(nbnd, nks), STAT = ierr)
+    IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating et_ks', 1)
+    et_ks(:, :) = zero
+    IF (eig_read) THEN
+      IF (meta_ionode) THEN
+        WRITE(stdout, '(5x, a, i5, a, i5, a)') "Reading external electronic eigenvalues (", &
+              nbnd, ",", nkstot,")"
+        tempfile = TRIM(prefix) // '.eig'
+        OPEN(iuqpeig, FILE = tempfile, FORM = 'formatted', ACTION = 'read', IOSTAT = ios)
+        IF (ios /= 0) CALL errore('elphon_shuffle_wrap', 'error opening' // tempfile, 1)
         READ(iuqpeig, '(a)') line
-        READ(iuqpeig, *) et_tmp(:, ik)
-      ENDDO
-      CLOSE(iuqpeig)
-      ! from eV to Ryd
-      et_tmp = et_tmp / ryd2ev
+        DO ik = 1, nkstot
+          ! We do not save the k-point for the moment ==> should be read and
+          ! tested against the current one
+          READ(iuqpeig, '(a)') line
+          READ(iuqpeig, *) et_tmp(:, ik)
+        ENDDO
+        CLOSE(iuqpeig)
+        ! from eV to Ryd
+        et_tmp = et_tmp / ryd2ev
+      ENDIF
+      CALL mp_bcast(et_tmp, meta_ionode_id, world_comm)
+      !
+      CALL fkbounds(nkstot, ik_start, ik_stop)
+      et_ks(:, :)  = et_loc(:, :)
+      et_loc(:, :) = et_tmp(:, ik_start:ik_stop)
     ENDIF
-    CALL mp_bcast(et_tmp, meta_ionode_id, world_comm)
-    !
-    CALL fkbounds(nkstot, ik_start, ik_stop)
-    et_ks(:, :)  = et_loc(:, :)
-    et_loc(:, :) = et_tmp(:, ik_start:ik_stop)
-  ENDIF
-  !
-  ! Do not recompute dipole matrix elements
-  IF (epwread .AND. .NOT. epbread) THEN
-    CONTINUE
   ELSE
-    ! compute coarse grid dipole matrix elements.  Very fast
-    IF (.NOT. vme) CALL compute_pmn_para
+    ! if starting from epwread, do not need to get external eigs from file.
+    ! allocate zero sized array so no issues with deallocation at end of execution
+    ALLOCATE(et_ks(0, 0), STAT = ierr)
+    IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating et_ks', 1)
   ENDIF
   !
   !  gather electronic eigenvalues for subsequent shuffle
   !
-  IF (eig_read) THEN
+  IF (eig_read .AND. .NOT. epwread) THEN
     et_all(:, :) = zero
     CALL poolgather(nbnd, nkstot, nks, et_loc(1:nbnd, 1:nks), et_all)
   ENDIF
@@ -334,6 +399,7 @@
     IF (mpime == ionode_id) THEN
       !
       OPEN(UNIT = crystal, FILE = 'crystal.fmt', STATUS = 'old', IOSTAT = ios)
+      IF (ios /= 0) CALL errore('elphon_shuffle_wrap', 'error opening crystal.fmt', crystal)
       READ(crystal, *) nat
       READ(crystal, *) nmodes
       READ(crystal, *) nelec
@@ -371,7 +437,54 @@
     ENDIF
   ENDIF ! epwread
   !
-  IF (system_2d) area = omega * alat / bg(3, 3)
+  ! If quadrupole file exist, read it
+  IF (mpime == ionode_id) THEN
+    INQUIRE(FILE = 'quadrupole.fmt', EXIST = exst)
+  ENDIF
+  CALL mp_bcast(exst, ionode_id, world_comm)
+  !
+  qrpl = .FALSE.
+  ALLOCATE(Qmat(nat, 3, 3, 3), STAT = ierr)
+  IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating Qmat', 1)
+  Qmat(:, :, :, :) = zero
+  IF (exst) THEN
+    qrpl = .TRUE.
+    IF (mpime == ionode_id) THEN
+      OPEN(UNIT = iuquad, FILE = 'quadrupole.fmt', STATUS = 'old', IOSTAT = ios)
+      READ(iuquad, *) dummy
+      DO i = 1, 3 * nat
+        READ(iuquad, *) na, idir, Qxx, Qyy, Qzz, Qyz, Qxz, Qxy
+        Qmat(na, idir, 1, 1) = Qxx
+        Qmat(na, idir, 2, 2) = Qyy
+        Qmat(na, idir, 3, 3) = Qzz
+        Qmat(na, idir, 2, 3) = Qyz
+        Qmat(na, idir, 3, 2) = Qyz
+        Qmat(na, idir, 1, 3) = Qxz
+        Qmat(na, idir, 3, 1) = Qxz
+        Qmat(na, idir, 1, 2) = Qxy
+        Qmat(na, idir, 2, 1) = Qxy
+      ENDDO
+      CLOSE(iuquad)
+    ENDIF ! mpime == ionode_id
+    CALL mp_bcast(Qmat, ionode_id, world_comm)
+    WRITE(stdout, '(a)') '     '
+    WRITE(stdout, '(a)') '     ------------------------------------ '
+    WRITE(stdout, '(a)') '     Quadrupole tensor is correctly read: '
+    WRITE(stdout, '(a)') '     ------------------------------------ '
+    WRITE(stdout, '(a)') '     atom   dir        Qxx       Qyy      Qzz        Qyz       Qxz       Qxy'
+    DO na = 1, nat
+      WRITE(stdout, '(i8, a,6f10.5)' ) na, '        x    ', Qmat(na, 1, 1, 1), Qmat(na, 1, 2, 2), Qmat(na, 1, 3, 3), &
+                                                            Qmat(na, 1, 2, 3), Qmat(na, 1, 1, 3), Qmat(na, 1, 1, 2)
+      WRITE(stdout, '(i8, a,6f10.5)' ) na, '        y    ', Qmat(na, 2, 1, 1), Qmat(na, 2, 2, 2), Qmat(na, 2, 3, 3), &
+                                                            Qmat(na, 2, 2, 3), Qmat(na, 2, 1, 3), Qmat(na, 2, 1, 2)
+      WRITE(stdout, '(i8, a,6f10.5)' ) na, '        z    ', Qmat(na, 3, 1, 1), Qmat(na, 3, 2, 2), Qmat(na, 3, 3, 3), &
+                                                            Qmat(na, 3, 2, 3), Qmat(na, 3, 1, 3), Qmat(na, 3, 1, 2)
+    ENDDO
+    WRITE(stdout, '(a)') '     '
+  ENDIF ! exst
+  !
+  IF (system_2d) area = omega * bg(3, 3) / alat
+  IF (system_2d) WRITE(stdout, * ) '  Area is [Bohr^2] ', area
   !
   IF (lifc) THEN
     ALLOCATE(ifc(nqc1, nqc2, nqc3, 3, 3, nat, nat), STAT = ierr)
@@ -379,8 +492,20 @@
     ifc(:, :, :, :, :, :, :) = zero
   ENDIF
   !
+  ! SP: Symmetries needs to be consistent with QE so that the order of the q in the star is the
+  !     same as in the .dyn files produced by QE.
+  !
   ! Initialize symmetries and create the s matrix
+  s(:, :, :) = 0 ! Symmetry in crystal axis with dim: 3,3,48
   CALL set_sym_bl()
+  !
+  ! Setup Bravais lattice symmetry
+  WRITE(stdout,'(5x,a,i3)') "Symmetries of Bravais lattice: ", nrot
+  !
+  ! Setup crystal symmetry
+  CALL find_sym(nat, tau, ityp, .FALSE., m_loc)
+  IF (fixsym) CALL fix_sym(.FALSE.)
+  WRITE(stdout, '(5x, a, i3)') "Symmetries of crystal:         ", nsym
   !
   IF (epwread .AND. .NOT. epbread) THEN
     CONTINUE
@@ -408,6 +533,41 @@
     IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating lwinq', 1)
     ALLOCATE(exband(nbnd), STAT = ierr)
     IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating exband', 1)
+
+    ! KV: Allocate and initialzie the variables for datasets that are written out in '<prefix>_elph_<pool_num>.h5'. 
+#if defined(__HDF5)
+    ! Allocate atomic masses. (3*nat).
+    allocate(atomic_masses(3*nat), stat=ierr)
+    IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating atomic_masses', 1)
+    atomic_masses(:) = zero
+
+    ! Get the atomic masses. 
+    do iter_idx = 0, (3*nat-1)
+      atomic_masses(iter_idx + 1) = amass(ityp( iter_idx/3 +1 ))   ! In Rydberg atomic units. 
+    end do 
+
+    ! Allocate dynmat. (nmodes, nmodes, nqcs).
+    allocate(dynmat(nmodes, nmodes, nqc1 * nqc2 * nqc3), stat=ierr)
+    IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating dynmat', 1)
+    dynmat(:, :, :) = czero
+
+    ! Allocate ph_evecs. (nmodes, nqcs, nmodes).
+    allocate(ph_evecs(nmodes, nqc1 * nqc2 * nqc3, nmodes), stat=ierr)
+    IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating ph_evecs', 1)
+    ph_evecs(:, :, :) = czero
+
+    ! Allocate ph_eigs. (nmodes, nqcs). 
+    allocate(ph_eigs(nmodes, nqc1 * nqc2 * nqc3), stat=ierr)
+    IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating ph_eigs', 1)
+    ph_eigs(:, :) = zero
+
+    ! Allocate elph_nu. (nbnds, nbnds, nks, nmodes, nqcs).
+    allocate(elph_nu(nbndep, nbndep, nks, nmodes, nqc1 * nqc2 * nqc3), stat=ierr)
+    IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error allocating elph_nu', 1)
+    elph_nu(:, :, :, :, :) = czero
+
+#endif
+
     dynq(:, :, :)         = czero
     epmatq(:, :, :, :, :) = czero
     epsi(:, :)            = zero
@@ -415,25 +575,12 @@
     bmat(:, :, :, :)      = czero
     cu(:, :, :)           = czero
     cuq(:, :, :)          = czero
+    sxq(:, :)             = zero
     !
     ! read interatomic force constat matrix from q2r
     IF (lifc) THEN
       CALL read_ifc_epw
     ENDIF
-    !
-    ! SP: The symmetries are now consistent with QE 5. This means that the order of the q in the star
-    !     should be the same as in the .dyn files produced by QE 5.
-    !
-    !     First we start by setting up the lattice & crystal symm. as done in PHonon/PH/q2qstar.f90
-    !
-    ! ~~~~~~~~ setup Bravais lattice symmetry ~~~~~~~~
-    WRITE(stdout,'(5x,a,i3)') "Symmetries of Bravais lattice: ", nrot
-    !
-    ! ~~~~~~~~ setup crystal symmetry ~~~~~~~~
-    CALL find_sym(nat, tau, ityp, .FALSE., m_loc)
-    IF (fixsym) CALL fix_sym(.FALSE.)
-    IF (.NOT. allfrac) CALL remove_sym(dfftp%nr1, dfftp%nr2, dfftp%nr3)
-    WRITE(stdout, '(5x, a, i3)') "Symmetries of crystal:         ", nsym
     !
     ! The following loop is required to propertly set up the symmetry matrix s.
     ! We here copy the calls made in PHonon/PH/init_representations.f90 to have the same s as in QE 5.
@@ -496,7 +643,7 @@
          INQUIRE(FILE = TRIM(filename), EXIST = exst)
          IF (.NOT. exst) CALL errore('elphon_shuffle_wrap', &
                    'cannot open file for reading or writing', ierr)
-         CALL read_disp_pattern_only (iunpattern, filename, iq_irr, ierr)
+         CALL read_disp_pattern_only(iunpattern, filename, iq_irr, ierr)
          IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', ' Problem with modes file', 1)
       ENDIF
       !
@@ -533,7 +680,7 @@
       ! ######################### star of q #########################
       !
       sym_smallq(:) = 0
-      CALL star_q2(xq, at, bg, nsym, s, invs, nq, sxq, isq, imq, .TRUE., sym_smallq)
+      CALL star_q2(xq, at, bg, nsym, s, invs, t_rev, nq, sxq, isq, imq, .TRUE., sym_smallq)
       IF (fixsym) THEN
         IF (epw_noinv) imq = 1 ! Any non-zero integer is ok.
       ENDIF
@@ -551,12 +698,7 @@
       !
       CALL sgam_lr(at, bg, nsym, s, irt, tau, rtau, nat)
       !
-      !IF (meta_ionode) THEN
-        CALL dynmat_asr(iq_irr, nqc_irr, nq, iq_first, sxq, imq, isq, invs, s, irt, rtau, sumr)
-      !ENDIF
-      !CALL mp_bcast(zstar, meta_ionode_id, world_comm)
-      !CALL mp_bcast(epsi , meta_ionode_id, world_comm)
-      !CALL mp_bcast(dynq , meta_ionode_id, world_comm)
+      CALL dynmat_asr(iq_irr, nqc_irr, nq, iq_first, sxq, imq, isq, invs, s, irt, rtau, sumr)
       !
       ! now dynq is the cartesian dyn mat (not divided by the masses)
       !
@@ -579,6 +721,10 @@
         !
         IF (iq == 1) WRITE(stdout, *)
         WRITE(stdout, 5) nqc, xq
+        ! Temporarily commented by H. Lee
+!        aq  = xq
+!        CALL cryst_to_cart(1, aq, at, -1)
+!        CALL find_gmin(aq)
         !
         ! Prepare the kmap for the refolding
         !
@@ -709,7 +855,7 @@
         CALL loadumat(nbndep, nbndsub, nks, nkstot, xq, cu, cuq, lwin, lwinq, exband, w_centers)
         !
         ! Calculate overlap U_k+q U_k^\dagger
-        IF (lpolar) CALL compute_umn_c(nbndep, nbndsub, nks, cu, cuq, bmat(:, :, :, nqc))
+        IF (lpolar .OR. qrpl) CALL compute_umn_c(nbndep, nbndsub, nks, cu, cuq, bmat(:, :, :, nqc))
         !
         !   calculate the sandwiches
         !
@@ -719,7 +865,7 @@
         ! are equal to 5+ digits).
         ! For any volunteers, please write to giustino@civet.berkeley.edu
         !
-        CALL elphon_shuffle(iq_irr, nqc_irr, nqc, gmapsym(:,isym1), eigv(:,isym1), isym, xq0, .FALSE.)
+        CALL elphon_shuffle(iq_irr, nqc_irr, nqc, gmapsym(:, isym1), eigv(:, isym1), isym, xq0, .FALSE.)
         !
         !  bring epmatq in the mode representation of iq_first,
         !  and then in the cartesian representation of iq
@@ -759,11 +905,11 @@
           CALL loadumat(nbndep, nbndsub, nks, nkstot, xq, cu, cuq, lwin, lwinq, exband, w_centers)
           !
           ! Calculate overlap U_k+q U_k^\dagger
-          IF (lpolar) CALL compute_umn_c(nbndep, nbndsub, nks, cu, cuq, bmat(:, :, :, nqc))
+          IF (lpolar .OR. qrpl) CALL compute_umn_c(nbndep, nbndsub, nks, cu, cuq, bmat(:, :, :, nqc))
           !
           xq0 = -xq0
           !
-          CALL elphon_shuffle(iq_irr, nqc_irr, nqc, gmapsym(:,isym1), eigv(:,isym1), isym, xq0, .TRUE.)
+          CALL elphon_shuffle(iq_irr, nqc_irr, nqc, gmapsym(:, isym1), eigv(:, isym1), isym, xq0, .TRUE.)
           !  bring epmatq in the mode representation of iq_first,
           !  and then in the cartesian representation of iq
           !
@@ -865,10 +1011,172 @@
       !
       IF (epbwrite) THEN
         OPEN(iuepb, FILE = tempfile, FORM = 'unformatted')
-        WRITE(stdout, '(/5x, "Writing ONLY epmatq on .epb files"/)')
+        WRITE(stdout, '(/5x, "Writing epmatq on .epb files"/)')
         WRITE(iuepb) epmatq
         CLOSE(iuepb)
         WRITE(stdout, '(/5x, "The .epb files have been correctly written"/)')
+
+        ! KV: Write the elph matrix to HDF5 file format here.
+#if defined(__HDF5)
+
+        ! Datasets. 
+        ! atomic_masses: (3*nat). 
+        ! dynmat: (3*nat, 3*nat, nqcs). Ry^2 units. Sure about the units?
+        ! ph_eigs: (nmodes, nqtot). Ry units. 
+        ! ph_evecs: (3*nat, nqcs, nmodes). No units. 
+        ! elph_nu: (nbnd, nbnd, nks, nmodes, nqcs). Ry units.  
+        ! elph_cart: Same as epmatq. epmatq: (nbnd, nbnd, nks, 3*nat, nqcs). Not divided by sqrt(2*mass*frequency) factor. What units? 
+
+        ! Calculate elph_nu. (nbnd, nbnd, nks, nmodes, nqcs). After division by sqrt(2*mass*frequency). Ry units.  
+        do iter_i = 1, nbndep
+          do iter_j = 1, nbndep
+            do iter_k = 1, nks
+              do iter_q = 1, (nqc1*nqc2*nqc3)
+                do iter_mode = 1, nmodes      ! Can also be thought of as 3*nat. 
+                  
+                  ! elph_nu: Do the dot product sum. Haven't divided by frequency factor yet.  
+                  elph_nu(iter_i, iter_j, iter_k, iter_mode, iter_q) = &
+                    dot_product( &
+                      ph_evecs(:, iter_q, iter_mode)/dsqrt(atomic_masses(:)), &
+                      epmatq(iter_i, iter_j, iter_k, :, iter_q) &
+                    )
+
+                  ! elph_nu: Divide by sqrt(2*frequency). Set to zero if freq is 0. 
+                  if (ph_eigs(iter_mode, iter_q) > 0.d0) then
+                    
+                    ! Division by frequency factor.  
+                    elph_nu(iter_i, iter_j, iter_k, iter_mode, iter_q) = &
+                      elph_nu(iter_i, iter_j, iter_k, iter_mode, iter_q) &
+                      / dsqrt(2*ph_eigs(iter_mode, iter_q))    !  frequency factor.  
+                  else 
+                    elph_nu(iter_i, iter_j, iter_k, iter_mode, iter_q) = (0.d0, 0.d0)
+                  end if
+
+                end do
+              end do
+            end do
+          end do
+        end do 
+
+        ! Write all of them. 
+        call h5open_f(ierr)
+
+        ! File. 
+        tempfile = TRIM(tmp_dir) // TRIM(prefix) // '_' // 'elph_' // TRIM(filelab) // '.h5'   ! File name (one for each pool).  
+        WRITE(stdout, '(/5x, a, a/)') 'KV: Started writing ', tempfile
+        call h5fcreate_f(tempfile, H5F_ACC_TRUNC_F, file_id, ierr) 
+
+        ! Write atomic_masses. Ry atomic units. (3*nat) 
+        ! TODO: deprecate this after test
+        atomic_masses_dims = shape(atomic_masses)
+        atomic_masses_rank = size(atomic_masses_dims)
+        call h5screate_simple_f(atomic_masses_rank, atomic_masses_dims, filespace_id, ierr)
+        call h5dcreate_f(file_id, 'atomic_masses', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, atomic_masses, atomic_masses_dims, ierr)  
+
+        ! Write types. 
+        !ityp_dims = shape(ityp)
+        !ityp_rank = size(ityp)
+        !call h5screate_simple_f(ityp_rank, ityp_dims, filespace_id, ierr)
+        !call h5dcreate_f(file_id, 'itype', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        !call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, ityp, ityp_dims, ierr)  
+
+        ! Write amasses. (3*nat)
+        !amass_dims = shape(amass)
+        !amass_rank = size(amass)
+        !call h5screate_simple_f(amass_rank, amass_dims, filespace_id, ierr)
+        !call h5dcreate_f(file_id, 'amass', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        !call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, amass, amass_dims, ierr)  
+        
+        ! Write dynq  (3*nat, 3*nat, nqcs)
+        dynq_dims = shape(dynq)
+        dynq_rank = size(dynq_dims)
+        call h5screate_simple_f(dynq_rank, dynq_dims, filespace_id, ierr)
+        call h5dcreate_f(file_id, 'dynq_real', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, real(dynq), dynq_dims, ierr)
+        call h5dcreate_f(file_id, 'dynq_imag', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, aimag(dynq), dynq_dims, ierr)
+
+        ! Write dynmat. Ry^2?. (3*nat, 3*nat, nqcs)
+        ! dynmat_dims = shape(dynmat)
+        ! dynmat_rank = size(dynmat_dims)
+        ! call h5screate_simple_f(dynmat_rank, dynmat_dims, filespace_id, ierr)
+        ! call h5dcreate_f(file_id, 'dynmat_real', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        ! call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, real(dynmat), dynmat_dims, ierr)  
+        ! call h5dcreate_f(file_id, 'dynmat_imag', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        ! call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, aimag(dynmat), dynmat_dims, ierr)  
+
+        ! Write ph_eigs. Ry. (nmodes, nqtot).
+        ! ph_eigs_dims = shape(ph_eigs)
+        ! ph_eigs_rank = size(ph_eigs_dims)
+        ! call h5screate_simple_f(ph_eigs_rank, ph_eigs_dims, filespace_id, ierr)
+        ! call h5dcreate_f(file_id, 'ph_eigs', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        ! call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, ph_eigs, ph_eigs_dims, ierr)  
+
+        ! Write ph_evecs. No units. (3*nat, nqcs, nmodes).
+        ! ph_evecs_dims = shape(ph_evecs)
+        ! ph_evecs_rank = size(ph_evecs_dims)
+        ! call h5screate_simple_f(ph_evecs_rank, ph_evecs_dims, filespace_id, ierr)
+        ! call h5dcreate_f(file_id, 'ph_evecs_real', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        ! call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, real(ph_evecs), ph_evecs_dims, ierr)  
+        ! call h5dcreate_f(file_id, 'ph_evecs_imag', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        ! call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, aimag(ph_evecs), ph_evecs_dims, ierr)  
+
+        ! Write elph_cart. What units? (nbnd, nbnd, nks, 3*nat, nqcs). Not divided by sqrt(2*mass*freq) factor. 
+        elph_cart_dims = shape(epmatq)
+        elph_cart_rank = size(elph_cart_dims)
+        call h5screate_simple_f(elph_cart_rank, elph_cart_dims, filespace_id, ierr)
+        call h5dcreate_f(file_id, 'elph_cart_real', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, real(epmatq), elph_cart_dims, ierr)  
+        call h5dcreate_f(file_id, 'elph_cart_imag', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, aimag(epmatq), elph_cart_dims, ierr)  
+
+        ! Write elph_nu. Ry. (nbnd, nbnd, nks, nmodes, nqcs).
+        ! elph_nu_dims = shape(elph_nu)
+        ! elph_nu_rank = size(elph_nu_dims)
+        ! call h5screate_simple_f(elph_nu_rank, elph_nu_dims, filespace_id, ierr)
+        ! call h5dcreate_f(file_id, 'elph_nu_real', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        ! call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, real(elph_nu), elph_nu_dims, ierr)  
+        ! call h5dcreate_f(file_id, 'elph_nu_imag', H5T_IEEE_F64LE, filespace_id, dataset_id, ierr)
+        ! call h5dwrite_f(dataset_id, H5T_IEEE_F64LE, aimag(elph_nu), elph_nu_dims, ierr)  
+        
+
+        ! File/Dataspace/Dataset close. 
+        call h5dclose_f(dataset_id, ierr)
+        call h5sclose_f(filespace_id, ierr)
+        call h5fclose_f(file_id, ierr)
+        call h5close_f(ierr)
+
+        ! Write to log that elph mat was written out. 
+        WRITE(stdout, '(/5x, a, a/)') 'KV: Done writing ', tempfile
+
+        
+
+        ! Deallocate variables. 
+        WRITE(stdout, '(/5x, a/)') 'KV: Starting to deallocate variables for h5 writing.'
+        ! Atomic masses. 
+        deallocate(atomic_masses, STAT = ierr)
+        if (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error deallocating atomic_masses', 1)
+
+        ! ph_eigs. 
+        deallocate(ph_eigs, STAT = ierr)
+        if (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error deallocating ph_eigs', 1)
+
+        ! ph_evecs.
+        deallocate(ph_evecs, STAT = ierr)
+        if (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error deallocating ph_evecs', 1)
+
+        ! dynmat. 
+        deallocate(dynmat, STAT = ierr)
+        if (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error deallocating dynmat', 1)
+
+        ! elph_nu. 
+        deallocate(elph_nu, STAT = ierr)
+        if (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error deallocating elph_nu', 1)
+
+        WRITE(stdout, '(/5x, a/)') 'KV: Done deallocating variables for h5 writing.'
+#endif  
+
       ENDIF
     ENDIF
   ENDIF
@@ -958,7 +1266,7 @@
     IF (ierr /= 0) CALL errore('elphon_shuffle_wrap', 'Error deallocating ityp', 1)
   ENDIF ! epwread
   !
-5 FORMAT (8x, "q(", i5, " ) = (", 3f16.12, " )")
+5 FORMAT (8x, "q(", i5, " ) = (", 3f12.7, " )")
   !
   RETURN
   !---------------------------------------------------------------------------
