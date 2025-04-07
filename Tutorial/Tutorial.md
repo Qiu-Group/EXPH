@@ -31,6 +31,13 @@ related properties, such as exciton band structure,exciton-phonon scattering mat
     
     - Install [EPW](https://docs.epw-code.org/doc/DownloadAndInstall.html) (I recommend you use EPW-5.3.0 and qe-6.6, which are 
      stable based on my experience)
+     The qe software can be found in link https://github.com/bwhou1997/q-e. If build on frontera: Load the modules: module load arpack impi 
+     intel/19.0.5 phdf5
+     set hdf5 in configure that directs to HDF5 in Frontera: ./configure --with-hdf5=${TACC_HDF5_DIR}
+
+     If build on Perlmutter, follow https://docs.nersc.gov/applications/quantum-espresso/
+     Pleas do not use -jN to build the qe, don't know why it doesn't work.
+   
       - ``cp ./EPW_src_modified/printing.f90 ~/software/your_qe_path/EPW/src/`` (This modified Fortran file could let EPW generate electron-phonon matrix with phase)
  
  - Tutorial Example
