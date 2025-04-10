@@ -170,7 +170,7 @@ SCF -> Phonon(DFPT) -> NSCF -pp.py-> EPW (carefully see every input file and go.
  just run go.sh.
   
  - collect data to gkk.save  
- ``collect.py gkk 6``  
+ ``collect.py gkk bn``  
  where gkk denotes this is for gkk.save and 6 is number of phonon mode (here we have 2 atoms, so nmode=6)  
   **Note:** you may need to add *./wannier90-3.1.0/utility/kmesh.pl* to your env path (Wannier90 is included in EPW, you can get the path
   of it using `find ~/ -name 'kmesh.pl'`). And this script is used to generate uniform k-grid in your real EPW calculation, you will use it 
