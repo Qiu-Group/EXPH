@@ -23,6 +23,7 @@ related properties, such as exciton band structure,exciton-phonon scattering mat
    - Add *./bin* to your environment and set root of EXPH:  
    `export PATH=~/your_software_path/EXPH/bin:$PATH`
    `export PYTHONPATH="${PYTHONPATH}:~/your_software_path/EXPH"`
+    - The python path need to be the absolute path
  
  - Required package:
     - Install [Anaconda](https://www.anaconda.com/) firstly
