@@ -105,7 +105,7 @@ class epbfile():
 
         # memory issue
         with h5.File("elphmat_phase.h5",'w') as f:
-            f.create_dataset("data", (self.nq, self.nk, self.nband, self.nband, self.nmodes, 2), dtype=np.float)
+            f.create_dataset("data", (self.nq, self.nk, self.nband, self.nband, self.nmodes, 2), dtype=np.float64)
             # f.create_dataset("elph_nu_imag", (self.nq, self.nmodes, self.nk, self.nband, self.nband), dtype=np.float)
 
             for iq in range(self.nq):
