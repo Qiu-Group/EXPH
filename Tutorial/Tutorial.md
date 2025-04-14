@@ -23,6 +23,7 @@ related properties, such as exciton band structure,exciton-phonon scattering mat
    - Add *./bin* to your environment and set root of EXPH:  
    `export PATH=~/your_software_path/EXPH/bin:$PATH`
    `export PYTHONPATH="${PYTHONPATH}:~/your_software_path/EXPH"`
+    - The python path need to be the absolute path
  
  - Required package:
     - Install [Anaconda](https://www.anaconda.com/) firstly
@@ -31,11 +32,13 @@ related properties, such as exciton band structure,exciton-phonon scattering mat
     
     - Install [EPW](https://docs.epw-code.org/doc/DownloadAndInstall.html) (I recommend you use EPW-5.3.0 and qe-6.6, which are 
      stable based on my experience)
-     The qe software can be found in link https://github.com/bwhou1997/q-e. If build on frontera: Load the modules: module load arpack impi intel/19.0.5 phdf5
+     - The qe software can be found in link https://github.com/bwhou1997/q-e. If build on frontera: Load the modules: module load arpack impi 
+     intel/19.0.5 phdf5
      set hdf5 in configure that directs to HDF5 in Frontera: ./configure --with-hdf5=${TACC_HDF5_DIR}
 
-     If build on Perlmutter, follow https://docs.nersc.gov/applications/quantum-espresso/
+     - If build on Perlmutter, follow https://docs.nersc.gov/applications/quantum-espresso/
      Pleas do not use -jN to build the qe, don't know why it doesn't work.
+   
       - ``cp ./EPW_src_modified/printing.f90 ~/software/your_qe_path/EPW/src/`` (This modified Fortran file could let EPW generate electron-phonon matrix with phase)
  
  - Tutorial Example
@@ -168,7 +171,7 @@ SCF -> Phonon(DFPT) -> NSCF -pp.py-> EPW (carefully see every input file and go.
  just run go.sh.
   
  - collect data to gkk.save  
- ``collect.py gkk 6``  
+ ``collect.py gkk bn``  
  where gkk denotes this is for gkk.save and 6 is number of phonon mode (here we have 2 atoms, so nmode=6)  
   **Note:** you may need to add *./wannier90-3.1.0/utility/kmesh.pl* to your env path (Wannier90 is included in EPW, you can get the path
   of it using `find ~/ -name 'kmesh.pl'`). And this script is used to generate uniform k-grid in your real EPW calculation, you will use it 
